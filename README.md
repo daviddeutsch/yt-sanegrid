@@ -1,7 +1,7 @@
 YT SaneGrid
 ===========
 
-[http://productforums.google.com/forum/#!category-topic/youtube/uVzkGUO7FKE](Related Discussion)
+[Related Discussion](http://productforums.google.com/forum/#!category-topic/youtube/uVzkGUO7FKE)
 
 YouTube abandoned the subscription grid view. This has made a lot of people very angry and been widely regarded as a bad move.
 
