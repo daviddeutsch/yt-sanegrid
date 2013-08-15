@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ytsubgridApp" ng-controller="AppCtrl">
+<head>
+	<meta charset="utf-8">
+	<title>mangrove: The package manager from valanx</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="The package manager you didn't know you desperately needed.">
+	<meta name="author" content="David Deutsch">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/ytgrid.css" rel="stylesheet">
+	<style type="text/css">
+	</style>
+</head>
+<body>
+	<div class="container" ng-controller="AppRepeatCtrl">
+		<header class="navbar" role="banner">
+			<img class="navbar-brand" src="http://www.youtube.com/yt/brand/media/image/yt-brand-flattype-5.png"/>
+			<form class="form-inline" role="form">
+				<div class="form-group">
+					<label class="sr-only" for="userid">Your Username</label>
+					<input
+							ng-model="userid"
+							id="userid"
+							type="text"
+							class="form-control"
+							placeholder="Your YouTube Username">
+					<button
+							class="btn btn-default"
+							type="submit"
+							ng-click="search(userid)">
+						Search
+					</button>
+				</div>
+
+			</form>
+			<p  ng-if="status" class="loading">Loading...</p>
+		</header>
+
+		<div ng-controller="AppRepeatCtrl">
+
+		</div>
+		<div ng-repeat="video in videos">
+			<div class="thumbnail">
+				<div class="img-container">
+					<a href="{{video.link}}">
+						<img src="{{video.img}}" />
+					</a>
+				</div>
+				<p class="title">
+					<a href="{{video.link}}">{{video.title}}</a>
+				</p>
+				<p class="text-muted">
+					by <a href="{{video.authorlink}}">{{video.author}}</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	<script src="js/jquery-1.10.2.min.js"></script>
+	<script src="js/jquery.easing.1.3.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+	<script src="js/ytgridapp.js"></script>
+</body>
+</html>
