@@ -22,31 +22,37 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			if ( q == false ) {
 				$scope.videos = [];
 			} else {
-				appLoading.loading();
+				if ($scope.end < 100) {
+					appLoading.loading();
 
-				ytSubList(q, $scope.end, function(data) {
-					var rewrite = [];
+					ytSubList(q, $scope.end, function(data) {
+						var rewrite = [];
 
-					var length = data.length, element = null;
+						var length = data.length, element = null;
 
-					for (var i = 0; i < length; i++) {
-						rewrite[i] = {
-							link : data[i]['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
-							title : data[i]['title']['$t'],
-							img : data[i]['media$group']['media$thumbnail'][0]['url'],
-							authorlink : data[i]['author'][0]['uri']['$t'],
-							author : data[i]['author'][0]['name']['$t']
-						};
-					}
+						for (var i = 0; i < length; i++) {
+							rewrite[i] = {
+								link : data[i]['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
+								title : data[i]['title']['$t'],
+								img : data[i]['media$group']['media$thumbnail'][0]['url'],
+								authorlink : data[i]['author'][0]['uri']['$t'],
+								author : data[i]['author'][0]['name']['$t']
+							};
+						}
 
-					$scope.end += 50;
+						$scope.end += 50;
 
-					$scope.videos = $scope.videos.concat(rewrite);
+						var newvideos = $scope.videos.concat(rewrite);
 
-					//$scope.videos = rewrite;
+						if (newvideos.length <= 100) {
+							$scope.videos = newvideos;
+						}
 
-					appLoading.ready();
-				});
+						//$scope.videos = rewrite;
+
+						appLoading.ready();
+					});
+				}
 			}
 		};
 
@@ -95,5 +101,14 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				fn(json.feed.entry);
 			});
 		};
-	}
-);
+	})
+
+	.directive('scroll', function($window, $document) {
+		return function(scope, elem, attrs) {
+			angular.element($window).bind('scroll', function() {
+				if ($document.height() <= $window.innerHeight + $window.pageYOffset) {
+					scope.$apply(attrs.scroll);
+				}
+			});
+		};
+	});
