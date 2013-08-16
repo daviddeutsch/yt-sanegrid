@@ -1,4 +1,4 @@
-var ytsubgridApp = angular.module("ytsubgridApp",[])
+var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 	.controller('AppCtrl', function($rootScope, appLoading) {
 		$rootScope.topScope = $rootScope;
@@ -11,10 +11,12 @@ var ytsubgridApp = angular.module("ytsubgridApp",[])
 		appLoading.ready();
 	})
 
-	.controller('AppRepeatCtrl', function($scope, ytSubList, appLoading ) {
+	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading ) {
 		$scope.end = 1;
 
 		$scope.videos = [];
+
+		$store.bind($scope,'userid','');
 
 		$scope.search = function(q) {
 			if ( q == false ) {
@@ -47,6 +49,11 @@ var ytsubgridApp = angular.module("ytsubgridApp",[])
 				});
 			}
 		};
+
+		if ( $scope.userid ) {
+			$scope.search($scope.userid);
+		}
+
 	})
 
 	.factory('appLoading', function($rootScope) {
