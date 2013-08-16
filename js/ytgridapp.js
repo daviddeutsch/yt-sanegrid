@@ -82,7 +82,7 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		};
 
 		var pushVideo = function( o ) {
-			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
+			id = o['id']['$t'].replace( 'https://gdata.youtube.com/feeds/api/videos/', '' );
 
 			var eid = $.inArray( id, $scope.idcache[$scope.userid] );
 
