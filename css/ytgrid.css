@@ -1,3 +1,7 @@
+body {
+	font-family: 'Lato', sans-serif;
+}
+
 .navbar {
 	background-color: #e2e2e2;
 }
@@ -37,6 +41,7 @@ p.loading{
 	padding-top: 4px;
 	font-size: 90%;
 	height: 3em;
+	color: #111;
 	overflow: hidden;
 	text-align: center;
 }
@@ -44,14 +49,14 @@ p.loading{
 .author {
 	margin-top: 8px;
 	margin-left: 4px;
-	font-size: 75%;
-	opacity: 0.7;
+	font-size: 80%;
+	font-weight: 300;
 	float: right;
 	clear: both;
 }
 
 .author a {
-	color: #999;
+	color: #666;
 }
 
 .author a:hover {
@@ -67,7 +72,7 @@ p.loading{
 	background: #fff;
 	border-radius: 24px;
 	line-height: 0.6em;
-	padding: 2px;
+	padding: 2px 2px 4px;
 	margin-top: -124px;
 	margin-left: 170px;
 	box-shadow: 0 2px 4px #999;
@@ -76,6 +81,10 @@ p.loading{
 	-ms-transition: opacity .15s ease-in-out;
 	-o-transition: opacity .15s ease-in-out;
 	transition: opacity .15s ease-in-out;
+}
+
+.text-close:hover {
+	text-decoration: none;
 }
 
 .thumbnail:hover .text-close {
@@ -90,20 +99,21 @@ p.time {
 	margin-top: -4px;
 	margin-left: 4px;
 	float: right;
-	font-size: 70%;
+	font-size: 75%;
+	font-weight: 300;
 	clear: both;
 }
 
 p.time abbr {
 	border-bottom: none !important;
-	color: #aaa;
+	color: #666;
 }
 
 .thumbnail {
 	float: left;
 	width: 200px;
 	height: 200px;
-	margin: 4px;
+	margin: 12px 4px;
 	border: none;
 }
 
