@@ -16,9 +16,19 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 		$store.bind($scope,'userid','');
 
-		$store.bind($scope,'videocache',[]);
+		$store.bind($scope,'videocache',{});
 
-		$store.bind($scope,'idcache',[]);
+		$store.bind($scope,'idcache',{});
+
+		$store.bind($scope,'videos',{});
+
+		if ( $.isArray($scope.videocache) ) {
+			$scope.videocache = {};
+		}
+
+		if ( $.isArray($scope.idcache) ) {
+			$scope.idcache = {};
+		}
 
 		var setUserid = function ( u ) {
 			if ( typeof $scope.videocache[u] == 'undefined' ) {
@@ -74,11 +84,13 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		};
 
 		$scope.mute = function( id ) {
-			$.each( $scope.videocache[$scope.userid], function( i, v ) {
+			$.each( $scope.videos, function( i, v ) {
 				if ( v.id == id ) {
-					$scope.videocache[$scope.userid][i].muted = !$scope.videocache[$scope.userid][i].muted;
+					$scope.videos[i].muted = !$scope.videos[i].muted;
 				}
 			});
+
+			$scope.videocache[$scope.userid] = $scope.videos;
 
 			return true;
 		};
