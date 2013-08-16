@@ -98,3 +98,9 @@ a:visited img {
 	width: 192px;
 	margin-top: -18px;
 }
+
+.account-error {
+	width: 40%;
+	margin-left: auto;
+	margin-right: auto;
+}

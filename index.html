@@ -35,8 +35,20 @@
 			</form>
 			<p ng-if="status" class="loading">Loading...</p>
 		</header>
-
-		<div ng-repeat="video in videos | orderBy:published">
+		<div class="account-error alert" ng-if="forbidden">
+			<h4>Subscription List Private</h4>
+			The account that you entered has their subscription list private. If you own this account,
+			you can go to your privacy settings page at
+			<a ng-href="https://www.youtube.com/account_privacy">
+				https://www.youtube.com/account_privacy
+			</a>
+			and make it public.
+		</div>
+		<div class="account-error alert" ng-if="notfound">
+			<h4>Account Not Found</h4>
+			The account you entered does not exist.
+		</div>
+		<div ng-repeat="video in videos track by $index | orderBy:published">
 			<div class="thumbnail" ng-class="{'muted':video.muted}">
 				<div class="img-container">
 					<a href="{{video.link}}">
