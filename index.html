@@ -53,14 +53,17 @@
 				<div class="img-container">
 					<a href="{{video.link}}">
 						<img src="{{video.img}}" />
+						<a ng-click="mute(video.id)" class="text-close">&times;</a>
 					</a>
 				</div>
-				<p class="title">
+				<div class="title">
 					<a href="{{video.link}}">{{video.title}}</a>
-				</p>
-				<p class="text-muted">
+				</div>
+				<p class="author text-muted">
 					by <a href="{{video.authorlink}}">{{video.author}}</a>
-					&nbsp;&nbsp;&nbsp;&nbsp;<a ng-click="mute(video.id)" class="text-close">&times;</a>&nbsp;&nbsp;
+				</p>
+				<p class="time">
+					<abbr class="timeago" title="{{video.published}}"></abbr>
 				</p>
 			</div>
 		</div>
@@ -70,6 +73,7 @@
 	</div>
 	<script src="js/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery.easing.1.3.js"></script>
+	<script src="js/jquery.timeago.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
 	<script src="js/angular-cookies.js"></script>
 	<script src="js/localStorage.js"></script>

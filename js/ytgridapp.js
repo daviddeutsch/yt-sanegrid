@@ -84,24 +84,27 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		var pushVideo = function( o ) {
 			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
 
-			if ( $.inArray( id, $scope.idcache[$scope.userid] ) != -1 ) {
-				return false;
+			var eid = $.inArray( id, $scope.idcache[$scope.userid] );
+
+			if ( eid != -1 ) {
+				$scope.videocache[$scope.userid][eid].duration = o['media$group']['yt$duration']['seconds'];
+			} else {
+				$scope.videocache[$scope.userid].push(
+					{
+						id: id,
+						link : o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
+						title : o['title']['$t'],
+						img : o['media$group']['media$thumbnail'][0]['url'],
+						authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
+						author : o['author'][0]['name']['$t'],
+						published : o['published']['$t'],
+						duration: o['media$group']['yt$duration']['seconds'],
+						muted: false
+					}
+				);
+
+				$scope.idcache[$scope.userid].push(id);
 			}
-
-			$scope.videocache[$scope.userid].push(
-				{
-					id: id,
-					link : o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
-					title : o['title']['$t'],
-					img : o['media$group']['media$thumbnail'][0]['url'],
-					authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
-					author : o['author'][0]['name']['$t'],
-					published : o['published']['$t'],
-					muted: false
-				}
-			);
-
-			$scope.idcache[$scope.userid].push(id);
 
 			return true;
 		};
@@ -191,10 +194,13 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 				clearTimeout(timer);
 				delay = delay == null ? 500 : false;
+				jQuery("abbr.timeago").timeago();
 				if(delay) {
 					timer = setTimeout(ready, delay);
 				}
 				else {
+
+
 					ready();
 				}
 			}

@@ -34,35 +34,78 @@ p.loading{
 }
 
 .title {
-	margin-top: 4px;
+	padding-top: 4px;
 	font-size: 90%;
 	height: 3em;
 	overflow: hidden;
+	text-align: center;
 }
 
-.text-muted {
-	margin-top: -12px;
-	font-size: 60%;
+.author {
+	margin-top: 8px;
+	margin-left: 4px;
+	font-size: 75%;
+	opacity: 0.7;
 	float: right;
+	clear: both;
+}
+
+.author a {
+	color: #999;
+}
+
+.author a:hover {
+	color: inherit;
 }
 
 .text-close {
+	opacity: 0;
 	cursor: pointer;
 	font-size: 200%;
+	position: absolute;
+	display: block;
+	background: #fff;
+	border-radius: 24px;
+	line-height: 0.6em;
+	padding: 2px;
+	margin-top: -124px;
+	margin-left: 170px;
+	box-shadow: 0 2px 4px #999;
+	-webkit-transition: opacity .15s ease-in-out;
+	-moz-transition: opacity .15s ease-in-out;
+	-ms-transition: opacity .15s ease-in-out;
+	-o-transition: opacity .15s ease-in-out;
+	transition: opacity .15s ease-in-out;
+}
+
+.thumbnail:hover .text-close {
+	opacity: 1;
+}
+
+p.time {
+	margin-top: -4px;
+	margin-left: 4px;
+	float: right;
+	font-size: 70%;
+	clear: both;
+}
+
+p.time abbr {
+	border-bottom: none !important;
+	color: #aaa;
 }
 
 .thumbnail {
 	float: left;
 	width: 200px;
-	height: 180px;
+	height: 200px;
 	margin: 4px;
 	border: none;
-	background: #fafafa;
-	box-shadow: 0 2px 4px #eee;
 }
 
 .thumbnail:hover {
-	box-shadow: 0 2px 1px #bbb;
+	background: #fafafa;
+	box-shadow: 0 2px 4px #999;
 }
 
 .thumbnail a {
