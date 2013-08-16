@@ -18,51 +18,21 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 		$store.bind($scope,'videocache',{});
 
-		$store.bind($scope,'idcache',{});
-
 		$store.bind($scope,'videos',{});
 
 		if ( $.isArray($scope.videocache) ) {
 			$scope.videocache = {};
 		}
 
-		if ( $.isArray($scope.idcache) ) {
-			$scope.idcache = {};
-		}
+		var datesort = function (a,b) {
+			var datea = new Date(a.published);
+			var dateb = new Date(b.published);
 
-		var duplicationCheck = function() {
-			if ( $scope.idcache[$scope.userid].length == 0 || $scope.videocache[$scope.userid].length == 0 ) {
-				$scope.idcache[$scope.userid] = [];
-				$scope.videocache[$scope.userid] = [];
-
-				return;
-			}
-
-			var xidcache = [];
-			var xvideocache = [];
-
-			$.each( $scope.idcache[$scope.userid], function( i, v ) {
-				if ( $.inArray( v, xidcache ) == -1 ) {
-					xidcache.push(v);
-				}
-			});
-
-			$.each( $scope.videocache[$scope.userid], function( i, v ) {
-				var found = false;
-
-				$.each( xvideocache, function( xi, xv ) {
-					if ( v.id == xv.id ) {
-						found = true;
-					}
-				});
-
-				if ( !found ) {
-					xvideocache.push(v);
-				}
-			});
-
-			$scope.idcache[$scope.userid] = xidcache;
-			$scope.videocache[$scope.userid] = xvideocache;
+				if (datea < dateb)
+					return 1;
+				if (datea > dateb)
+					return -1;
+				return 0;
 		};
 
 		var setUserid = function( u ) {
@@ -70,21 +40,15 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				$scope.videocache[u] = [];
 			}
 
-			if ( typeof $scope.idcache[u] == 'undefined' ) {
-				$scope.idcache[u] = [];
-			}
-
 			$scope.userid = u;
 
-			duplicationCheck();
+			$scope.videocache[$scope.userid].sort(datesort);
 
 			$scope.videos = $scope.videocache[$scope.userid];
 		};
 
 		var pushVideo = function( o ) {
 			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
-
-			var eid = $.inArray( id, $scope.idcache[$scope.userid] );
 
 			var details = {
 				id: id,
@@ -98,13 +62,24 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				muted: false
 			};
 
-			if ( eid != -1 ) {
+			var existing = false;
+			var eid = 0;
+
+			$.each( $scope.videocache[$scope.userid], function( i, v ) {
+				if ( $scope.videocache[$scope.userid][i].id == id ) {
+					existing = true;
+
+					eid = i;
+				}
+			});
+
+			if ( existing ) {
+				// Update existing data
 				$scope.videocache[$scope.userid][eid].link = details.link;
 				$scope.videocache[$scope.userid][eid].duration = details.duration;
+				$scope.videocache[$scope.userid][eid].published = details.published;
 			} else {
 				$scope.videocache[$scope.userid].push(details);
-
-				$scope.idcache[$scope.userid].push(id);
 			}
 
 			return true;
@@ -126,6 +101,8 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 						pushVideo(data[i]);
 					}
 
+					$scope.videocache[$scope.userid].sort(datesort);
+
 					$scope.videos = $scope.videocache[$scope.userid];
 				}
 			} else if (code == 403) {
@@ -134,6 +111,8 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				$scope.notfound = 1;
 			}
 
+			$scope.videocache[$scope.userid] = _.uniq( $scope.videocache[$scope.userid] );
+
 			appLoading.ready();
 		};
 
@@ -141,6 +120,23 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			resetErrors();
 			appLoading.loading();
 			ytSubList($scope.userid, 1, pushVideos);
+			test = 'test';
+		};
+
+		$scope.loadBottom = function() {
+			resetErrors();
+			appLoading.loading();
+			ytSubList($scope.userid, $scope.videocache[$scope.userid].length+1, pushVideos);
+		};
+
+		$scope.search = function(q) {
+			if ( q == false ) {
+				$scope.userid = '';
+			} else {
+				setUserid(q);
+
+				loadTop();
+			}
 		};
 
 		$scope.mute = function( id ) {
@@ -153,22 +149,6 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$scope.videocache[$scope.userid] = $scope.videos;
 
 			return true;
-		};
-
-		$scope.loadBottom = function() {
-			resetErrors();
-			appLoading.loading();
-			ytSubList($scope.userid, $scope.idcache[$scope.userid].length+1, pushVideos);
-		};
-
-		$scope.search = function(q) {
-			if ( q == false ) {
-				$scope.userid = '';
-			} else {
-				setUserid(q);
-
-				loadTop();
-			}
 		};
 
 		if ( $scope.userid ) {
