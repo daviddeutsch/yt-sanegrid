@@ -41,9 +41,14 @@ p.loading{
 }
 
 .text-muted {
+	margin-top: -12px;
 	font-size: 60%;
 	float: right;
-	margin-right: 16px;
+}
+
+.text-close {
+	cursor: pointer;
+	font-size: 200%;
 }
 
 .thumbnail {
@@ -69,6 +74,10 @@ p.loading{
 	height: 108px;
 	border-radius: 2px;
 	overflow: hidden;
+}
+
+.muted {
+	opacity: 0.1;
 }
 
 a:visited {

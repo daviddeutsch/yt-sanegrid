@@ -37,7 +37,7 @@
 		</header>
 
 		<div ng-repeat="video in videos | orderBy:published">
-			<div class="thumbnail">
+			<div class="thumbnail" ng-class="{'muted':video.muted}">
 				<div class="img-container">
 					<a href="{{video.link}}">
 						<img src="{{video.img}}" />
@@ -48,6 +48,7 @@
 				</p>
 				<p class="text-muted">
 					by <a href="{{video.authorlink}}">{{video.author}}</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;<a ng-click="mute(video.id)" class="text-close">&times;</a>&nbsp;&nbsp;
 				</p>
 			</div>
 		</div>
