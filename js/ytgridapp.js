@@ -86,22 +86,23 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 			var eid = $.inArray( id, $scope.idcache[$scope.userid] );
 
+			var details = {
+				id: id,
+				link : 'https://www.youtube.com/watch?v='+o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ).replace( 'https://gdata.youtube.com/feeds/api/videos/', '' ).replace( 'https://www.youtube.com/watch?v=', '' ),
+				title : o['title']['$t'],
+				img : o['media$group']['media$thumbnail'][0]['url'],
+				authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
+				author : o['author'][0]['name']['$t'],
+				published : o['published']['$t'],
+				duration: o['media$group']['yt$duration']['seconds'],
+				muted: false
+			};
+
 			if ( eid != -1 ) {
-				$scope.videocache[$scope.userid][eid].duration = o['media$group']['yt$duration']['seconds'];
+				$scope.videocache[$scope.userid][eid].link = details.link;
+				$scope.videocache[$scope.userid][eid].duration = details.duration;
 			} else {
-				$scope.videocache[$scope.userid].push(
-					{
-						id: id,
-						link : o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
-						title : o['title']['$t'],
-						img : o['media$group']['media$thumbnail'][0]['url'],
-						authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
-						author : o['author'][0]['name']['$t'],
-						published : o['published']['$t'],
-						duration: o['media$group']['yt$duration']['seconds'],
-						muted: false
-					}
-				);
+				$scope.videocache[$scope.userid].push(details);
 
 				$scope.idcache[$scope.userid].push(id);
 			}
