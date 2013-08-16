@@ -30,14 +30,14 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$scope.idcache = {};
 		}
 
-		var duplicationCheck = function()
-		{
+		var duplicationCheck = function() {
 			if ( $scope.idcache[$scope.userid].length == 0 || $scope.videocache[$scope.userid].length == 0 ) {
 				$scope.idcache[$scope.userid] = [];
 				$scope.videocache[$scope.userid] = [];
 
 				return;
 			}
+
 			var xidcache = [];
 			var xvideocache = [];
 
@@ -129,13 +129,14 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			} else {
 				$scope.notfound = 1;
 			}
-		}
+
+			appLoading.ready();
+		};
 
 		var loadTop = function() {
 			resetErrors();
 			appLoading.loading();
 			ytSubList($scope.userid, 1, pushVideos);
-			appLoading.ready();
 		};
 
 		$scope.mute = function( id ) {
