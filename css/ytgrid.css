@@ -80,18 +80,8 @@ p.loading{
 	opacity: 0.1;
 }
 
-a:visited {
-	color: #fff;
-	height: 0;
-	overflow: hidden;
-}
-
 a:hover {
 	color: #428bca !important;
-}
-
-a:visited img {
-	display: none;
 }
 
 .thumbnail img {
