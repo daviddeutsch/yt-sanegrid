@@ -47,7 +47,7 @@
 			<h4>Account Not Found</h4>
 			The account you entered does not exist.
 		</div>
-		<div ng-repeat="video in videos track by $index | orderBy:'published'">
+		<div ng-repeat="video in videos track by $index">
 			<div class="thumbnail" ng-class="{'muted':video.muted}">
 				<div class="img-container">
 					<a href="{{video.link}}">
