@@ -30,7 +30,42 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$scope.idcache = {};
 		}
 
-		var setUserid = function ( u ) {
+		var duplicationCheck = function()
+		{
+			if ( $scope.idcache[$scope.userid].length == 0 || $scope.videocache[$scope.userid].length == 0 ) {
+				$scope.idcache[$scope.userid] = [];
+				$scope.videocache[$scope.userid] = [];
+
+				return;
+			}
+			var xidcache = [];
+			var xvideocache = [];
+
+			$.each( $scope.idcache[$scope.userid], function( i, v ) {
+				if ( $.inArray( v, xidcache ) == -1 ) {
+					xidcache.push(v);
+				}
+			});
+
+			$.each( $scope.videocache[$scope.userid], function( i, v ) {
+				var found = false;
+
+				$.each( xvideocache, function( xi, xv ) {
+					if ( v.id == xv.id ) {
+						found = true;
+					}
+				});
+
+				if ( !found ) {
+					xvideocache.push(v);
+				}
+			});
+
+			$scope.idcache[$scope.userid] = xidcache;
+			$scope.videocache[$scope.userid] = xvideocache;
+		};
+
+		var setUserid = function( u ) {
 			if ( typeof $scope.videocache[u] == 'undefined' ) {
 				$scope.videocache[u] = [];
 			}
@@ -41,13 +76,15 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 			$scope.userid = u;
 
+			duplicationCheck();
+
 			$scope.videos = $scope.videocache[$scope.userid];
 		};
 
 		var pushVideos = function( o ) {
 			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
 
-			if ($.inArray( $scope.idcache[$scope.userid], id ) > 0 ) {
+			if ( $.inArray( id, $scope.idcache[$scope.userid] ) != -1 ) {
 				return false;
 			}
 
