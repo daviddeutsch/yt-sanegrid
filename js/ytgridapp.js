@@ -14,45 +14,75 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading ) {
 		$scope.end = 1;
 
-		$scope.videos = [];
-
 		$store.bind($scope,'userid','');
+
+		if ( typeof $scope.videos == 'undefined' ) {
+			$scope.videos = [];
+		}
+
+		if ( typeof $scope.idlist == 'undefined' ) {
+			$scope.idlist = [];
+		}
+
+		var pushVideos = function( o ) {
+			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
+
+			if ($.inArray( $scope.idlist, id ) > 0 ) {
+				return false;
+			}
+
+			$scope.videos.push(
+				{
+					id: id,
+					link : o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
+					title : o['title']['$t'],
+					img : o['media$group']['media$thumbnail'][0]['url'],
+					authorlink : o['author'][0]['uri']['$t'],
+					author : o['author'][0]['name']['$t'],
+					published : o['published']['$t']
+				}
+			);
+
+			$scope.idlist.push(id);
+
+			return true;
+		};
+
+		var loadTop = function() {
+			appLoading.loading();
+
+			ytSubList($scope.userid, 1, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					pushVideos(data[i]);
+				}
+
+				appLoading.ready();
+			});
+		};
+
+		$scope.loadBottom = function() {
+			appLoading.loading();
+
+			ytSubList($scope.userid, $scope.idlist.length+1, function(data) {
+				for (var i = 0; i < data.length; i++) {
+					pushVideos(data[i]);
+				}
+
+				appLoading.ready();
+			});
+		};
 
 		$scope.search = function(q) {
 			if ( q == false ) {
+				$scope.userid = '';
 				$scope.videos = [];
 			} else {
-				if ($scope.end < 100) {
-					appLoading.loading();
 
-					ytSubList(q, $scope.end, function(data) {
-						var rewrite = [];
-
-						var length = data.length, element = null;
-
-						for (var i = 0; i < length; i++) {
-							rewrite[i] = {
-								link : data[i]['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
-								title : data[i]['title']['$t'],
-								img : data[i]['media$group']['media$thumbnail'][0]['url'],
-								authorlink : data[i]['author'][0]['uri']['$t'],
-								author : data[i]['author'][0]['name']['$t']
-							};
-						}
-
-						$scope.end += 50;
-
-						var newvideos = $scope.videos.concat(rewrite);
-
-						if (newvideos.length <= 100) {
-							$scope.videos = newvideos;
-						}
-
-						//$scope.videos = rewrite;
-
-						appLoading.ready();
-					});
+				if ( $scope.userid != q ) {
+					$scope.userid = q;
 				}
+
+				loadTop();
 			}
 		};
 
@@ -111,4 +141,5 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				}
 			});
 		};
-	});
+	})
+;
