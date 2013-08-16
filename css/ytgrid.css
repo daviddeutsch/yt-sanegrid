@@ -82,6 +82,10 @@ p.loading{
 	opacity: 1;
 }
 
+.thumbnail:hover img {
+	opacity: 1;
+}
+
 p.time {
 	margin-top: -4px;
 	margin-left: 4px;
@@ -108,14 +112,23 @@ p.time abbr {
 	box-shadow: 0 2px 4px #999;
 }
 
-.thumbnail a {
+.thumbnail .title a {
 	text-decoration: none;
+	color: #333;
+}
+
+.thumbnail:hover a {
+	color: inherit;
+}
+
+.thumbnail img {
+	opacity: 0.9;
 }
 
 .thumbnail .img-container {
 	width: 192px;
 	height: 108px;
-	border-radius: 2px;
+	border-radius: 4px;
 	overflow: hidden;
 }
 
