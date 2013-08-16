@@ -57,7 +57,8 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 					img : o['media$group']['media$thumbnail'][0]['url'],
 					authorlink : o['author'][0]['uri']['$t'],
 					author : o['author'][0]['name']['$t'],
-					published : o['published']['$t']
+					published : o['published']['$t'],
+					muted: false
 				}
 			);
 

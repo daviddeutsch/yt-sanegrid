@@ -33,7 +33,7 @@
 				</div>
 
 			</form>
-			<p  ng-if="status" class="loading">Loading...</p>
+			<p ng-if="status" class="loading">Loading...</p>
 		</header>
 
 		<div ng-repeat="video in videos | orderBy:published">
@@ -50,6 +50,9 @@
 					by <a href="{{video.authorlink}}">{{video.author}}</a>
 				</p>
 			</div>
+		</div>
+		<div class="progress-bar" role="progressbar" style="width: 45%" ng-if="status">
+			<span class='sr-only'>45% Complete</span>
 		</div>
 	</div>
 	<script src="js/jquery-1.10.2.min.js"></script>
