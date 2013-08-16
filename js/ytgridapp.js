@@ -81,7 +81,7 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$scope.videos = $scope.videocache[$scope.userid];
 		};
 
-		var pushVideos = function( o ) {
+		var pushVideo = function( o ) {
 			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
 
 			if ( $.inArray( id, $scope.idcache[$scope.userid] ) != -1 ) {
@@ -103,21 +103,39 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 			$scope.idcache[$scope.userid].push(id);
 
-			$scope.videos = $scope.videocache[$scope.userid];
-
 			return true;
 		};
 
-		var loadTop = function() {
-			appLoading.loading();
+		var resetErrors = function() {
+			if ($scope.forbidden == 1 || $scope.notfound == 1) {
+				appLoading.loading();
+				$scope.forbidden = 0;
+				$scope.notfound = 0;
+				appLoading.ready(1);
+			}
+		};
 
-			ytSubList($scope.userid, 1, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					pushVideos(data[i]);
+		var pushVideos = function(data, code) {
+			if (code == 200) {
+				if (typeof data != 'undefined') {
+					for (var i = 0; i < data.length; i++) {
+						pushVideo(data[i]);
+					}
+
+					$scope.videos = $scope.videocache[$scope.userid];
 				}
+			} else if (code == 403) {
+				$scope.forbidden = 1;
+			} else {
+				$scope.notfound = 1;
+			}
+		}
 
-				appLoading.ready();
-			});
+		var loadTop = function() {
+			resetErrors();
+			appLoading.loading();
+			ytSubList($scope.userid, 1, pushVideos);
+			appLoading.ready();
 		};
 
 		$scope.mute = function( id ) {
@@ -133,17 +151,9 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		};
 
 		$scope.loadBottom = function() {
+			resetErrors();
 			appLoading.loading();
-
-			ytSubList($scope.userid, $scope.idcache[$scope.userid].length+1, function(data) {
-				if ( typeof data != 'undefined' ) {
-					for (var i = 0; i < data.length; i++) {
-						pushVideos(data[i]);
-					}
-				}
-
-				appLoading.ready();
-			});
+			ytSubList($scope.userid, $scope.idcache[$scope.userid].length+1, pushVideos);
 		};
 
 		$scope.search = function(q) {
@@ -199,9 +209,13 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		return function(q, s, fn) {
 			var defer = $q.defer();
 			var url = baseUrl.replace(searchToken, q).replace(startToken, s);
-			$.getJSON(url).then(function(json){
-				fn(json.feed.entry);
-			});
+			$.getJSON(url)
+				.fail(function(j, t, e) {
+					fn(e, j.status);
+				})
+				.done(function(json){
+					fn(json.feed.entry, 200);
+				});
 		};
 	})
 
