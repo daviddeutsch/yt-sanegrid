@@ -16,22 +16,40 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 		$store.bind($scope,'userid','');
 
-		if ( typeof $scope.videos == 'undefined' ) {
-			$scope.videos = [];
+		$store.bind($scope,'videocache',[]);
+
+		$store.bind($scope,'idcache',[]);
+
+		if ( typeof $scope.videocache == 'undefined' ) {
+			$scope.videocache = [];
 		}
 
-		if ( typeof $scope.idlist == 'undefined' ) {
-			$scope.idlist = [];
+		if ( typeof $scope.idcache == 'undefined' ) {
+			$scope.idcache = [];
 		}
+
+		var setUserid = function ( u ) {
+			if ( typeof $scope.videocache[u] == 'undefined' ) {
+				$scope.videocache[u] = [];
+			}
+
+			if ( typeof $scope.idcache[u] == 'undefined' ) {
+				$scope.idcache[u] = [];
+			}
+
+			$scope.userid = u;
+
+			$scope.videos = $scope.videocache[$scope.userid];
+		};
 
 		var pushVideos = function( o ) {
 			id = o['id']['$t'].replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
 
-			if ($.inArray( $scope.idlist, id ) > 0 ) {
+			if ($.inArray( $scope.idcache[$scope.userid], id ) > 0 ) {
 				return false;
 			}
 
-			$scope.videos.push(
+			$scope.videocache[$scope.userid].push(
 				{
 					id: id,
 					link : o['link'][0]['href'].replace( '&feature=youtube_gdata', '' ),
@@ -43,7 +61,9 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				}
 			);
 
-			$scope.idlist.push(id);
+			$scope.idcache[$scope.userid].push(id);
+
+			$scope.videos = $scope.videocache[$scope.userid];
 
 			return true;
 		};
@@ -63,9 +83,11 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		$scope.loadBottom = function() {
 			appLoading.loading();
 
-			ytSubList($scope.userid, $scope.idlist.length+1, function(data) {
-				for (var i = 0; i < data.length; i++) {
-					pushVideos(data[i]);
+			ytSubList($scope.userid, $scope.idcache[$scope.userid].length+1, function(data) {
+				if ( typeof data != 'undefined' ) {
+					for (var i = 0; i < data.length; i++) {
+						pushVideos(data[i]);
+					}
 				}
 
 				appLoading.ready();
@@ -75,19 +97,17 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 		$scope.search = function(q) {
 			if ( q == false ) {
 				$scope.userid = '';
-				$scope.videos = [];
 			} else {
-
-				if ( $scope.userid != q ) {
-					$scope.userid = q;
-				}
+				setUserid(q);
 
 				loadTop();
 			}
 		};
 
 		if ( $scope.userid ) {
-			$scope.search($scope.userid);
+			setUserid($scope.userid);
+
+			loadTop();
 		}
 
 	})
