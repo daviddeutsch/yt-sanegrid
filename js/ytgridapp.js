@@ -94,6 +94,7 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
 				author : o['author'][0]['name']['$t'],
 				published : o['published']['$t'],
+				publishdate : Date.parse(o['published']['$t']),
 				duration: o['media$group']['yt$duration']['seconds'],
 				muted: false
 			};
