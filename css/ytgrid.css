@@ -161,7 +161,7 @@ p.time abbr {
 }
 
 .muted {
-	opacity: 0.1;
+	display:none;
 }
 
 a:hover {
