@@ -51,6 +51,14 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$scope.videos = $scope.videocache[$scope.userid];
 		};
 
+		var hms = function(d) {
+			d = Number(d);
+			var h = Math.floor(d / 3600);
+			var m = Math.floor(d % 3600 / 60);
+			var s = Math.floor(d % 3600 % 60);
+			return ((h > 0 ? h+":":"") + (m > 0 ? (h > 0 && m < 10 ? "0" : "") + m + ":" : "00:") + (s < 10 ? "0" : "") + s);
+		};
+
 		var pushVideo = function( o ) {
 			id = o['id']['$t'].replace( 'https://gdata.youtube.com/feeds/api/videos/', '' ).replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
 
@@ -62,7 +70,7 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				authorlink : o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
 				author : o['author'][0]['name']['$t'],
 				published : o['published']['$t'],
-				duration: o['media$group']['yt$duration']['seconds'],
+				duration: hms(o['media$group']['yt$duration']['seconds']),
 				muted: false
 			};
 
