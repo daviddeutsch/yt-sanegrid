@@ -50,16 +50,16 @@
 		<div ng-repeat="video in videos track by $index">
 			<div class="thumbnail" ng-class="{'muted':video.muted}">
 				<div class="img-container">
-					<a href="{{video.link}}">
+					<a ng-href="{{video.link}}">
 						<img src="{{video.img}}" />
 						<a ng-click="mute(video.id)" class="text-close">&times;</a>
 					</a>
 				</div>
 				<div class="title">
-					<a href="{{video.link}}">{{video.title}}</a>
+					<a ng-href="{{video.link}}">{{video.title}}</a>
 				</div>
 				<p class="author text-muted">
-					by <a href="{{video.authorlink}}">{{video.author}}</a>
+					by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
 				</p>
 				<p class="time">
 					<abbr class="timeago" title="{{video.published}}"></abbr>
