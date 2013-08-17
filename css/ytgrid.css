@@ -83,6 +83,24 @@ p.loading{
 	transition: opacity .15s ease-in-out;
 }
 
+.duration {
+	position: absolute;
+	display: inline;
+	height: 16px;
+	line-height: 16px;
+	color: #dddddd;
+	vertical-align: top;
+	opacity: 0.75;
+	text-align: center;
+	background: #000;
+	border-radius: 3px;
+	font-size: 13px;
+	right: 3px;
+	bottom: 3px;
+	padding: 0px 3px 0px 3px;
+	box-shadow: 0 2px 2px #111;
+}
+
 .text-close:hover {
 	text-decoration: none;
 }
@@ -139,6 +157,7 @@ p.time abbr {
 	width: 192px;
 	height: 108px;
 	border-radius: 4px;
+	position: relative;
 	overflow: hidden;
 }
 
