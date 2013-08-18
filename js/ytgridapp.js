@@ -12,8 +12,6 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 	})
 
 	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading ) {
-		$scope.end = 1;
-
 		$store.bind($scope,'userid','');
 
 		$store.bind($scope,'videocache',{});
@@ -37,6 +35,28 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 		var checkData = function() {
 			$scope.videocache[$scope.userid] = _.uniq( $scope.videocache[$scope.userid] );
+
+			// Retrofit some parameters to existing data
+			$.each( $scope.videocache[$scope.userid], function( i, v ) {
+				if ( typeof $scope.videocache[$scope.userid][i].watched == 'undefined' ) {
+					$scope.videocache[$scope.userid][i].watched = $scope.videocache[$scope.userid][i].muted;
+					$scope.videocache[$scope.userid][i].muted = false;
+				}
+			});
+
+			/*var test = $scope.videocache[$scope.userid];
+			var idlist = [];
+
+			for ( var i=0; i<test.length; i++ ) {
+				if ( ( $.inArray( test[i].id, idlist ) !== -1 ) && idlist.length ) {
+					test.splice(i, 1);
+					i--;
+				} else {
+					idlist.push(test[i].id);
+				}
+			}
+
+			var test2 = test;*/
 		};
 
 		var setUserid = function( u ) {
@@ -63,7 +83,10 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 				author : o['author'][0]['name']['$t'],
 				published : o['published']['$t'],
 				duration: o['media$group']['yt$duration']['seconds'],
-				muted: false
+				muted: false,
+				muteddate: null,
+				watched: false,
+				watcheddate: null
 			};
 
 			var existing = false;
@@ -107,6 +130,8 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 
 					$scope.videocache[$scope.userid].sort(datesort);
 
+					checkData();
+
 					$scope.videos = $scope.videocache[$scope.userid];
 				}
 			} else if (code == 403) {
@@ -114,8 +139,6 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			} else {
 				$scope.notfound = 1;
 			}
-
-			checkData();
 
 			appLoading.ready();
 		};
@@ -147,6 +170,20 @@ var ytsubgridApp = angular.module("ytsubgridApp",['localStorage'])
 			$.each( $scope.videos, function( i, v ) {
 				if ( v.id == id ) {
 					$scope.videos[i].muted = !$scope.videos[i].muted;
+					$scope.videos[i].muteddate = new Date().toISOString();
+				}
+			});
+
+			$scope.videocache[$scope.userid] = $scope.videos;
+
+			return true;
+		};
+
+		$scope.watched = function( id ) {
+			$.each( $scope.videos, function( i, v ) {
+				if ( v.id == id ) {
+					$scope.videos[i].watched = !$scope.videos[i].watched;
+					$scope.videos[i].watcheddate = new Date().toISOString();
 				}
 			});
 

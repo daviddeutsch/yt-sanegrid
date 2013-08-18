@@ -63,24 +63,36 @@ p.loading{
 	color: inherit;
 }
 
-.text-close {
+.video-buttons {
+	position: absolute;
+	margin-top: -124px;
+	margin-left: 0;
+	width: 100%;
+	overflow: visible;
+	text-align: right;
+}
+
+.video-buttons a {
 	opacity: 0;
 	cursor: pointer;
+	display: inline-block;
 	font-size: 200%;
-	position: absolute;
-	display: block;
 	background: #fff;
 	border-radius: 24px;
 	line-height: 0.6em;
-	padding: 2px 2px 4px;
-	margin-top: -124px;
-	margin-left: 170px;
+	padding: 16px 4px 6px;
+	margin-top: -16px;
+	margin-right: 6px;
 	box-shadow: 0 2px 4px #999;
 	-webkit-transition: opacity .15s ease-in-out;
 	-moz-transition: opacity .15s ease-in-out;
 	-ms-transition: opacity .15s ease-in-out;
 	-o-transition: opacity .15s ease-in-out;
 	transition: opacity .15s ease-in-out;
+}
+
+.video-buttons a:hover {
+	text-decoration: none;
 }
 
 .duration {
@@ -100,11 +112,7 @@ p.loading{
 	padding: 0 3px 0 3px;
 }
 
-.text-close:hover {
-	text-decoration: none;
-}
-
-.thumbnail:hover .text-close {
+.thumbnail:hover a {
 	opacity: 1;
 }
 
@@ -161,7 +169,11 @@ p.time abbr {
 }
 
 .muted {
-	opacity: 0.1;
+	display: none;
+}
+
+.watched {
+	opacity: 0.2;
 }
 
 a:hover {

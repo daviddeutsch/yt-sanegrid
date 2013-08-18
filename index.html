@@ -48,16 +48,18 @@
 			The account you entered does not exist.
 		</div>
 		<div ng-repeat="video in videos track by $index">
-			<div class="thumbnail" ng-class="{'muted':video.muted}">
+			<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
 				<div class="img-container">
-					<a ng-href="{{video.link}}">
-						<img src="{{video.img}}" />
-						<a ng-click="mute(video.id)" class="text-close">&times;</a>
-						<div class="duration">{{ video.duration | duration }}</div>
-					</a>
+					<img src="{{video.img}}" />
+					<div class="video-buttons">
+						<a ng-click="watched(video.id)" class="click-watched" title="mark as watched">&#10004;</a>
+						<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
+					</div>
+
+					<div class="duration">{{ video.duration | duration }}</div>
 				</div>
 				<div class="title">
-					<a ng-href="{{video.link}}">{{video.title}}</a>
+					<a ng-href="{{video.link}}" ng-click="watched(video.id)">{{video.title}}</a>
 				</div>
 				<p class="author text-muted">
 					by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
