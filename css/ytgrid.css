@@ -74,6 +74,7 @@ p.loading{
 
 .video-buttons a {
 	opacity: 0;
+	color: #444;
 	cursor: pointer;
 	display: inline-block;
 	font-size: 200%;
@@ -82,7 +83,7 @@ p.loading{
 	line-height: 0.6em;
 	padding: 16px 4px 6px;
 	margin-top: -16px;
-	margin-right: 6px;
+	margin-right: 4px;
 	box-shadow: 0 2px 4px #999;
 	-webkit-transition: opacity .15s ease-in-out;
 	-moz-transition: opacity .15s ease-in-out;
@@ -93,6 +94,23 @@ p.loading{
 
 .video-buttons a:hover {
 	text-decoration: none;
+	color: #000 !important;
+}
+
+.muted .click-mute {
+	background-color: #ebb;
+}
+
+.click-mute {
+	opacity: 0.7;
+}
+
+.watched .click-watched {
+	background-color: #9b9;
+}
+
+.click-mute:hover {
+	opacity: 1;
 }
 
 .duration {
@@ -113,6 +131,14 @@ p.loading{
 }
 
 .thumbnail:hover a {
+	opacity: 1;
+}
+
+.thumbnail:hover .click-mute {
+	opacity: 0.7;
+}
+
+.thumbnail:hover .click-mute:hover {
 	opacity: 1;
 }
 
@@ -169,11 +195,11 @@ p.time abbr {
 }
 
 .muted {
-	opacity: 0.1;
+	opacity: 0.3;
 }
 
 .watched {
-	opacity: 0.2;
+	opacity: 0.5;
 }
 
 a:hover {
