@@ -12,13 +12,21 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 	})
 
 	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading) {
-		$scope.end = 1;
-
 		$store.bind($scope, 'userid', '');
 
 		$store.bind($scope, 'videocache', {});
 
 		$store.bind($scope, 'videos', {});
+
+		$store.bind($scope, 'settings', {});
+
+		if ( typeof $scope.settings == 'undefined' ) {
+			$scope.settings = {
+				hidewatched : false,
+				hidemuted: true,
+				theme: 'default'
+			}
+		}
 
 		if ($.isArray($scope.videocache)) {
 			$scope.videocache = {};
@@ -218,7 +226,13 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 				clearTimeout(timer);
 				delay = delay == null ? 500 : false;
+
 				jQuery("abbr.timeago").timeago();
+
+				$('input').iCheck({
+					checkboxClass: 'icheckbox_flat-blue',
+					radioClass: 'iradio_flat-blue'
+				});
 				if (delay) {
 					timer = setTimeout(ready, delay);
 				} else {
@@ -265,6 +279,15 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 			var m = Math.floor(d % 3600 / 60);
 			var s = Math.floor(d % 3600 % 60);
 			return ((h > 0 ? h+":":"") + (m > 0 ? (h > 0 && m < 10 ? "0" : "") + m + ":" : "00:") + (s < 10 ? "0" : "") + s);
+		};
+	})
+
+	.filter('visible', function() {
+		return function( item ) {
+			return !(
+				( item.muted && $scope.settings.hidemuted )
+				|| ( item.watched && $scope.settings.hidewatched )
+				);
 		};
 	})
 ;

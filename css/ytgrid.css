@@ -169,7 +169,7 @@ p.time abbr {
 }
 
 .muted {
-	display: none;
+	opacity: 0.1;
 }
 
 .watched {
@@ -189,4 +189,17 @@ a:hover {
 	width: 40%;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+footer {
+	position: fixed;
+	width: 100%;
+	padding: 12px;
+	bottom: 0;
+	height: 40px;
+	background: #eee;
+}
+
+footer label {
+	vertical-align: top;
 }
