@@ -142,7 +142,7 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 					checkData();
 
-					$scope.videos = $scope.videocache[$scope.userid];
+					$scope.updateVideos();
 				}
 			} else if (code == 403) {
 				$scope.forbidden = 1;
@@ -158,6 +158,21 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 			appLoading.loading();
 			ytSubList($scope.userid, 1, pushVideos);
 			test = 'test';
+		};
+
+		$scope.updateVideos = function() {
+			$scope.videos = [];
+
+			angular.forEach( $scope.videocache[$scope.userid], function( item ) {
+				if (
+					!(
+						( item.muted && ($scope.settings.hidemuted=="1") )
+						|| ( item.watched && ($scope.settings.hidewatched=="1") )
+					)
+				) {
+					$scope.videos.push(item);
+				}
+			});
 		};
 
 		$scope.loadBottom = function() {
@@ -186,7 +201,7 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 			$scope.videocache[$scope.userid] = $scope.videos;
 
-			return true;
+			$scope.updateVideos();
 		};
 
 		$scope.watched = function( id ) {
@@ -199,7 +214,12 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 			$scope.videocache[$scope.userid] = $scope.videos;
 
-			return true;
+			$scope.updateVideos();
+		};
+
+		$scope.toggleSetting = function( id ) {
+			$scope.setting[id] = !$scope.setting[id];
+			test = $scope.setting[id];
 		};
 
 		if ($scope.userid) {
@@ -229,10 +249,6 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 				jQuery("abbr.timeago").timeago();
 
-				$('input').iCheck({
-					checkboxClass: 'icheckbox_flat-blue',
-					radioClass: 'iradio_flat-blue'
-				});
 				if (delay) {
 					timer = setTimeout(ready, delay);
 				} else {
@@ -272,6 +288,20 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 		};
 	})
 
+	.directive('jqIcheck', function(){
+		var linkFn = function(scope,element,attrs){
+			element.iCheck({
+				checkboxClass: 'icheckbox_flat-blue',
+				radioClass: 'iradio_flat-blue'
+			});
+		};
+
+		return {
+			restrict:'A',
+			link: linkFn
+		}
+	})
+
 	.filter('duration', function() {
 		return function(d) {
 			d = Number(d);
@@ -283,11 +313,18 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 	})
 
 	.filter('visible', function() {
-		return function( item ) {
-			return !(
-				( item.muted && $scope.settings.hidemuted )
-				|| ( item.watched && $scope.settings.hidewatched )
-				);
+		return function( items, hidewatched, hidemuted ) {
+			var filtered = [];
+
+			angular.forEach( items, function( item ) {
+				if (
+					!( ( item.muted && (hidemuted=="1") ) || ( item.watched && (hidewatched=="1") ) )
+					) {
+					filtered.push(item);
+				}
+			});
+
+			return filtered;
 		};
 	})
 ;
