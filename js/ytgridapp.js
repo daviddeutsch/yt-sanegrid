@@ -11,7 +11,7 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 		appLoading.ready();
 	})
 
-	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading) {
+	.controller('AppRepeatCtrl', function($scope, $store, ytSubList, appLoading, $timeout) {
 		$store.bind($scope, 'userid', '');
 
 		$store.bind($scope, 'videocache', {});
