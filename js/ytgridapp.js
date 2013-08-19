@@ -155,9 +155,10 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 		var loadTop = function() {
 			resetErrors();
+
 			appLoading.loading();
+
 			ytSubList($scope.userid, 1, pushVideos);
-			test = 'test';
 		};
 
 		$scope.updateVideos = function() {
@@ -192,27 +193,23 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 		};
 
 		$scope.mute = function(id) {
-			$.each($scope.videos, function(i, v) {
+			$.each($scope.videocache[$scope.userid], function(i, v) {
 				if (v.id == id) {
-					$scope.videos[i].muted = !$scope.videos[i].muted;
-					$scope.videos[i].muteddate = new Date().toISOString();
+					$scope.videocache[$scope.userid][i].muted = !$scope.videocache[$scope.userid][i].muted;
+					$scope.videocache[$scope.userid][i].muteddate = new Date().toISOString();
 				}
 			});
-
-			$scope.videocache[$scope.userid] = $scope.videos;
 
 			$scope.updateVideos();
 		};
 
 		$scope.watched = function( id ) {
-			$.each( $scope.videos, function( i, v ) {
+			$.each( $scope.videocache[$scope.userid], function( i, v ) {
 				if ( v.id == id ) {
-					$scope.videos[i].watched = !$scope.videos[i].watched;
-					$scope.videos[i].watcheddate = new Date().toISOString();
+					$scope.videocache[$scope.userid][i].watched = !$scope.videocache[$scope.userid][i].watched;
+					$scope.videocache[$scope.userid][i].watcheddate = new Date().toISOString();
 				}
 			});
-
-			$scope.videocache[$scope.userid] = $scope.videos;
 
 			$scope.updateVideos();
 		};
