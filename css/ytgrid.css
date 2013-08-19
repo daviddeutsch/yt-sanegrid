@@ -226,6 +226,7 @@ footer {
 	background: #e2e2e2;
 }
 
-footer label {
+footer label,
+footer a {
 	vertical-align: top;
 }
