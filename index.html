@@ -13,7 +13,7 @@
 </head>
 <body>
 	<div class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
-		<header class="navbar" role="banner">
+		<header class="navbar" role="banner" ng-if="settings.hidemuted">
 			<img class="navbar-brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-5.png"/>
 			<form class="form-inline" role="form">
 				<div class="form-group">
@@ -73,14 +73,14 @@
 		<div class="progress-bar" role="progressbar" style="width: 45%" ng-if="status">
 			<span class='sr-only'>45% Complete</span>
 		</div>
+		<footer>
+			<input type="checkbox" id="settings-hidemuted" ng-model="settings.hidemuted"/>
+			<label for="settings-hidemuted">Hide Muted</label>
+			<input type="checkbox" id="settings-hidewatched" ng-model="settings.hidewatched"/>
+			<label for="settings-hidewatched">Hide Watched</label>
+			<span class="pull-right"><a href="https://github.com/daviddeutsch/yt-sanegrid">Fork me on GitHub</a></span>
+		</footer>
 	</div>
-	<footer>
-		<input type="checkbox" id="settings-hidemuted" ng-model="settings.hidemuted"/>
-		<label for="settings-hidemuted">Hide Muted</label>
-		<input type="checkbox" id="settings-hidewatched" ng-model="settings.hidewatched"/>
-		<label for="settings-hidewatched">Hide Watched</label>
-		<span class="pull-right"><a href="https://github.com/daviddeutsch/yt-sanegrid">Fork me on GitHub</a></span>
-	</footer>
 	<script src="js/lodash.min.js"></script>
 	<script src="js/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery.easing.1.3.js"></script>

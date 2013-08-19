@@ -20,7 +20,7 @@ var ytsubgridApp = angular.module("ytsubgridApp", ['localStorage'])
 
 		$store.bind($scope, 'settings', {});
 
-		if ( typeof $scope.settings == 'undefined' ) {
+		if ( $.isEmptyObject($scope.settings) ) {
 			$scope.settings = {
 				hidewatched : false,
 				hidemuted: true,
