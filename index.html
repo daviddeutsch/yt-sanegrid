@@ -47,26 +47,28 @@
 			<h4>Account Not Found</h4>
 			The account you entered does not exist.
 		</div>
-		<div ng-repeat="video in videos track by $index">
-			<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
-				<div class="img-container">
-					<img src="{{video.img}}" />
-					<div class="video-buttons">
-						<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
-						<a ng-click="watched(video.id)" class="click-watched" title="mark as watched">&#10004;</a>
-					</div>
+		<div class="videolist" ng-class="{'hidemuted':settings.hidemuted=='1','hidewatched':settings.hidewatched=='1'}">
+			<div ng-repeat="video in videos track by $index">
+				<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
+					<div class="img-container">
+						<img src="{{video.img}}" />
+						<div class="video-buttons">
+							<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
+							<a ng-click="watched(video.id)" class="click-watched" title="mark as watched">&#10004;</a>
+						</div>
 
-					<div class="duration">{{ video.duration | duration }}</div>
+						<div class="duration">{{ video.duration | duration }}</div>
+					</div>
+					<div class="title">
+						<a ng-href="{{video.link}}" ng-click="watched(video.id)" target="__blank">{{video.title}}</a>
+					</div>
+					<p class="author text-muted">
+						by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
+					</p>
+					<p class="time">
+						<abbr class="timeago" title="{{video.published}}"></abbr>
+					</p>
 				</div>
-				<div class="title">
-					<a ng-href="{{video.link}}" ng-click="watched(video.id)" target="__blank">{{video.title}}</a>
-				</div>
-				<p class="author text-muted">
-					by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
-				</p>
-				<p class="time">
-					<abbr class="timeago" title="{{video.published}}"></abbr>
-				</p>
 			</div>
 		</div>
 		<div class="progress-bar" role="progressbar" style="width: 45%" ng-if="status">

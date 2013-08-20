@@ -202,6 +202,11 @@ p.time abbr {
 	opacity: 0.5;
 }
 
+.hidemuted .muted,
+.hidewatched .watched {
+	display: none;
+}
+
 a:hover {
 	color: #428bca !important;
 }
