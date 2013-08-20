@@ -18,8 +18,8 @@ ytsubgridApp.controller( 'AppHomeCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$scope', '$store', 'ytSubList', 'appLoading', '$timeout',
-		function ( $scope, $store, ytSubList, appLoading, $timeout ) {
+	['$scope', '$store', '$document', 'ytSubList', 'appLoading', '$timeout',
+		function ( $scope, $store, $document, ytSubList, appLoading, $timeout ) {
 			$store.bind( $scope, 'userid', '' );
 			$store.bind( $scope, 'videocache', {} );
 			$store.bind( $scope, 'videos', {} );
@@ -160,6 +160,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				ytSubList( $scope.userid, 1, pushVideos );
 			};
 
+			var sidebar = function () {
+				if ( $scope.settings.sidebar ) {
+					$('.sidebar' ).css({"height":$document.height()});
+				} else {
+					$('.sidebar' ).css({"height":"40px"});
+				}
+			};
+
 			$scope.loadBottom = function () {
 				resetErrors();
 
@@ -196,12 +204,19 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				} );
 			};
 
+			$scope.togglesidebar = function () {
+				$scope.settings.sidebar = !$scope.settings.sidebar;
+
+				sidebar();
+			};
+
 			if ( $scope.userid ) {
 				setUserid( $scope.userid );
 
 				loadTop();
 			}
 
+			sidebar();
 		}]
 );
 

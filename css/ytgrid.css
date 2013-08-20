@@ -222,6 +222,27 @@ a:hover {
 	margin-right: auto;
 }
 
+.sidebar {
+	position: absolute;
+	right: 0;
+	margin-top: -20px;
+	background: #d43f3a;
+	z-index: 100;
+}
+
+.sidebar h4 {
+	text-align: center;
+}
+
+.sidebar-collapsed {
+	position: fixed;
+	margin-left: 14px;
+	padding: 0 24px;
+	bottom: 40px;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+}
+
 footer {
 	position: fixed;
 	width: 100%;
@@ -229,6 +250,7 @@ footer {
 	bottom: 0;
 	height: 40px;
 	background: #e2e2e2;
+	z-index: 200;
 }
 
 footer label,
