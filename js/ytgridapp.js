@@ -90,14 +90,17 @@ ytsubgridApp.controller('AppRepeatCtrl',
 			};
 
 			var pushVideo = function (o) {
-				id = o['id']['$t'].replace('https://gdata.youtube.com/feeds/api/videos/', '').replace('http://gdata.youtube.com/feeds/api/videos/', '');
+				id = o['id']['$t']
+					.replace('https://gdata.youtube.com/feeds/api/videos/', '')
+					.replace('http://gdata.youtube.com/feeds/api/videos/', '');
 
 				var details = {
 					id: id,
-					link: 'https://www.youtube.com/watch?v=' + o['link'][0]['href'].replace('&feature=youtube_gdata', '').replace('https://gdata.youtube.com/feeds/api/videos/', '').replace('https://www.youtube.com/watch?v=', ''),
+					link: 'https://www.youtube.com/watch?v=' + id,
 					title: o['title']['$t'],
 					img: o['media$group']['media$thumbnail'][0]['url'],
-					authorlink: o['author'][0]['uri']['$t'].replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
+					authorlink: o['author'][0]['uri']['$t']
+						.replace('gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/'),
 					author: o['author'][0]['name']['$t'],
 					published: o['published']['$t'],
 					duration: o['media$group']['yt$duration']['seconds'],
@@ -108,6 +111,7 @@ ytsubgridApp.controller('AppRepeatCtrl',
 				};
 
 				var existing = false;
+
 				var eid = 0;
 
 				$.each($scope.videocache[$scope.userid], function (i, v) {
@@ -173,12 +177,10 @@ ytsubgridApp.controller('AppRepeatCtrl',
 				$scope.videos = [];
 
 				angular.forEach($scope.videocache[$scope.userid], function (item) {
-					if (
-						!(
+					if ( !(
 							( item.muted && ($scope.settings.hidemuted == "1") )
 								|| ( item.watched && ($scope.settings.hidewatched == "1") )
-							)
-						) {
+						) ) {
 						$scope.videos.push(item);
 					}
 				});
@@ -186,7 +188,9 @@ ytsubgridApp.controller('AppRepeatCtrl',
 
 			$scope.loadBottom = function () {
 				resetErrors();
+
 				appLoading.loading();
+
 				ytSubList($scope.userid, $scope.videocache[$scope.userid].length + 1, pushVideos);
 			};
 
@@ -222,11 +226,6 @@ ytsubgridApp.controller('AppRepeatCtrl',
 				$scope.updateVideos();
 			};
 
-			$scope.toggleSetting = function (id) {
-				$scope.setting[id] = !$scope.setting[id];
-				test = $scope.setting[id];
-			};
-
 			if ($scope.userid) {
 				setUserid($scope.userid);
 
@@ -243,16 +242,20 @@ ytsubgridApp.factory('appLoading',
 			return {
 				loading: function () {
 					clearTimeout(timer);
+
 					$rootScope.status = 1;
+
 					if (!$rootScope.$$phase) $rootScope.$apply();
 				},
 				ready: function (delay) {
 					function ready() {
 						$rootScope.status = 0;
+
 						if (!$rootScope.$$phase) $rootScope.$apply();
 					}
 
 					clearTimeout(timer);
+
 					delay = delay == null ? 500 : false;
 
 					jQuery("abbr.timeago").timeago();
@@ -271,13 +274,16 @@ ytsubgridApp.factory('ytSubList',
 	['$q',
 		function ($q) {
 			var searchToken = '{SEARCH}';
+
 			var startToken = '{START}';
 
 			var baseUrl = "https://gdata.youtube.com/feeds/api/users/" + searchToken + "/newsubscriptionvideos?alt=json&start-index=" + startToken + "&max-results=50";
 
 			return function (q, s, fn) {
 				var defer = $q.defer();
+
 				var url = baseUrl.replace(searchToken, q).replace(startToken, s);
+
 				$.getJSON(url)
 					.fail(function (j, t, e) {
 						fn(e, j.status);
@@ -307,10 +313,16 @@ ytsubgridApp.filter('duration',
 	function () {
 		return function (d) {
 			d = Number(d);
+
 			var h = Math.floor(d / 3600);
 			var m = Math.floor(d % 3600 / 60);
 			var s = Math.floor(d % 3600 % 60);
-			return ((h > 0 ? h + ":" : "") + (m > 0 ? (h > 0 && m < 10 ? "0" : "") + m + ":" : "00:") + (s < 10 ? "0" : "") + s);
+
+			return (
+				( h > 0 ? h + ":" : "" )
+				+ ( m > 0 ? (h > 0 && m < 10 ? "0" : "" ) + m + ":" : "00:")
+				+ (s < 10 ? "0" : "") + s
+			);
 		};
 	}
 );
@@ -322,7 +334,8 @@ ytsubgridApp.filter('visible',
 
 			angular.forEach(items, function (item) {
 				if (
-					!( ( item.muted && (hidemuted == "1") ) || ( item.watched && (hidewatched == "1") ) )
+					!( ( item.muted && (hidemuted == "1") )
+						|| ( item.watched && (hidewatched == "1") ) )
 					) {
 					filtered.push(item);
 				}
