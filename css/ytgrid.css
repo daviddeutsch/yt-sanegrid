@@ -223,9 +223,9 @@ a:hover {
 }
 
 .sidebar {
-	position: absolute;
+	position: fixed;
 	right: 0;
-	margin-top: -20px;
+	margin-top: 50px;
 	background: #d43f3a;
 	z-index: 100;
 }
@@ -241,6 +241,11 @@ a:hover {
 	bottom: 40px;
 	border-top-right-radius: 6px;
 	border-top-left-radius: 6px;
+}
+
+.videolist {
+	margin-top: 50px;
+	padding-bottom: 240px;
 }
 
 footer {

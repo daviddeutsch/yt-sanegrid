@@ -18,8 +18,8 @@ ytsubgridApp.controller( 'AppHomeCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$scope', '$store', '$document', 'ytSubList', 'appLoading', '$timeout',
-		function ( $scope, $store, $document, ytSubList, appLoading, $timeout ) {
+	['$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'appLoading', '$timeout',
+		function ( $scope, $store, $document, ytSubList, ytChannelList, appLoading, $timeout ) {
 			$store.bind( $scope, 'userid', '' );
 			$store.bind( $scope, 'videocache', {} );
 			$store.bind( $scope, 'videos', {} );
@@ -68,6 +68,32 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				$scope.userid = u;
 
 				$scope.videos = $scope.videocache[u];
+
+				ytChannelList( $scope.userid, loadChannels );
+			};
+
+			var loadChannels = function ( data, code ) {
+				if ( code == 200 ) {
+					if ( typeof data != 'undefined' ) {
+						$scope.channels = [];
+
+						var idents = [];
+
+						$.each( $scope.videos, function ( i, v ) {
+							if ( $.inArray( v.author, idents ) == -1 ) {
+								$scope.channels.push( v );
+
+								idents.push( v.author );
+							}
+						} );
+					}
+				} else if ( code == 403 ) {
+					$scope.forbidden = 1;
+				} else {
+					$scope.notfound = 1;
+				}
+
+				appLoading.ready();
 			};
 
 			var pushVideos = function ( data, code ) {
@@ -268,6 +294,30 @@ ytsubgridApp.factory( 'ytSubList',
 				var defer = $q.defer();
 
 				var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
+
+				$.getJSON( url )
+					.fail( function ( j, t, e ) {
+						fn( e, j.status );
+					} )
+					.done( function ( json ) {
+						fn( json.feed.entry, 200 );
+					} )
+				;
+			};
+		}]
+);
+
+ytsubgridApp.factory( 'ytChannelList',
+	['$q',
+		function ( $q ) {
+			var searchToken = '{SEARCH}';
+
+			var baseUrl = "https://gdata.youtube.com/feeds/api/users/" + searchToken + "/subscriptions?alt=json";
+
+			return function ( q, fn ) {
+				var defer = $q.defer();
+
+				var url = baseUrl.replace( searchToken, q );
 
 				$.getJSON( url )
 					.fail( function ( j, t, e ) {
