@@ -2,14 +2,8 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
-.navbar {
-	background-color: #e2e2e2;
-}
-
-.navbar form {
-	float: left;
-	padding: 6px;
-	width: 300px;
+a:hover {
+	cursor: pointer;
 }
 
 .form-group {
@@ -75,7 +69,6 @@ p.loading{
 .video-buttons a {
 	opacity: 0;
 	color: #444;
-	cursor: pointer;
 	display: inline-block;
 	font-size: 200%;
 	background: #fff;
@@ -225,7 +218,6 @@ a:hover {
 .sidebar {
 	position: fixed;
 	right: 0;
-	margin-top: 50px;
 	background: #d43f3a;
 	z-index: 100;
 }
@@ -244,7 +236,6 @@ a:hover {
 }
 
 .videolist {
-	margin-top: 50px;
 	padding-bottom: 240px;
 }
 
@@ -253,12 +244,26 @@ footer {
 	width: 100%;
 	padding: 12px;
 	bottom: 0;
-	height: 40px;
+	height: 120px;
 	background: #e2e2e2;
 	z-index: 200;
 }
 
+footer .form-control {
+	display: inline-block;
+	width: 120px;
+	margin-top: -8px;
+}
+
 footer label,
-footer a {
+footer input {
 	vertical-align: top;
+}
+
+#settings {
+	width: 70%;
+}
+
+#info {
+	width: 30%;
 }

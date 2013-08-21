@@ -12,44 +12,47 @@
 </head>
 <body>
 	<div class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
-		<header class="navbar navbar-fixed-top" role="banner">
-			<img class="navbar-brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-5.png"/>
-			<form class="form-inline" role="form">
-				<div class="form-group">
-					<label class="sr-only" for="userid">Your Username</label>
-					<input
-							ng-model="userid"
-							id="userid"
-							type="text"
-							class="form-control"
-							placeholder="Your YouTube Username">
-					<button
-							class="btn btn-default"
-							type="submit"
-							ng-click="search(userid)">
-						Search
-					</button>
-				</div>
+		<div id="main" class="row">
 
-			</form>
-			<p ng-if="status" class="loading">Loading...</p>
-		</header>
-		<div class="account-error alert" ng-if="forbidden">
-			<h4>Subscription List Private</h4>
-			The account that you entered has their subscription list private. If you own this account,
-			you can go to your privacy settings page at
-			<a ng-href="https://www.youtube.com/account_privacy">
-				https://www.youtube.com/account_privacy
-			</a>
-			and make it public.
-		</div>
-		<div class="account-error alert" ng-if="notfound">
-			<h4>Account Not Found</h4>
-			The account you entered does not exist.
-		</div>
-		<div class="row">
+			<div id="errors" ng-if="forbidden||notfound||!userid">
+				<div class="col-md-8 col-offset-4">
+					<img class="navbar-brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
+					<h2>Sane Grid</h2>
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							<label class="sr-only" for="userid">Your Username</label>
+							<input
+									ng-model="userid"
+									id="userid"
+									type="text"
+									class="form-control"
+									placeholder="Your YouTube Username">
+							<button
+									class="btn btn-default"
+									type="submit"
+									ng-click="selectUserid(userid)">
+								Select
+							</button>
+						</div>
+					</form>
+				</div>
+				<div class="account-error alert col-md-4 col-offset-4" ng-if="forbidden">
+					<h4>Subscription List Private</h4>
+					<p>The account that you entered has their subscription list private. If you own this account,
+					you can go to your privacy settings page at
+					<a ng-href="https://www.youtube.com/account_privacy">
+						https://www.youtube.com/account_privacy
+					</a>
+					and make it public.</p>
+				</div>
+				<div class="account-error alert col-md-4 col-offset-4" ng-if="notfound">
+					<h4>Account Not Found</h4>
+					<p>The account you entered does not exist.</p>
+				</div>
+			</div>
+
 			<div class="videolist col-md-10" ng-class="{'hidemuted':settings.hidemuted=='1','hidewatched':settings.hidewatched=='1','col-md-10':settings.sidebar,'col-md-12':!settings.sidebar}">
-				<div ng-repeat="video in videos track by $index">
+				<div ng-repeat="video in videos track by $index | filter:search">
 					<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
 						<div class="img-container">
 							<img src="{{video.img}}" />
@@ -72,31 +75,53 @@
 					</div>
 				</div>
 			</div>
+
 			<div id="subscriptionlist" class="sidebar" ng-class="{'col-md-2':settings.sidebar,'sidebar-collapsed':!settings.sidebar}">
 				<h4 ng-click="togglesidebar()">Subscriptions</h4>
 				<div ng-repeat="channel in channels track by $index">
 					<p>{{ channel.author }}</p>
 				</div>
 			</div>
+
 		</div>
+
 		<div class="progress-bar" role="progressbar" style="width: 45%" ng-if="status">
 			<span class='sr-only'>45% Complete</span>
 		</div>
-		<footer>
-			<input type="checkbox" id="settings-hidemuted" ng-model="settings.hidemuted" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
-			<label for="settings-hidemuted">Hide Muted</label>
-			&nbsp;&nbsp;&nbsp;
-			<input type="checkbox" id="settings-hidewatched" ng-model="settings.hidewatched" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
-			<label for="settings-hidewatched">Hide Watched</label>
-			<span class="pull-right">
+
+		<footer ng-if="userid&&!forbidden&&!notfound">
+			<div id="settings" class="pull-left">
+				<p>
+					<strong>{{ userid }}</strong>&nbsp;(<a ng-click="selectUserid('')">change</a>)
+					&nbsp;&nbsp;&nbsp;
+					<input type="checkbox" id="settings-hidemuted" ng-model="settings.hidemuted" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
+					<label for="settings-hidemuted">Hide Muted</label>
+					&nbsp;&nbsp;&nbsp;
+					<input type="checkbox" id="settings-hidewatched" ng-model="settings.hidewatched" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
+					<label for="settings-hidewatched">Hide Watched</label>
+					&nbsp;&nbsp;&nbsp;
+					<input
+							ng-model="search"
+							id="search"
+							type="text"
+							class="form-control"
+							placeholder="Search">
+				</p>
+			</div>
+			<div id="info" class="pull-right">
+				<span ng-if="status" class="loading">Loading...</span>
 				<iframe style="border: 0; margin: 0; padding: 0;"
 						src="https://www.gittip.com/daviddeutsch/widget.html"
 						width="48pt" height="22pt"></iframe>
 				<script id='flattrbtn'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('flattrbtn');</script>
 				&nbsp;&nbsp;&nbsp;
-				<a href="https://github.com/daviddeutsch/yt-sanegrid">Fork me on GitHub</a>
-			</span>
+				<iframe src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
+						allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
+				<iframe src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
+						allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
+			</div>
 		</footer>
+
 	</div>
 	<script src="js/lodash.min.js"></script>
 	<script src="js/jquery-1.10.2.min.js"></script>

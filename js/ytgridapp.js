@@ -202,7 +202,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				ytSubList( $scope.userid, $scope.videos.length + 1, pushVideos );
 			};
 
-			$scope.search = function ( q ) {
+			$scope.selectUserid = function ( q ) {
 				if ( q == false ) {
 					$scope.userid = '';
 				} else {
