@@ -2,7 +2,7 @@
 <html lang="en" ng-app="ytsubgridApp" ng-controller="AppCtrl">
 <head>
 	<meta charset="utf-8">
-	<title>YT SaneGrid - A poor hack to make up for a grave loss</title>
+	<title>YT SaneGrid - maintain sanity, zen procrastination</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="YT Sanegrid">
 	<meta name="author" content="David Deutsch">
@@ -14,112 +14,250 @@
 	<div class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
 		<div id="main" class="row">
 
-			<div id="errors" ng-if="forbidden||notfound||!userid">
-				<div class="col-md-8 col-offset-4">
-					<img class="navbar-brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
-					<h2>Sane Grid</h2>
-					<form class="form-inline" role="form">
-						<div class="form-group">
-							<label class="sr-only" for="userid">Your Username</label>
-							<input
-									ng-model="userid"
-									id="userid"
-									type="text"
-									class="form-control"
-									placeholder="Your YouTube Username">
-							<button
-									class="btn btn-default"
-									type="submit"
-									ng-click="selectUserid(userid)">
-								Select
-							</button>
-						</div>
-					</form>
+			<div id="start" class="col-md-6 col-md-offset-3" ng-if="start">
+				<h2>
+					<img class="brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
+					Sane Grid
+				</h2>
+				<p>Hi there,<br/>This is a small app that helps you <strong>manage and enjoy your YouTube Subscriptions</strong> while keeping your sanity.</p>
+				<p>I built it after the much beloved /my_subscriptions grid was killed off mercilessly and it is now almost en par, feature wise.</p>
+				<p>"En par" is French for "it does the job"*, although it's ok if you're uncomfortable with somebody speaking French, especially if he's actually German.</p>
+				<p><strong>To get started, simply enter your youtube username below</strong>.</p>
+				<p><strong>Don't worry</strong>, nothing is stored on the server, this page works completely from and only stores data in your browser.</p>
+				<p class="pull-right">*not really</p>
+				<br />
+				<hr />
+				<br />
+				<form class="form-inline" role="form" ng-submit="selectUserid(userid)">
+					<div class="form-group">
+						<label class="sr-only" for="userid">Your Username</label>
+						<input
+							ng-model="userid"
+							id="userid"
+							type="text"
+							class="form-control"
+							autofocus
+							placeholder="Your YouTube Username">
+						<button
+							class="btn btn-default"
+							type="submit"
+							ng-click="selectUserid(userid)">
+							Ok!
+						</button>
+					</div>
+				</form>
+
+				<br />
+
+				<div id="errors" ng-if="forbidden||notfound||!start">
+					<div class="account-error alert " ng-if="forbidden">
+						<h4>Subscription List Private</h4>
+						<p>The account that you entered has their subscription list private. If you own this account,
+							you can go to your privacy settings page at
+							<a ng-href="https://www.youtube.com/account_privacy">
+								https://www.youtube.com/account_privacy
+							</a>
+							and make it public.</p>
+					</div>
+					<div class="account-error alert" ng-if="notfound">
+						<h4>Account Not Found</h4>
+						<p>The account you entered does not exist.</p>
+					</div>
 				</div>
-				<div class="account-error alert col-md-4 col-offset-4" ng-if="forbidden">
-					<h4>Subscription List Private</h4>
-					<p>The account that you entered has their subscription list private. If you own this account,
-					you can go to your privacy settings page at
-					<a ng-href="https://www.youtube.com/account_privacy">
-						https://www.youtube.com/account_privacy
-					</a>
-					and make it public.</p>
-				</div>
-				<div class="account-error alert col-md-4 col-offset-4" ng-if="notfound">
-					<h4>Account Not Found</h4>
-					<p>The account you entered does not exist.</p>
-				</div>
+
+				<br />
+				<hr />
+				<p>All code is free and open source software, you can check out the details in the GitHub links below:</p>
+				<iframe style="border: 0; margin: 0; padding: 0;"
+						src="https://www.gittip.com/daviddeutsch/widget.html"
+						width="48pt" height="22pt"></iframe>
+				&nbsp;&nbsp;&nbsp;
+				<script id='flattrbtnstart'>
+					(function(i){
+						var f,s=document.getElementById(i);
+						f=document.createElement('iframe');
+						f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
+						f.title='Flattr';
+						f.height=20;
+						f.width=110;
+						f.style.borderWidth=0;
+						s.parentNode.insertBefore(f,s);
+					})('flattrbtnstart');
+				</script>
+				&nbsp;&nbsp;&nbsp;
+				<iframe
+					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
+					allowtransparency="true"
+					frameborder="0"
+					scrolling="0"
+					width="62"
+					height="20"
+					></iframe>
+				<iframe
+					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
+					allowtransparency="true"
+					frameborder="0"
+					scrolling="0"
+					width="62"
+					height="20"
+					></iframe>
 			</div>
 
-			<div class="videolist col-md-10" ng-class="{'hidemuted':settings.hidemuted=='1','hidewatched':settings.hidewatched=='1','col-md-10':settings.sidebar,'col-md-12':!settings.sidebar}">
-				<div ng-repeat="video in videos track by $index | filter:search">
+			<div
+				class="videolist col-md-10"
+				ng-class="{
+					'hidemuted':settings.hidemuted=='1',
+					'hidewatched':settings.hidewatched=='1',
+					'col-md-10':settings.sidebar,
+					'col-md-12':!settings.sidebar
+				}"
+				ng-if="!start"
+				>
+				<div ng-repeat="video in videolist() track by $index">
 					<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
 						<div class="img-container">
 							<img src="{{video.img}}" />
-							<div class="video-buttons">
-								<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
-								<a ng-click="watched(video.id)" class="click-watched" title="mark as watched">&#10004;</a>
-							</div>
-
 							<div class="duration">{{ video.duration | duration }}</div>
 						</div>
-						<div class="title">
-							<a ng-href="{{video.link}}" ng-click="watched(video.id)" target="__blank">{{video.title}}</a>
+
+						<div class="img-container-overlay"></div>
+
+						<div class="video-buttons">
+							<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
+							<a ng-click="watched(video.id)" class="click-watched" title="mark as watched">&#10004;</a>
 						</div>
-						<p class="author text-muted">
-							by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
-						</p>
-						<p class="time">
-							<abbr class="timeago" title="{{video.published}}"></abbr>
-						</p>
+
+						<div class="thumbnail-body">
+							<div class="title">
+								<a ng-href="{{video.link}}" ng-click="watched(video.id)" target="__blank" title="{{video.title}}">{{video.title}}</a>
+							</div>
+							<p class="author text-muted">
+								by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
+							</p>
+							<p class="time">
+								<abbr class="timeago" title="{{video.published}}"></abbr>
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div id="subscriptionlist" class="sidebar" ng-class="{'col-md-2':settings.sidebar,'sidebar-collapsed':!settings.sidebar}">
-				<h4 ng-click="togglesidebar()">Subscriptions</h4>
-				<div ng-repeat="channel in channels track by $index">
-					<p>{{ channel.author }}</p>
+			<div
+				id="channellist"
+				class="sidebar col-md-2"
+				ng-class="{'sidebar-collapsed':!settings.sidebar}"
+				ng-if="!start"
+				>
+				<h4 ng-click="togglesidebar()">Channels</h4>
+
+				<div class="channel" ng-repeat="channel in channels track by $index">
+					<h5>{{ channel.name }}</h5>
+
+					<input
+						type="checkbox"
+						id="channel-mute-{{ channel.id }}"
+						ng-true-value="1"
+						ng-false-value="0"
+						ng-model="channelstate.hidden[channel.name]"
+						ng-click="hideChannel(channel.name)"
+						/>
+					<label for="channel-mute-{{ channel.id }}">Hide Videos</label>
 				</div>
 			</div>
-
 		</div>
 
-		<div class="progress-bar" role="progressbar" style="width: 45%" ng-if="status">
-			<span class='sr-only'>45% Complete</span>
-		</div>
+		<footer ng-if="!start&&!forbidden&&!notfound">
 
-		<footer ng-if="userid&&!forbidden&&!notfound">
 			<div id="settings" class="pull-left">
 				<p>
-					<strong>{{ userid }}</strong>&nbsp;(<a ng-click="selectUserid('')">change</a>)
+					<strong>{{ userid }}</strong>
+
+					&nbsp;
+
+					(<a ng-click="selectUserid('')">change</a>)
+
 					&nbsp;&nbsp;&nbsp;
-					<input type="checkbox" id="settings-hidemuted" ng-model="settings.hidemuted" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
-					<label for="settings-hidemuted">Hide Muted</label>
-					&nbsp;&nbsp;&nbsp;
-					<input type="checkbox" id="settings-hidewatched" ng-model="settings.hidewatched" ng-true-value="1" ng-false-value="0" ng-click="updateVideos()"/>
-					<label for="settings-hidewatched">Hide Watched</label>
-					&nbsp;&nbsp;&nbsp;
+
 					<input
-							ng-model="search"
-							id="search"
-							type="text"
-							class="form-control"
-							placeholder="Search">
+						type="checkbox"
+						id="settings-hidemuted"
+						class="form-control"
+						ng-model="settings.hidemuted"
+						ng-true-value="1"
+						ng-false-value="0"
+						ng-click="updateVideos()"
+						/>
+
+					<label for="settings-hidemuted">Hide Muted</label>
+
+					&nbsp;&nbsp;&nbsp;
+
+					<input
+						type="checkbox"
+						id="settings-hidewatched"
+						class="form-control"
+						ng-model="settings.hidewatched"
+						ng-true-value="1"
+						ng-false-value="0"
+						ng-click="updateVideos()"
+						/>
+
+					<label for="settings-hidewatched">Hide Watched</label>
+
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+					<button
+							class="btn btn-default"
+							type="submit"
+							ng-click="refresh()"
+							>
+						<span ng-if="!status">Refresh</span>
+						<span ng-if="status">Loading...</span>
+					</button>
 				</p>
 			</div>
+
 			<div id="info" class="pull-right">
-				<span ng-if="status" class="loading">Loading...</span>
 				<iframe style="border: 0; margin: 0; padding: 0;"
 						src="https://www.gittip.com/daviddeutsch/widget.html"
 						width="48pt" height="22pt"></iframe>
-				<script id='flattrbtn'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('flattrbtn');</script>
+
 				&nbsp;&nbsp;&nbsp;
-				<iframe src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
-						allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
-				<iframe src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
-						allowtransparency="true" frameborder="0" scrolling="0" width="62" height="20"></iframe>
+
+				<script id='flattrbtn'>
+					(function(i){
+						var f,s=document.getElementById(i);
+						f=document.createElement('iframe');
+						f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
+						f.title='Flattr';
+						f.height=20;
+						f.width=110;
+						f.style.borderWidth=0;
+						s.parentNode.insertBefore(f,s);
+					})('flattrbtn');
+				</script>
+
+				&nbsp;&nbsp;&nbsp;
+
+				<iframe
+					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
+					allowtransparency="true"
+					frameborder="0"
+					scrolling="0"
+					width="62"
+					height="20"
+					></iframe>
+
+				<iframe
+					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
+					allowtransparency="true"
+					frameborder="0"
+					scrolling="0"
+					width="62"
+					height="20"
+					></iframe>
 			</div>
+
 		</footer>
 
 	</div>
@@ -127,7 +265,7 @@
 	<script src="js/jquery-1.10.2.min.js"></script>
 	<script src="js/jquery.easing.1.3.js"></script>
 	<script src="js/jquery.timeago.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
 	<script src="js/angular-cookies.js"></script>
 	<script src="js/localStorage.js"></script>
 	<script src="js/ytgridapp.js"></script>

@@ -18,12 +18,15 @@ ytsubgridApp.controller( 'AppHomeCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'appLoading', '$timeout',
-		function ( $scope, $store, $document, ytSubList, ytChannelList, appLoading, $timeout ) {
+	['$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', '$timeout',
+		function ( $scope, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, $timeout ) {
 			$store.bind( $scope, 'userid', '' );
 			$store.bind( $scope, 'videocache', {} );
 			$store.bind( $scope, 'videos', {} );
 			$store.bind( $scope, 'settings', {} );
+			$store.bind( $scope, 'channelstate', {} );
+
+			$scope.start = true;
 
 			if ( $.isEmptyObject( $scope.settings ) ) {
 				$scope.settings = {
@@ -31,6 +34,12 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					hidemuted:   true,
 					theme:       'default'
 				}
+			}
+
+			if ( $.isEmptyObject( $scope.channelstate ) ) {
+				$scope.channelstate = {};
+				$scope.channelstate.hidden = {};
+				$scope.channelstate.zipped = {};
 			}
 
 			if ( $.isArray( $scope.videocache ) ) {
@@ -49,8 +58,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			};
 
 			var checkData = function () {
-				$scope.videos = _.uniq( $scope.videos );
-
 				// Retrofit some parameters to existing data
 				$.each( $scope.videos, function ( i, v ) {
 					if ( typeof $scope.videos[i].watched == 'undefined' ) {
@@ -61,6 +68,9 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			};
 
 			var setUserid = function ( u ) {
+				$scope.start = false;
+				$scope.settings.sidebar = false;
+
 				if ( typeof $scope.videocache[u] == 'undefined' ) {
 					$scope.videocache[u] = [];
 				}
@@ -79,11 +89,17 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 						var idents = [];
 
-						$.each( $scope.videos, function ( i, v ) {
-							if ( $.inArray( v.author, idents ) == -1 ) {
-								$scope.channels.push( v );
+						$.each( data, function ( i, v ) {
+							if ( $.inArray( v['yt$username'], idents ) == -1 ) {
+								$scope.channels.push(
+									{
+										id: v['yt$channelId']['$t'],
+										name: v['yt$username']['$t'],
+										thumbnail: v['media$thumbnail']['url']
+									}
+								);
 
-								idents.push( v.author );
+								idents.push( v['yt$username'] );
 							}
 						} );
 					}
@@ -108,8 +124,10 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 						checkData();
 					}
 				} else if ( code == 403 ) {
+					$scope.start = true;
 					$scope.forbidden = 1;
 				} else {
+					$scope.start = true;
 					$scope.notfound = 1;
 				}
 
@@ -117,18 +135,21 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			};
 
 			var pushVideo = function ( o ) {
-				id = o['id']['$t']
+				var id = o['id']['$t']
 					.replace( 'https://gdata.youtube.com/feeds/api/videos/', '' )
 					.replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
+
+				var authid = o['author'][0]['uri']['$t']
+					.replace( 'https://gdata.youtube.com/feeds/api/users/', '' );
 
 				var details = {
 					id:          id,
 					link:        'https://www.youtube.com/watch?v=' + id,
 					title:       o['title']['$t'],
 					img:         o['media$group']['media$thumbnail'][0]['url'],
-					authorlink:  o['author'][0]['uri']['$t']
-									.replace( 'gdata.youtube.com/feeds/api/users/', 'www.youtube.com/user/' ),
+					authorid:    authid,
 					author:      o['author'][0]['name']['$t'],
+					authorlink:  'https://www.youtube.com/user/' + authid,
 					published:   o['published']['$t'],
 					duration:    o['media$group']['yt$duration']['seconds'],
 					muted:       false,
@@ -153,8 +174,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					// Update existing data
 					$.each(
 						[
-							'id', 'link', 'title', 'img',
-							'authorlink', 'author', 'published', 'duration'
+							'id', 'link', 'title', 'img', 'authorid',
+							'author', 'authorlink', 'published', 'duration'
 						],
 						function ( i, v ) {
 							$scope.videos[eid][v] = details[v];
@@ -186,8 +207,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				ytSubList( $scope.userid, 1, pushVideos );
 			};
 
-			var sidebar = function () {
-				if ( $scope.settings.sidebar ) {
+			var updateSidebar = function () {
+				if ( $scope.settings.sidebar === true ) {
 					$('.sidebar' ).css({"height":$document.height()});
 				} else {
 					$('.sidebar' ).css({"height":"40px"});
@@ -195,6 +216,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			};
 
 			$scope.loadBottom = function () {
+				if ( $scope.start ) return;
+
 				resetErrors();
 
 				appLoading.loading();
@@ -204,12 +227,18 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$scope.selectUserid = function ( q ) {
 				if ( q == false ) {
-					$scope.userid = '';
+					$scope.start = true;
 				} else {
 					setUserid( q );
 
 					loadTop();
 				}
+			};
+
+			$scope.refresh = function() {
+				appLoading.loading();
+
+				ytChannelList( $scope.userid, loadChannels );
 			};
 
 			$scope.mute = function ( id ) {
@@ -219,6 +248,25 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 						$scope.videos[i].muteddate = new Date().toISOString();
 					}
 				} );
+			};
+
+			$scope.mute = function ( id ) {
+				$.each( $scope.videos, function ( i, v ) {
+					if ( v.id == id ) {
+						$scope.videos[i].muted = !$scope.videos[i].muted;
+						$scope.videos[i].muteddate = new Date().toISOString();
+					}
+				} );
+			};
+
+			$scope.hideChannel = function ( name ) {
+				var pos = $.inArray( name, $scope.channeloptions.hidden );
+
+				if ( pos != -1 ) {
+					$scope.channeloptions.hidden = $scope.channeloptions.hidden.splice(pos, 1);
+				} else {
+					$scope.channeloptions.hidden.push(name);
+				}
 			};
 
 			$scope.watched = function ( id ) {
@@ -233,16 +281,59 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.togglesidebar = function () {
 				$scope.settings.sidebar = !$scope.settings.sidebar;
 
-				sidebar();
+				updateSidebar();
+			};
+
+			$scope.videolist = function () {
+				var ids = [];
+				var result = [];
+
+				var len = $scope.videos.length;
+
+				for( i=0; i<len; i++ ) {
+					var video = $scope.videos[i];
+
+					if ( $.inArray( video.id, ids ) != -1  ) {
+						$scope.videos.splice(i, 1);
+
+						i--;
+						len--;
+
+						continue;
+					}
+
+					if (
+						( ( video.muted && ($scope.settings.hidemuted == "1") )
+							|| ( video.watched && ($scope.settings.hidewatched == "1") ) )
+						) {
+						continue;
+					}
+
+					var auth = video.authorlink.split("/");
+					var key = auth[auth.length-1].toLowerCase();
+
+					if ( $scope.channelstate.hidden[key] === "1" ) {
+						continue;
+					}
+
+					ids.push(video.id);
+
+					result.push(video);
+				}
+
+				return result;
 			};
 
 			if ( $scope.userid ) {
+				$scope.start = false;
+				$scope.settings.sidebar = false;
+
 				setUserid( $scope.userid );
 
 				loadTop();
-			}
 
-			sidebar();
+				updateSidebar();
+			}
 		}]
 );
 
@@ -288,7 +379,11 @@ ytsubgridApp.factory( 'ytSubList',
 
 			var startToken = '{START}';
 
-			var baseUrl = "https://gdata.youtube.com/feeds/api/users/" + searchToken + "/newsubscriptionvideos?alt=json&start-index=" + startToken + "&max-results=50";
+			var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+				+ searchToken
+				+ "/newsubscriptionvideos?alt=json&start-index="
+				+ startToken
+				+ "&max-results=50";
 
 			return function ( q, s, fn ) {
 				var defer = $q.defer();
@@ -312,7 +407,36 @@ ytsubgridApp.factory( 'ytChannelList',
 		function ( $q ) {
 			var searchToken = '{SEARCH}';
 
-			var baseUrl = "https://gdata.youtube.com/feeds/api/users/" + searchToken + "/subscriptions?alt=json";
+			var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+				+ searchToken
+				+ "/subscriptions?alt=json"
+				+ "&max-results=50";
+
+			return function ( q, fn ) {
+				var defer = $q.defer();
+
+				var url = baseUrl.replace( searchToken, q );
+
+				$.getJSON( url )
+					.fail( function ( j, t, e ) {
+						fn( e, j.status );
+					} )
+					.done( function ( json ) {
+						fn( json.feed.entry, 200 );
+					} )
+				;
+			};
+		}]
+);
+
+ytsubgridApp.factory( 'ytChannelVideos',
+	['$q',
+		function ( $q ) {
+			var searchToken = '{SEARCH}';
+
+			var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+				+ searchToken
+				+ "/uploads?alt=json";
 
 			return function ( q, fn ) {
 				var defer = $q.defer();
@@ -358,25 +482,6 @@ ytsubgridApp.filter( 'duration',
 					+ ( m > 0 ? (h > 0 && m < 10 ? "0" : "" ) + m + ":" : "00:")
 					+ (s < 10 ? "0" : "") + s
 				);
-		};
-	}
-);
-
-ytsubgridApp.filter( 'visible',
-	function () {
-		return function ( items, hidewatched, hidemuted ) {
-			var filtered = [];
-
-			angular.forEach( items, function ( item ) {
-				if (
-					!( ( item.muted && (hidemuted == "1") )
-						|| ( item.watched && (hidewatched == "1") ) )
-					) {
-					filtered.push( item );
-				}
-			} );
-
-			return filtered;
 		};
 	}
 );
