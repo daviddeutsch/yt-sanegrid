@@ -18,8 +18,8 @@ ytsubgridApp.controller( 'AppHomeCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', '$timeout',
-		function ( $scope, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, $timeout ) {
+	['$window', '$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', '$timeout',
+		function ( $window, $scope, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, $timeout ) {
 			$store.bind( $scope, 'userid', '' );
 			$store.bind( $scope, 'videocache', {} );
 			$store.bind( $scope, 'videos', {} );
@@ -267,6 +267,12 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				} else {
 					$scope.channeloptions.hidden.push(name);
 				}
+			};
+
+			$scope.watch = function ( link, id ) {
+				$scope.watched(id);
+
+				$window.open(link, '_blank');
 			};
 
 			$scope.watched = function ( id ) {
