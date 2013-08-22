@@ -238,7 +238,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.refresh = function() {
 				appLoading.loading();
 
-				ytChannelList( $scope.userid, loadChannels );
+				loadTop();
 			};
 
 			$scope.mute = function ( id ) {
