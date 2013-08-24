@@ -1,4 +1,4 @@
-var ytsubgridApp = angular.module( "ytsubgridApp", ['localStorage'] );
+var ytsubgridApp = angular.module( "ytsubgridApp", ['ui.bootstrap','localStorage'] );
 
 ytsubgridApp.controller( 'AppCtrl',
 	['$rootScope', 'appLoading',

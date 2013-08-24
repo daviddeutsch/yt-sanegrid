@@ -2,6 +2,10 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
+#wrap {
+	padding: 0 !important;
+}
+
 .container .row {
 	margin: 0 !important;
 }
@@ -269,20 +273,20 @@ a:hover {
 .sidebar h4 {
 	text-align: center;
 	cursor: pointer;
+	right: 0;
 }
 
 .sidebar-collapsed {
 	position: fixed;
 	padding: 0 24px;
 	bottom: 50px;
-	right: 0;
 	box-shadow: -1px -2px 4px rgba(0,0,0,0.2);
 	border-top-right-radius: 6px;
 	border-top-left-radius: 6px;
 }
 
 .channel {
-	margin: 4px 0 2px -15px;
+	margin: 4px -15px 2px -15px;
 	padding-left: 15px;
 	padding-right: 15px;
 	padding-top: 4px;

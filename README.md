@@ -13,3 +13,8 @@ Caveats:
 * API restricts loading to two sets of videos (94, I think). So press that search button twice to get the maximum number of videos
 
 Send your Pull Requests now.
+
+
+### License
+
+This app is released under the GNU GPL v.3

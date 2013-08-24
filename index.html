@@ -6,14 +6,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="YT Sanegrid">
 	<meta name="author" content="David Deutsch">
-	<link type="image/x-icon" rel="shortcut icon" href="favicon.ico"></link>
-	<link sizes="32x32" href="//s.ytimg.com/yts/img/favicon_32.png" rel="icon"></link>
+	<link type="image/x-icon" rel="shortcut icon" href="favicon.ico">
+	<link sizes="32x32" href="https://s.ytimg.com/yts/img/favicon_32.png" rel="icon">
 	<link href='https://fonts.googleapis.com/css?family=Lato:400,700,300' rel='stylesheet' type='text/css'>
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet">
+	<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/ytgrid.css" rel="stylesheet">
 </head>
 <body>
-	<div class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
+	<div id="wrap" class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
 		<div id="main" class="row">
 
 			<div id="start" class="col-md-6 col-md-offset-3" ng-if="start">
@@ -122,7 +123,9 @@
 							<div class="duration">{{ video.duration | duration }}</div>
 						</div>
 
-						<div class="img-container-overlay"></div>
+						<a ng-click="watch(video.link, video.id)" target="__blank" title="{{video.title}}">
+							<div class="img-container-overlay"></div>
+						</a>
 
 						<div class="video-buttons">
 							<a ng-click="mute(video.id)" class="click-mute" title="mute and hide">&times;</a>
@@ -153,7 +156,11 @@
 				<h4 ng-click="togglesidebar()">Channels</h4>
 
 				<div class="channel" ng-repeat="channel in channels track by $index">
-					<h5>{{ channel.name }}</h5>
+					<i class="icon-eye-closed" ng-if="!channelstate.hidden[channel.name]"></i>
+					<h5>
+						{{ channel.name }}
+
+					</h5>
 
 					<input
 						type="checkbox"
@@ -180,33 +187,27 @@
 
 					&nbsp;&nbsp;&nbsp;
 
-					<input
-						type="checkbox"
-						id="settings-hidemuted"
-						class="form-control"
-						ng-model="settings.hidemuted"
-						ng-true-value="1"
-						ng-false-value="0"
-						ng-click="updateVideos()"
-						/>
-
-					<label for="settings-hidemuted">Hide Muted</label>
+					<button
+							type="button"
+							class="btn btn-primary"
+							ng-model="settings.hidemuted"
+							btn-checkbox
+							btn-checkbox-true="0"
+							btn-checkbox-false="1"
+							>Show Muted</button>
 
 					&nbsp;&nbsp;&nbsp;
 
-					<input
-						type="checkbox"
-						id="settings-hidewatched"
-						class="form-control"
-						ng-model="settings.hidewatched"
-						ng-true-value="1"
-						ng-false-value="0"
-						ng-click="updateVideos()"
-						/>
+					<button
+							type="button"
+							class="btn btn-primary"
+							ng-model="settings.hidewatched"
+							btn-checkbox
+							btn-checkbox-true="0"
+							btn-checkbox-false="1"
+							>Show Watched</button>
 
-					<label for="settings-hidewatched">Hide Watched</label>
-
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;&nbsp;
 
 					<button
 							class="btn btn-default"
@@ -263,11 +264,11 @@
 		</footer>
 
 	</div>
-	<script src="js/lodash.min.js"></script>
-	<script src="js/jquery-1.10.2.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/jquery.easing.1.3.js"></script>
 	<script src="js/jquery.timeago.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
+	<script src="js/ui-bootstrap-tpls-0.5.0.min.js"></script>
 	<script src="js/angular-cookies.js"></script>
 	<script src="js/localStorage.js"></script>
 	<script src="js/ytgridapp.js"></script>
