@@ -6,6 +6,10 @@ body {
 	padding: 0 !important;
 }
 
+.modal {
+	display: block;
+}
+
 .container .row {
 	margin: 0 !important;
 }
@@ -92,8 +96,9 @@ p.loading{
 	position: relative;
 	clear: none;
 	top: -216px;
-	width: 192px;
-	height: 60px;
+	left: 96px;
+	width: 96px;
+	height: 32px;
 	overflow: hidden;
 	text-align: right;
 	padding-left: 8px;
@@ -235,7 +240,7 @@ p.time abbr {
 
 .thumbnail-body {
 	position: relative;
-	top: -168px;
+	top: -132px;
 }
 
 .muted {
@@ -261,13 +266,31 @@ a:hover {
 	margin-right: auto;
 }
 
+#channel-btn {
+	position: absolute;
+	text-align: center;
+	background: #eee;
+	top: -39px;
+	left: 0;
+	padding: 0 24px;
+	box-shadow: -1px -2px 4px rgba(0,0,0,0.2);
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+}
+
+#channel-btn:hover {
+	cursor: pointer;
+}
+
 .sidebar {
 	position: relative;
 	float: left;
+
 	right: 0;
 	height: 40px;
 	background: #eee;
 	z-index: 100;
+	overflow: hidden;
 }
 
 .sidebar h4 {
@@ -277,12 +300,7 @@ a:hover {
 }
 
 .sidebar-collapsed {
-	position: fixed;
-	padding: 0 24px;
-	bottom: 50px;
-	box-shadow: -1px -2px 4px rgba(0,0,0,0.2);
-	border-top-right-radius: 6px;
-	border-top-left-radius: 6px;
+	display: none;
 }
 
 .channel {
@@ -292,11 +310,11 @@ a:hover {
 	padding-top: 4px;
 	height: 2em;
 	overflow: hidden;
-	-webkit-transition: all .5s ease;
-	-moz-transition: all .5s ease;
-	-ms-transition: all .5s ease;
-	-o-transition: all .5s ease;
-	transition: all .5s ease;
+	-webkit-transition: all .4s ease;
+	-moz-transition: all .4s ease;
+	-ms-transition: all .4s ease;
+	-o-transition: all .4s ease;
+	transition: all .4s ease;
 }
 
 .channel:hover {
@@ -318,9 +336,13 @@ footer {
 	width: 100%;
 	padding: 12px;
 	bottom: 0;
-	height: 50px;
 	background: #e2e2e2;
 	z-index: 200;
+}
+
+footer p {
+	margin: 0;
+	line-height: 32px;
 }
 
 footer .form-control {
@@ -340,10 +362,6 @@ footer input {
 	vertical-align: middle;
 }
 
-#settings {
-	width: 55%;
-}
-
-#info {
-	width: 40%;
+#support {
+	text-align: right;
 }

@@ -12,12 +12,15 @@
 	<link href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet">
 	<link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/ytgrid.css" rel="stylesheet">
+	<link href="css/angular-social.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
 </head>
 <body>
 	<div id="wrap" class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
 		<div id="main" class="row">
 
-			<div id="start" class="col-md-6 col-md-offset-3" ng-if="start">
+			<div id="start" class="col-md-6 col-md-offset-3" ng-if="start" ng-cloak>
 				<h2>
 					<img class="brand" src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
 					Sane Grid
@@ -70,40 +73,38 @@
 
 				<br />
 				<hr />
-				<p>All code is free and open source software, you can check out the details in the GitHub links below:</p>
-				<iframe style="border: 0; margin: 0; padding: 0;"
-						src="https://www.gittip.com/daviddeutsch/widget.html"
-						width="48pt" height="22pt"></iframe>
-				&nbsp;&nbsp;&nbsp;
-				<script id='flattrbtnstart'>
-					(function(i){
-						var f,s=document.getElementById(i);
-						f=document.createElement('iframe');
-						f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
-						f.title='Flattr';
-						f.height=20;
-						f.width=110;
-						f.style.borderWidth=0;
-						s.parentNode.insertBefore(f,s);
-					})('flattrbtnstart');
-				</script>
-				&nbsp;&nbsp;&nbsp;
-				<iframe
-					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
-					allowtransparency="true"
-					frameborder="0"
-					scrolling="0"
-					width="62"
-					height="20"
-					></iframe>
-				<iframe
-					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
-					allowtransparency="true"
-					frameborder="0"
-					scrolling="0"
-					width="62"
-					height="20"
-					></iframe>
+				<p>All code is free and open source software, you can check out the details below:</p>
+				<ul ng-social-buttons data-url="'http://daviddeutsch.github.io/yt-sanegrid/'">
+					<li class="ng-social-github" user="daviddeutsch" repository="yt-sanegrid">GitHub</li>
+					<li class="ng-social-github-forks" user="daviddeutsch" repository="yt-sanegrid">Forks</li>
+				</ul>
+			</div>
+
+			<div
+				id="channellist"
+				class="sidebar col-md-2"
+				ng-class="{'sidebar-collapsed':!settings.sidebar}"
+				ng-if="!start"
+				>
+				<h4 ng-click="togglesidebar()">Channels</h4>
+
+				<div class="channel" ng-repeat="channel in channels track by $index">
+					<i class="icon-eye-closed" ng-if="!channelstate.hidden[channel.name]"></i>
+					<h5>
+						{{ channel.name }}
+
+					</h5>
+
+					<input
+							type="checkbox"
+							id="channel-mute-{{ channel.id }}"
+							ng-true-value="1"
+							ng-false-value="0"
+							ng-model="channelstate.hidden[channel.name]"
+							ng-click="hideChannel(channel.name)"
+							/>
+					<label for="channel-mute-{{ channel.id }}">Hide Videos</label>
+				</div>
 			</div>
 
 			<div
@@ -146,132 +147,176 @@
 					</div>
 				</div>
 			</div>
-
-			<div
-				id="channellist"
-				class="sidebar col-md-2"
-				ng-class="{'sidebar-collapsed':!settings.sidebar}"
-				ng-if="!start"
-				>
-				<h4 ng-click="togglesidebar()">Channels</h4>
-
-				<div class="channel" ng-repeat="channel in channels track by $index">
-					<i class="icon-eye-closed" ng-if="!channelstate.hidden[channel.name]"></i>
-					<h5>
-						{{ channel.name }}
-
-					</h5>
-
-					<input
-						type="checkbox"
-						id="channel-mute-{{ channel.id }}"
-						ng-true-value="1"
-						ng-false-value="0"
-						ng-model="channelstate.hidden[channel.name]"
-						ng-click="hideChannel(channel.name)"
-						/>
-					<label for="channel-mute-{{ channel.id }}">Hide Videos</label>
-				</div>
-			</div>
 		</div>
 
 		<footer ng-if="!start&&!forbidden&&!notfound">
-
-			<div id="settings" class="pull-left">
-				<p>
+			<div
+					id="channel-btn"
+					class="col-md-2"
+					ng-if="!settings.sidebar"
+					ng-click="togglesidebar()"
+					>
+				<h4>Channels</h4>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<p>
 					<strong>{{ userid }}</strong>
 
 					&nbsp;
 
 					(<a ng-click="selectUserid('')">change</a>)
-
-					&nbsp;&nbsp;&nbsp;
-
-					<button
+					</p>
+				</div>
+				<div class="col-md-7">
+					<p>
+						<button
 							type="button"
-							class="btn btn-primary"
+							class="btn"
+							ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
 							ng-model="settings.hidemuted"
 							btn-checkbox
 							btn-checkbox-true="0"
 							btn-checkbox-false="1"
-							>Show Muted</button>
+							>
+							<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+							&nbsp;&nbsp;Muted
+						</button>
 
-					&nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;
 
-					<button
+						<button
 							type="button"
-							class="btn btn-primary"
+							class="btn"
+							ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
 							ng-model="settings.hidewatched"
 							btn-checkbox
 							btn-checkbox-true="0"
 							btn-checkbox-false="1"
-							>Show Watched</button>
-
-					&nbsp;&nbsp;&nbsp;
-
-					<button
-							class="btn btn-default"
-							type="submit"
-							ng-click="refresh()"
 							>
-						<span ng-if="!status">Refresh</span>
-						<span ng-if="status">Loading...</span>
-					</button>
-				</p>
-			</div>
+							<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+							&nbsp;&nbsp;Watched
+						</button>
 
-			<div id="info" class="pull-right">
-				<iframe style="border: 0; margin: 0; padding: 0;"
-						src="https://www.gittip.com/daviddeutsch/widget.html"
-						width="48pt" height="22pt"></iframe>
+						&nbsp;&nbsp;&nbsp;
 
-				&nbsp;&nbsp;&nbsp;
+						<button
+								class="btn btn-default"
+								type="submit"
+								ng-click="refresh()"
+								>
+							<span ng-if="!status"><i class="icon-refresh"></i>&nbsp;&nbsp;Refresh</span>
+							<span ng-if="status"><i class="icon-spinner icon-spin"></i>&nbsp;&nbsp;Loading...</span>
+						</button>
+					</p>
+				</div>
 
-				<script id='flattrbtn'>
-					(function(i){
-						var f,s=document.getElementById(i);
-						f=document.createElement('iframe');
-						f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
-						f.title='Flattr';
-						f.height=20;
-						f.width=110;
-						f.style.borderWidth=0;
-						s.parentNode.insertBefore(f,s);
-					})('flattrbtn');
-				</script>
+				<div id="support" class="col-md-2">
+					<div ng-controller="ModalDemoCtrl">
+						<button class="btn btn-success" ng-click="open()"><i class="icon-heart"></i> Support the developer</button>
+						<div modal="shouldBeOpen" close="close()" options="opts">
+							<div class="modal-dialog">
+							<div class="modal-content">
+							<div class="modal-body">
+								<h4>Hey, thanks a lot for using YT Sane Grid!</h4>
+								<p>Please help me make it even better:</p>
+								<hr>
+								<div class="row">
+								<div class="col-md-6">
+									<p>Donate to the<br> "David buys awesome tea" fund</p>
+									<iframe style="border: 0; margin: 0; padding: 0;"
+											src="https://www.gittip.com/daviddeutsch/widget.html"
+											width="48pt" height="22pt"></iframe>
 
-				&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;&nbsp;
 
-				<iframe
-					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=watch"
-					allowtransparency="true"
-					frameborder="0"
-					scrolling="0"
-					width="62"
-					height="20"
-					></iframe>
+									<script id='flattrbtn'>
+										(function(i){
+											var f,s=document.getElementById(i);
+											f=document.createElement('iframe');
+											f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
+											f.title='Flattr';
+											f.height=20;
+											f.width=110;
+											f.style.borderWidth=0;
+											s.parentNode.insertBefore(f,s);
+										})('flattrbtn');
+									</script>
 
-				<iframe
-					src="http://ghbtns.com/github-btn.html?user=daviddeutsch&repo=yt-sanegrid&type=fork"
-					allowtransparency="true"
-					frameborder="0"
-					scrolling="0"
-					width="62"
-					height="20"
-					></iframe>
+									&nbsp;&nbsp;&nbsp;
+
+									<script type="text/javascript" src="https://blockchain.info//Resources/wallet/pay-now-button.js"></script>
+									<div class="blockchain-btn"
+										 data-address="1DLAnAVQjtZA6PRKomnumr27Km7ENPtgLc"
+										 data-shared="false">
+										<button class="btn btn-warning btn-xs blockchain stage-begin">
+											<i class="icon-bitcoin"></i> Donate Bitcoins
+										</button>
+										<div class="blockchain stage-loading" style="text-align:center">
+											<img src="https://blockchain.info//Resources/loading-large.gif" style="width:16px;"/>
+										</div>
+										<div class="blockchain stage-ready">
+											<p>Please Donate To Bitcoin Address: <b>[[address]]</b></p>
+											<p class="qr-code"></p>
+										</div>
+										<div class="blockchain stage-paid">
+											Donation of <b>[[value]] BTC</b> Received. Thank You.
+										</div>
+										<div class="blockchain stage-error">
+											<span style="color:red">[[error]]</span>
+										</div>
+									</div>
+
+								</div>
+								<div class="col-md-6">
+									<p>Tell others about it:</p>
+									<ul ng-social-buttons
+										data-url="'http://daviddeutsch.github.io/yt-sanegrid/'"
+										data-title="'Check out this sweet YouTube grid'"
+										data-description="'Check out this sweet YouTube grid'"
+										>
+										<li class="ng-social-facebook">Facebook</li>
+										<li class="ng-social-google-plus">Google+</li>
+										<li class="ng-social-twitter">Twitter</li>
+										<li class="ng-social-pinterest">Pinterest</li>
+									</ul>
+								</div>
+								<div class="col-md-2"></div>
+								</div>
+
+								<hr>
+
+								<p>Of course, you can also help directly by filing bug reports and/or feature request on GitHub:</p>
+								<ul ng-social-buttons data-url="'http://daviddeutsch.github.io/yt-sanegrid/'">
+									<li class="ng-social-github" user="daviddeutsch" repository="yt-sanegrid">GitHub</li>
+									<li class="ng-social-github-forks" user="daviddeutsch" repository="yt-sanegrid">Forks</li>
+								</ul>
+
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-warning cancel" ng-click="close()">Close this</button>
+							</div>
+
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 		</footer>
 
 	</div>
-	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 	<script src="js/jquery.easing.1.3.js"></script>
 	<script src="js/jquery.timeago.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
-	<script src="js/ui-bootstrap-tpls-0.5.0.min.js"></script>
+
+	<script src="js/ui-bootstrap-tpls-0.6.0-SNAPSHOT.min.js"></script>
 	<script src="js/angular-cookies.js"></script>
+	<script src="js/angular-social.js"></script>
 	<script src="js/localStorage.js"></script>
+
 	<script src="js/ytgridapp.js"></script>
+
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
