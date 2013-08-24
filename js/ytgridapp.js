@@ -276,12 +276,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			};
 
 			$scope.watched = function ( id ) {
-				$.each( $scope.videos, function ( i, v ) {
-					if ( v.id == id ) {
-						$scope.videos[i].watched = !$scope.videos[i].watched;
+				for( i=0; i<$scope.videos.length; i++ ) {
+					if ( $scope.videos[i].id == id ) {
+						if ( $scope.videos[i].watched ) {
+							return;
+						}
+
+						$scope.videos[i].watched = true;
 						$scope.videos[i].watcheddate = new Date().toISOString();
 					}
-				} );
+				}
 			};
 
 			$scope.togglesidebar = function () {
