@@ -269,7 +269,11 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			}
 		};
 
-		$scope.watch = function ( link, id ) {
+		$scope.watch = function ( link, id, $event ) {
+			if ( $event.button == 2 ) {
+				return;
+			}
+
 			$scope.watched(id);
 
 			$window.open(link, '_blank');
