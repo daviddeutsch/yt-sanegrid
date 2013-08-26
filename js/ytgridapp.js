@@ -1,4 +1,4 @@
-var ytsubgridApp = angular.module( "ytsubgridApp", ['ui.bootstrap', 'ngSocial','localStorage'] );
+var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
 ytsubgridApp.controller( 'AppCtrl',
 	['$rootScope', 'appLoading',
@@ -269,14 +269,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			}
 		};
 
-		$scope.watch = function ( link, id, $event ) {
-			if ( $event.button == 2 ) {
+		$scope.watch = function ( id, $event ) {
+			if ( ($event.button == 2) ) {
 				return;
 			}
 
 			$scope.watched(id, false);
 
-			$window.open(link, '_blank');
+			return true;
 		};
 
 		$scope.watched = function ( id, force ) {
@@ -310,9 +310,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				if ( $.inArray( video.id, ids ) != -1  ) {
 					$scope.videos.splice(i, 1);
 
-					i--;
-					len--;
-
+					result[i] = null;
 					continue;
 				}
 
@@ -332,7 +330,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 				ids.push(video.id);
 
-				result.push(video);
+				result[i] = video;
 			}
 
 			return result;
