@@ -123,7 +123,7 @@
 							<div class="duration">{{ video.duration | duration }}</div>
 						</div>
 
-						<a ng-href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">
+						<a href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">
 							<div class="img-container-overlay"></div>
 						</a>
 
@@ -134,7 +134,7 @@
 
 						<div class="thumbnail-body">
 							<div class="title">
-								<a ng-href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">{{video.title}}</a>
+								<a href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">{{video.title}}</a>
 							</div>
 							<p class="author text-muted">
 								by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
