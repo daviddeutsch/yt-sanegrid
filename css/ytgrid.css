@@ -202,10 +202,12 @@ p.time abbr {
 
 .thumbnail {
 	float: left;
+	position: relative;
 	width: 200px;
 	height: 200px;
 	margin: 12px 4px;
 	border: none;
+	overflow: hidden;
 }
 
 .thumbnail:hover {
@@ -245,6 +247,29 @@ p.time abbr {
 .thumbnail-body {
 	position: relative;
 	top: -132px;
+}
+
+.muted,
+.watched,
+.thumbnail {
+	-webkit-transition: all 0.05s ease-out;
+	-moz-transition: all 0.05s ease-out;
+	-o-transition: all 0.05s ease-out;
+	transition: all 0.05s ease-out;
+	-webkit-transform: translate(0, 0) scale(1,1);
+	-ms-transform: translate(0, 0) scale(1,1);
+	-o-transform: translate(0, 0) scale(1,1);
+	transform: translate(0, 0) scaleX(1);
+}
+
+.muted-add,
+.muted-remove,
+.watched-add,
+.watched-remove {
+	-webkit-transform: translate(-50px, -50px) scale(0,0);
+	-ms-transform: translate(-50px, -50px) scale(0,0);
+	-o-transform: translate(-50px, -50px) scale(0,0);
+	transform: translate(-50px, -50px) scaleX(0);
 }
 
 .muted {

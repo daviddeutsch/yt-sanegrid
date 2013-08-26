@@ -14,7 +14,8 @@
 	<link href="css/ytgrid.css" rel="stylesheet">
 	<link href="css/angular-social.css" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular.min.js"></script>
+	<script src="http://code.angularjs.org/1.2.0rc1/angular.min.js"></script>
+	<script src="http://code.angularjs.org/1.2.0rc1/angular-animate.min.js"></script>
 </head>
 <body>
 	<div id="wrap" class="container" ng-controller="AppRepeatCtrl" scroll="loadBottom()">
@@ -110,21 +111,19 @@
 			<div
 				class="videolist col-md-10"
 				ng-class="{
-					'hidemuted':settings.hidemuted=='1',
-					'hidewatched':settings.hidewatched=='1',
 					'col-md-10':settings.sidebar,
 					'col-md-12':!settings.sidebar
 				}"
 				ng-if="!start"
 				>
-				<div ng-repeat="video in videolist() track by $index">
-					<div class="thumbnail" ng-class="{'muted':video.muted,'watched':video.watched}">
+				<div ng-repeat="video in videolist() track by $index" class="repeat-item">
+					<div class="thumbnail" ng-if="video.id"  ng-class="{'muted':video.muted,'watched':video.watched}">
 						<div class="img-container">
 							<img src="{{video.img}}" />
 							<div class="duration">{{ video.duration | duration }}</div>
 						</div>
 
-						<a ng-click="watch(video.link, video.id, $event)" ng-mousedown="watch(video.link, video.id, $event)" target="__blank" title="{{video.title}}">
+						<a ng-href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">
 							<div class="img-container-overlay"></div>
 						</a>
 
@@ -135,7 +134,7 @@
 
 						<div class="thumbnail-body">
 							<div class="title">
-								<a ng-click="watch(video.link, video.id, $event)" ng-mousedown="watch(video.link, video.id, $event)" target="__blank" title="{{video.title}}">{{video.title}}</a>
+								<a ng-href="{{ video.link }}" ng-mousedown="watch(video.id, $event)" target="__blank" title="{{video.title}}">{{video.title}}</a>
 							</div>
 							<p class="author text-muted">
 								by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
