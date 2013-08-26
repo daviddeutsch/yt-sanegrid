@@ -275,8 +275,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			}
 
 			$scope.watched(id, false);
-
-			return true;
 		};
 
 		$scope.watched = function ( id, force ) {
