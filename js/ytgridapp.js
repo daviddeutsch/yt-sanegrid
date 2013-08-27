@@ -334,6 +334,12 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			return result;
 		};
 
+		angular.element($document).bind("keyup", function(event) {
+			if (event.which === 82) {
+				$scope.refresh();
+			}
+		});
+
 		if ( $scope.userid ) {
 			$scope.start = false;
 			$scope.settings.sidebar = false;
@@ -346,7 +352,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		}
 	}]
 );
-
 
 ytsubgridApp.controller( 'ModalDemoCtrl',
 	[ '$scope',
