@@ -100,9 +100,9 @@ p.loading{
 	position: relative;
 	clear: none;
 	top: -216px;
-	left: 96px;
-	width: 96px;
-	height: 32px;
+	left: 80px;
+	width: 112px;
+	height: 42px;
 	overflow: hidden;
 	text-align: right;
 	padding-left: 8px;
@@ -132,6 +132,10 @@ p.loading{
 	color: #000 !important;
 }
 
+.video-buttons i {
+	font-size: 70%;
+}
+
 .muted .click-mute {
 	background-color: #ebb;
 }
@@ -144,12 +148,20 @@ p.loading{
 	opacity: 0.7;
 }
 
-.watched .click-watched {
-	background-color: #9b9;
-}
-
 .click-mute:hover {
 	opacity: 1;
+}
+
+.click-filter {
+	opacity: 0.7;
+}
+
+.click-filter:hover {
+	opacity: 1;
+}
+
+.watched .click-watched {
+	background-color: #9b9;
 }
 
 .duration {
@@ -173,11 +185,13 @@ p.loading{
 	opacity: 1;
 }
 
-.thumbnail:hover .click-mute {
-	opacity: 0.7;
+.thumbnail:hover .click-mute,
+.thumbnail:hover .click-filter{
+	opacity: 0.6;
 }
 
-.thumbnail:hover .click-mute:hover {
+.thumbnail:hover .click-mute:hover,
+.thumbnail:hover .click-filter:hover{
 	opacity: 1;
 }
 

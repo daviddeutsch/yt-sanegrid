@@ -334,6 +334,21 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			return result;
 		};
 
+		$scope.filterOpen = function ( title ) {
+			$scope.newfilter = title;
+
+			$scope.filterOpened = true;
+		};
+
+		$scope.filterClose = function () {
+			$scope.filterOpened = false;
+		};
+
+		$scope.filterOpts = {
+			backdropFade: false,
+			dialogFade:true
+		};
+
 		angular.element($document).bind("keyup", function(event) {
 			if (event.which === 82) {
 				$scope.refresh();
