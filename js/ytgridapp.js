@@ -345,7 +345,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		};
 
 		$scope.filterOpts = {
-			backdropFade: false,
+			backdrop: false,
 			dialogFade:true
 		};
 

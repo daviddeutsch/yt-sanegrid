@@ -5,15 +5,13 @@ YT SaneGrid
 
 YouTube abandoned the subscription grid view. This has made a lot of people very angry and been widely regarded as a bad move.
 
-There are a number of issues with using the API to recreate the experience, so here is my attempt at hacking together something usable until either YT creates a substitute, or enough people help me out make my extremely poor code into something that recreates the full experience.
+With this replacement, you already get more functionality than the original grid view and I'm working on more stuff for the future.
 
-Caveats:
+### Help me out
 
-* Cannot hide what you've watched (it uses a cheap substitute, blanking the titles)
-* API restricts loading to two sets of videos (94, I think). So press that search button twice to get the maximum number of videos
-
-Send your Pull Requests now.
-
+* Submit Bugs/Feature Requests/Pull Requests
+* [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=skore&url=https://github.com/daviddeutsch/yt-sanegrid&title=YT SaneGrid&language=&tags=github&category=software)
+* Support me on [Gittip](https://www.gittip.com/daviddeutsch/)
 
 ### License
 

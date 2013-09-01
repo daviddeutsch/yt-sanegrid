@@ -128,7 +128,7 @@
 						</a>
 
 						<div class="video-buttons">
-							<a ng-click="filteropen(video.title)" class="click-filter" title="create a filter"><i class="icon-filter"></i></a>
+							<a ng-click="filterOpen(video.title)" class="click-filter" title="create a filter"><i class="icon-filter"></i></a>
 							<a ng-click="mute(video.id)" class="click-mute" title="mute and hide"><i class="icon-remove"></i></a>
 							<a ng-click="watched(video.id, true)" class="click-watched" title="mark as watched"><i class="icon-ok"></i></a>
 						</div>
@@ -148,28 +148,32 @@
 				</div>
 
 				<div modal="filterOpened" close="filterClose()" options="filterOpts">
-					<div class="modal-header">
-						<h3>Create a new filter</h3>
-					</div>
-					<div class="modal-body">
-						<form class="form-inline" role="form" ng-submit="createFilter(newfilter)">
-							<input
-									ng-model="newfilter"
-									id="newfilter"
-									type="text"
-									class="form-control"
-									autofocus
-									placeholder="Set up a new filter rule">
-							<button
-									class="btn btn-default"
-									type="submit"
-									ng-click="selectUserid(userid)">
-								Go!
-							</button>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button class="btn btn-warning cancel" ng-click="close()">Cancel</button>
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h3>Create a new filter</h3>
+							</div>
+							<div class="modal-body">
+								<form role="form" ng-submit="createFilter(newfilter)">
+									<textarea
+											ng-model="newfilter"
+											id="newfilter"
+											class="form-control col-lg-6"
+											autofocus
+											placeholder="Set up a new filter rule"></textarea>
+									<br />
+									<button
+											class="btn btn-primary pull-right"
+											type="submit"
+											ng-click="selectUserid(userid)">
+										Filter!
+									</button>
+									<br />
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-warning cancel" ng-click="close()">Cancel</button>
+							</div>
 					</div>
 				</div>
 
