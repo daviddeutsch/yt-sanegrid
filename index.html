@@ -201,6 +201,7 @@
 				</div>
 				<div class="col-md-7">
 					<p>
+						<div class="btn-group">
 						<button
 							type="button"
 							class="btn"
@@ -214,7 +215,6 @@
 							&nbsp;&nbsp;Muted
 						</button>
 
-						&nbsp;&nbsp;&nbsp;
 
 						<button
 							type="button"
@@ -229,16 +229,15 @@
 							&nbsp;&nbsp;Watched
 						</button>
 
-						&nbsp;&nbsp;&nbsp;
 
 						<button
 								class="btn btn-default"
 								type="submit"
 								ng-click="refresh()"
 								>
-							<span ng-if="!status"><i class="icon-refresh"></i>&nbsp;&nbsp;Refresh</span>
-							<span ng-if="status"><i class="icon-spinner icon-spin"></i>&nbsp;&nbsp;Loading...</span>
+							&nbsp;<i ng-class="{'icon-spinner icon-spin':status, 'icon-refresh':!status}"></i>&nbsp;
 						</button>
+				</div>
 					</p>
 				</div>
 
