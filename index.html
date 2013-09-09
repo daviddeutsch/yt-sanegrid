@@ -174,9 +174,9 @@
 							<div class="modal-footer">
 								<button class="btn btn-warning cancel" ng-click="close()">Cancel</button>
 							</div>
+						</div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 
@@ -202,42 +202,42 @@
 				<div class="col-md-7">
 					<p>
 						<div class="btn-group">
-						<button
-							type="button"
-							class="btn"
-							ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
-							ng-model="settings.hidemuted"
-							btn-checkbox
-							btn-checkbox-true="0"
-							btn-checkbox-false="1"
-							>
-							<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
-							&nbsp;&nbsp;Muted
-						</button>
-
-
-						<button
-							type="button"
-							class="btn"
-							ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
-							ng-model="settings.hidewatched"
-							btn-checkbox
-							btn-checkbox-true="0"
-							btn-checkbox-false="1"
-							>
-							<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
-							&nbsp;&nbsp;Watched
-						</button>
-
-
-						<button
-								class="btn btn-default"
-								type="submit"
-								ng-click="refresh()"
+							<button
+								type="button"
+								class="btn"
+								ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
+								ng-model="settings.hidemuted"
+								btn-checkbox
+								btn-checkbox-true="0"
+								btn-checkbox-false="1"
 								>
-							&nbsp;<i ng-class="{'icon-spinner icon-spin':status, 'icon-refresh':!status}"></i>&nbsp;
-						</button>
-				</div>
+								<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+								&nbsp;&nbsp;Muted
+							</button>
+
+
+							<button
+								type="button"
+								class="btn"
+								ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
+								ng-model="settings.hidewatched"
+								btn-checkbox
+								btn-checkbox-true="0"
+								btn-checkbox-false="1"
+								>
+								<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+								&nbsp;&nbsp;Watched
+							</button>
+
+
+							<button
+									class="btn btn-default"
+									type="submit"
+									ng-click="refresh()"
+									>
+								&nbsp;<i ng-class="{'icon-spinner icon-spin':status, 'icon-refresh':!status}"></i>&nbsp;
+							</button>
+						</div>
 					</p>
 				</div>
 
