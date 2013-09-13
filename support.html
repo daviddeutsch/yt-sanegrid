@@ -1,0 +1,68 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-body">
+			<h4>Hey, thanks a lot for using YT Sane Grid!</h4>
+			<p>Please help me make it even better:</p>
+			<hr>
+			<div class="row">
+				<div class="col-md-6">
+					<p>Donate to the<br> "David buys awesome tea" fund</p>
+					<iframe style="border: 0; margin: 0; padding: 0;"
+							src="https://www.gittip.com/daviddeutsch/widget.html"
+							width="48pt" height="22pt"></iframe>
+
+					&nbsp;&nbsp;&nbsp;
+
+					<script id='flattrbtn'>
+						(function(i){
+							var f,s=document.getElementById(i);
+							f=document.createElement('iframe');
+							f.src='//api.flattr.com/button/view/?uid=skore&button=compact&url='+encodeURIComponent(document.URL);
+							f.title='Flattr';
+							f.height=20;
+							f.width=110;
+							f.style.borderWidth=0;
+							s.parentNode.insertBefore(f,s);
+						})('flattrbtn');
+					</script>
+
+					&nbsp;&nbsp;&nbsp;
+
+					<div class="alert alert-warning">
+						<p><i class="icon-bitcoin"></i> Donate Bitcoins:</p>
+						<p class="btc">1DLAnAVQjtZA6PRKomnumr27Km7ENPtgLc</p>
+					</div>
+
+				</div>
+				<div class="col-md-6">
+					<p>Tell others about it:</p>
+					<ul ng-social-buttons
+						data-url="'http://daviddeutsch.github.io/yt-sanegrid/'"
+						data-title="'Check out this sweet YouTube grid'"
+						data-description="'Check out this sweet YouTube grid'"
+							>
+						<li class="ng-social-facebook">Facebook</li>
+						<li class="ng-social-google-plus">Google+</li>
+						<li class="ng-social-twitter">Twitter</li>
+						<li class="ng-social-pinterest">Pinterest</li>
+					</ul>
+				</div>
+				<div class="col-md-2"></div>
+			</div>
+
+			<hr>
+
+			<p>Of course, you can also help directly by filing bug reports and/or feature request on GitHub:</p>
+			<ul ng-social-buttons data-url="'http://daviddeutsch.github.io/yt-sanegrid/'">
+				<li class="ng-social-github" user="daviddeutsch" repository="yt-sanegrid">GitHub</li>
+				<li class="ng-social-github-forks" user="daviddeutsch" repository="yt-sanegrid">Forks</li>
+			</ul>
+
+		</div>
+
+		<div class="modal-footer">
+			<button class="btn btn-warning cancel" ng-click="cancel()">Nope</button>
+		</div>
+
+	</div>
+</div>

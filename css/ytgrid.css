@@ -2,6 +2,10 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
+.ng-cloak {
+	display: none;
+}
+
 #wrap {
 	padding: 0 !important;
 	width: 100%;
@@ -326,6 +330,10 @@ a:hover {
 
 #channel-btn:hover {
 	cursor: pointer;
+}
+
+.btn:active, .btn.active {
+	box-shadow: inset 0 3px 5px rgba(0,0,0,0.5);
 }
 
 .sidebar {

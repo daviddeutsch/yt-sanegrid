@@ -18,13 +18,14 @@ ytsubgridApp.controller( 'AppHomeCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$window', '$scope', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', '$timeout',
-	function ( $window, $scope, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, $timeout ) {
+	['$window', '$scope', '$modal', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', '$timeout',
+	function ( $window, $scope, $modal, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, $timeout ) {
 		$store.bind( $scope, 'userid', '' );
 		$store.bind( $scope, 'videocache', {} );
 		$store.bind( $scope, 'videos', {} );
 		$store.bind( $scope, 'settings', {} );
 		$store.bind( $scope, 'channelstate', {} );
+		$store.bind( $scope, 'filters', {} );
 
 		$scope.start = true;
 
@@ -40,6 +41,12 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.channelstate = {};
 			$scope.channelstate.hidden = {};
 			$scope.channelstate.zipped = {};
+		}
+
+		if ( $.isEmptyObject( $scope.filters ) ) {
+			$scope.filters = {};
+			$scope.filters.global = {};
+			$scope.filters.channels = {};
 		}
 
 		if ( $.isArray( $scope.videocache ) ) {
@@ -326,33 +333,34 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					continue;
 				}
 
+				var filtered = false;
+
+				$.each( $scope.filters.global, function ( i, v ) {
+					if ( video.title.indexOf(v) != -1 ) {
+						filtered = true;
+					}
+				});
+
+				if ( !filtered && $scope.filters.channels.hasOwnProperty(video.authorid) ) {
+					$.each( $scope.filters.channels[video.authorid], function ( i, v ) {
+						if ( video.title.indexOf(v) != -1 ) {
+							filtered = true;
+						}
+					});
+				}
+
+				if ( filtered ) {
+					$scope.videos[i].muted = true;
+
+					continue;
+				}
+
 				ids.push(video.id);
 
 				result[i] = video;
 			}
 
 			return result;
-		};
-
-		$scope.filterOpen = function ( title, author, authorid ) {
-			$scope.newfilter = title;
-			$scope.newfilter_author = author;
-			$scope.newfilter_authorid = authorid;
-
-			$scope.filterOpened = true;
-		};
-
-		$scope.filterClose = function () {
-			$scope.filterOpened = false;
-		};
-
-		$scope.makeFilter = function ( filter ) {
-
-		};
-
-		$scope.filterOpts = {
-			backdrop: false,
-			dialogFade:true
 		};
 
 		angular.element($document).bind("keyup", function(event) {
@@ -374,24 +382,68 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 	}]
 );
 
-ytsubgridApp.controller( 'ModalDemoCtrl',
-	[ '$scope',
-	function ($scope) {
+ytsubgridApp.controller( 'SupportModalCtrl',
+	[ '$scope', '$modal',
+	function ($scope, $modal) {
 		$scope.open = function () {
-			$scope.shouldBeOpen = true;
+			var modalInstance = $modal.open({
+				templateUrl: 'support.html',
+				backdrop: false,
+				dialogFade:true,
+				controller: SupportModalInstanceCtrl
+			});
 		};
-
-		$scope.close = function () {
-			$scope.shouldBeOpen = false;
-		};
-
-		$scope.opts = {
-			backdrop: false,
-			dialogFade:true
-		};
-
 	}]
 );
+
+var SupportModalInstanceCtrl = function ($scope, $modalInstance) {
+	$scope.cancel = function () {
+		$modalInstance.dismiss('cancel');
+	};
+};
+
+ytsubgridApp.controller( 'FilterModalCtrl',
+	[ '$scope', '$modal',
+		function ($scope, $modal) {
+			$scope.open = function (video) {
+				$scope.video = video;
+
+				var modalInstance = $modal.open({
+					templateUrl: 'filter.html',
+					backdrop: false,
+					dialogFade:true,
+					controller: FilterModalInstanceCtrl,
+					resolve: {
+						item: function () {
+							return $scope.video;
+						}
+					}
+				});
+			};
+		}]
+);
+
+var FilterModalInstanceCtrl = function ($scope, $modalInstance, item) {
+	$scope.filter = {
+		title: item.title,
+		channel: item.authorid,
+		author: item.author,
+		authorid: item.authorid
+	};
+
+	$scope.cancel = function () {
+		$modalInstance.dismiss('cancel');
+	};
+
+	$scope.ok = function () {
+		if ( $scope.filter.channel.length ) {
+			$scope.filters.channels[channel].push($scope.filter.title);
+		} else {
+			$scope.filters.global.push($scope.filter.title);
+		}
+	};
+
+};
 
 
 
@@ -443,7 +495,7 @@ ytsubgridApp.factory( 'ytSubList',
 			+ startToken
 			+ "&max-results=50";
 
-        return function ( q, s, fn ) {
+		return function ( q, s, fn ) {
 			var defer = $q.defer();
 
 			var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
