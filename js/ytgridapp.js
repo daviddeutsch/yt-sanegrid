@@ -418,7 +418,7 @@ ytsubgridApp.factory( 'ytSubList',
 
 		var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
 			+ searchToken
-			+ "/subscriptions?alt=json&start-index="
+			+ "/newsubscriptionvideos?alt=json&start-index="
 			+ startToken
 			+ "&max-results=50";
 
