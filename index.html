@@ -128,7 +128,7 @@
 						</a>
 
 						<div class="video-buttons">
-							<a ng-click="filterOpen(video.title)" class="click-filter" title="create a filter"><i class="icon-filter"></i></a>
+							<a ng-click="filterOpen(video.title, video.author, video.authorid)" class="click-filter" title="create a filter"><i class="icon-filter"></i></a>
 							<a ng-click="mute(video.id)" class="click-mute" title="mute and hide"><i class="icon-remove"></i></a>
 							<a ng-click="watched(video.id, true)" class="click-watched" title="mark as watched"><i class="icon-ok"></i></a>
 						</div>
@@ -155,6 +155,29 @@
 							</div>
 							<div class="modal-body">
 								<form role="form" ng-submit="createFilter(newfilter)">
+									<div class="btn-group">
+										<button
+												type="button"
+												class="btn"
+												btn-radio="''"
+												ng-model="newfilter_channel"
+												>
+											<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+											&nbsp;&nbsp;All Channels
+										</button>
+
+
+										<button
+												type="button"
+												class="btn"
+												btn-radio="''"
+												ng-model="newfilter_channel"
+												>
+											<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+											&nbsp;&nbsp;Watched
+										</button>
+									</div>
+									<br />
 									<textarea
 											ng-model="newfilter"
 											id="newfilter"
@@ -165,14 +188,14 @@
 									<button
 											class="btn btn-primary pull-right"
 											type="submit"
-											ng-click="selectUserid(userid)">
+											ng-click="makeFilter()">
 										Filter!
 									</button>
 									<br />
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button class="btn btn-warning cancel" ng-click="close()">Cancel</button>
+								<button class="btn btn-warning cancel" ng-click="filterClose()">Cancel</button>
 							</div>
 						</div>
 					</div>

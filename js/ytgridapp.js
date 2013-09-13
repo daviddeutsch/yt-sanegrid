@@ -334,14 +334,20 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			return result;
 		};
 
-		$scope.filterOpen = function ( title ) {
+		$scope.filterOpen = function ( title, author, authorid ) {
 			$scope.newfilter = title;
+			$scope.newfilter_author = author;
+			$scope.newfilter_authorid = authorid;
 
 			$scope.filterOpened = true;
 		};
 
 		$scope.filterClose = function () {
 			$scope.filterOpened = false;
+		};
+
+		$scope.makeFilter = function ( filter ) {
+
 		};
 
 		$scope.filterOpts = {
@@ -437,7 +443,7 @@ ytsubgridApp.factory( 'ytSubList',
 			+ startToken
 			+ "&max-results=50";
 
-		return function ( q, s, fn ) {
+        return function ( q, s, fn ) {
 			var defer = $q.defer();
 
 			var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
