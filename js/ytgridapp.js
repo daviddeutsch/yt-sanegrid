@@ -39,6 +39,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			if ( $.isEmptyObject( $scope.filters ) ) {
 				$scope.filters = {};
+				$scope.filters.count = 0;
+				$scope.filters.caught = 0;
 				$scope.filters.global = [];
 				$scope.filters.channels = {};
 			}
@@ -214,15 +216,9 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			appLoading.loading();
 
-			//ytSubList( $scope.userid, 1, pushVideos );
-		};
+			$scope.filters.caught = 0;
 
-		var updateSidebar = function () {
-			if ( $scope.settings.sidebar === true ) {
-				$('.sidebar' ).css({"height":$document.height()});
-			} else {
-				$('.sidebar' ).css({"height":"40px"});
-			}
+			//ytSubList( $scope.userid, 1, pushVideos );
 		};
 
 		$scope.loadBottom = function () {
@@ -232,7 +228,17 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			appLoading.loading();
 
+			$scope.filters.caught = 0;
+
 			ytSubList( $scope.userid, $scope.videos.length + 1, pushVideos );
+		};
+
+		var updateSidebar = function () {
+			if ( $scope.settings.sidebar === true ) {
+				$('.sidebar' ).css({"height":$document.height()});
+			} else {
+				$('.sidebar' ).css({"height":"40px"});
+			}
 		};
 
 		$scope.selectUserid = function ( q ) {
@@ -353,6 +359,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				}
 
 				if ( filtered ) {
+					$scope.filters.caught++;
+
 					$scope.videos[i].muted = true;
 
 					continue;
@@ -414,6 +422,7 @@ var SettingsModalInstanceCtrl = function ($scope, $modalInstance, $store) {
 			$scope.filters.global.splice(id,1)
 		}
 
+		$scope.filters.count--;
 	};
 };
 
@@ -487,6 +496,8 @@ var FilterModalInstanceCtrl = function ($scope, $modalInstance, item, filters) {
 		} else {
 			filters.global.push({string:$scope.filter.title});
 		}
+
+		filters.count++;
 
 		$modalInstance.dismiss('ok');
 	};
