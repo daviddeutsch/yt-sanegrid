@@ -389,7 +389,7 @@ ytsubgridApp.controller( 'SettingsModalCtrl',
 
 			$scope.open = function () {
 				var modalInstance = $modal.open({
-					templateUrl: 'settings.html',
+					templateUrl: 'templates/settings.html',
 					backdrop: false,
 					dialogFade:true,
 					controller: SettingsModalInstanceCtrl,
@@ -414,7 +414,7 @@ ytsubgridApp.controller( 'SupportModalCtrl',
 	function ($scope, $modal) {
 		$scope.open = function () {
 			var modalInstance = $modal.open({
-				templateUrl: 'support.html',
+				templateUrl: 'templates/support.html',
 				backdrop: false,
 				dialogFade:true,
 				controller: SupportModalInstanceCtrl
@@ -438,7 +438,7 @@ ytsubgridApp.controller( 'FilterModalCtrl',
 				$scope.video = video;
 
 				var modalInstance = $modal.open({
-					templateUrl: 'filter.html',
+					templateUrl: 'templates/filter.html',
 					backdrop: false,
 					dialogFade:true,
 					controller: FilterModalInstanceCtrl,

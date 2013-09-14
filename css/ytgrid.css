@@ -242,7 +242,7 @@ p.time abbr {
 .thumbnail .img-container {
 	width: 192px;
 	height: 108px;
-	border-radius: 4px;
+	border-radius: 4px !important;
 	position: relative;
 	overflow: hidden;
 }
@@ -252,7 +252,7 @@ p.time abbr {
 	top: -108px;
 	width: 192px;
 	height: 108px;
-	border-radius: 4px;
+	border-radius: 4px !important;
 	-webkit-transition: box-shadow .15s ease-in-out;
 	-moz-transition: box-shadow .15s ease-in-out;
 	-ms-transition: box-shadow .15s ease-in-out;
@@ -392,6 +392,7 @@ footer {
 	bottom: 0;
 	background: #e2e2e2;
 	z-index: 200;
+	box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
 }
 
 footer p {
@@ -414,6 +415,32 @@ footer input.form-control {
 footer label,
 footer input {
 	vertical-align: middle;
+}
+
+footer .btn-group {
+	margin: 0 6px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+footer .btn,
+footer .btn.disabled,
+footer .btn-group .btn[disabled],
+footer .btn-group fieldset[disabled] {
+	margin: 0 6px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+footer .btn-group .btn,
+footer .btn-group .btn.disabled,
+footer .btn-group .btn[disabled],
+footer .btn-group fieldset[disabled]{
+	margin: 0;
+	box-shadow: none;
+}
+
+footer .btn span {
+	margin: 0 0 0 6px;
 }
 
 #support {

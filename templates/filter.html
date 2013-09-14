@@ -1,0 +1,56 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3><strong>Your very own <a
+				href="http://en.wikipedia.org/wiki/Filter_bubble">Filter
+				Bubble</a>!</strong></h3>
+		</div>
+		<div class="modal-body">
+			<p>Automatically mute videos where the title fits a certain pattern.
+				Edit the filter text below, cutting it down to a portion that
+				would show up in other videos of the same series.</p>
+
+			<p>For example: "<strong>Munchies: Hedonistic Hipster Chef
+				#25</strong>" would be cut down to "<strong>Munchies</strong>"
+				(sorry, VICE).</p>
+
+			<p>You can also <strong>choose whether the filter should apply to
+				all channels</strong> or just the one that you were selecting a
+				video from.</p>
+			<br/>
+			<textarea
+				ng-model="filter.title"
+				id="newfilter"
+				class="form-control col-lg-6"
+				autofocus
+				placeholder="Set up a new filter rule">{{ filter.title
+				}}</textarea>
+		</div>
+		<div class="clearfix modal-footer">
+			<div class="btn-group">
+				<button
+					type="button"
+					class="btn btn-danger"
+					btn-radio="''"
+					ng-model="filter.channel"
+					>On All Channels
+				</button>
+				<button
+					type="button"
+					class="btn btn-success"
+					btn-radio="filter.authorid"
+					ng-model="filter.channel"
+					>Only On "{{ filter.author }}"
+				</button>
+			</div>
+			<button
+				class="btn btn-primary"
+				type="submit"
+				ng-click="ok()">
+				Filter!
+			</button>
+			<button class="btn btn-danger cancel" ng-click="cancel()">Cancel
+			</button>
+		</div>
+	</div>
+</div>
