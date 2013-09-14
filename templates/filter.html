@@ -12,16 +12,21 @@
 
 			<p>For example: "<strong>Munchies: Hedonistic Hipster Chef
 				#25</strong>" would be cut down to "<strong>Munchies</strong>"
-				(sorry, VICE).</p>
+				to filter the entire series (sorry, VICE).</p>
 
 			<p>You can also <strong>choose whether the filter should apply to
 				all channels</strong> or just the one that you were selecting a
 				video from.</p>
+
+			<p>
+				If you want to change filters later on, you can do that in the
+				Settings
+			</p>
 			<br/>
 			<textarea
 				ng-model="filter.title"
 				id="newfilter"
-				class="form-control col-lg-6"
+				class="form-control col-lg-6 clearfix"
 				autofocus
 				placeholder="Set up a new filter rule">{{ filter.title
 				}}</textarea>

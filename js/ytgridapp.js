@@ -405,7 +405,11 @@ var SettingsModalInstanceCtrl = function ($scope, $modalInstance, $store) {
 
 	$scope.removeFilter = function (channel, id) {
 		if ( channel.length ) {
-			$scope.filters.channels[channel].filters.splice(id,1)
+			$scope.filters.channels[channel].filters.splice(id,1);
+
+			if ( $scope.filters.channels[channel].filters.length == 0 ) {
+				delete $scope.filters.channels[channel];
+			}
 		} else {
 			$scope.filters.global.splice(id,1)
 		}
@@ -439,18 +443,17 @@ ytsubgridApp.controller( 'FilterModalCtrl',
 			$store.bind( $scope, 'filters', {} );
 
 			$scope.open = function (video) {
-				$scope.video = video;
-
 				var modalInstance = $modal.open({
 					templateUrl: 'templates/filter.html',
 					backdrop: false,
 					dialogFade:true,
 					controller: FilterModalInstanceCtrl,
+					scope: $scope,
 					resolve: {
 						item: function () {
-							return $scope.video;
+							return video;
 						},
-						filters: function() {
+						filters: function () {
 							return $scope.filters;
 						}
 					}
