@@ -1,0 +1,70 @@
+<footer ng-if="!start&&!forbidden&&!notfound">
+	<div
+			id="channel-btn"
+			class="col-md-2"
+			ng-if="!settings.sidebar"
+			ng-click="togglesidebar()"
+			>
+		<h4>Channels</h4>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<p>
+				<strong>{{ userid }}</strong>
+
+				&nbsp;
+
+				(<a ng-click="selectUserid('')">change</a>, <span ng-controller="SettingsModalCtrl"><a ng-click="open()">settings</a></span>)
+			</p>
+		</div>
+		<div class="col-md-5">
+			<p>
+			<div class="btn-group">
+				<button
+						type="button"
+						class="btn"
+						ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
+						ng-model="settings.hidemuted"
+						btn-checkbox
+						btn-checkbox-true="0"
+						btn-checkbox-false="1"
+						>
+					<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+					&nbsp;&nbsp;Muted
+				</button>
+
+
+				<button
+						type="button"
+						class="btn"
+						ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
+						ng-model="settings.hidewatched"
+						btn-checkbox
+						btn-checkbox-true="0"
+						btn-checkbox-false="1"
+						>
+					<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+					&nbsp;&nbsp;Watched
+				</button>
+
+
+			</div>
+			<button
+					class="btn btn-default"
+					type="submit"
+					ng-click="refresh()"
+					title="Refresh"
+					>
+				&nbsp;<i ng-class="{'icon-spinner icon-spin':status, 'icon-refresh':!status}"></i>&nbsp;
+			</button>
+			</p>
+		</div>
+
+		<div id="support" class="col-md-4">
+			<div ng-controller="SupportModalCtrl">
+				<button class="btn btn-success" ng-click="open()"><i class="icon-lemon" style="color:#fbcc5a"></i> mmmh, yes yes, support the developer</button>
+			</div>
+		</div>
+	</div>
+
+</footer>
