@@ -5,23 +5,22 @@
 		</div>
 		<div class="modal-body">
 			<h4>Global Filters</h4>
-			{{ filters }}
 			<span
 				class="label label-primary"
-				ng-repeat="filter in filters.global"
+				ng-repeat="filter in filters.global track by $index"
 				>
-				<a ng-click="">&times;</a>
+				<a ng-click="removeFilter('', $index)">&times;</a>
 				{{ filter.string }}
 			</span>
-			<hr/>
 			<div ng-repeat="channel in filters.channels" class="repeat-item">
+				<hr/>
 				<h4>{{ channel.title }}</h4>
 				<span class="label label-primary"
 					  ng-repeat="filter in channel.filters track by $index">
-					<a ng-click="">&times;</a>
+					<a ng-click="removeFilter(channel.title, $index)">&times;</a>
 					{{ filter.string }}
 				</span>
-				<hr/>
+
 			</div>
 		</div>
 		<div class="clearfix modal-footer">
