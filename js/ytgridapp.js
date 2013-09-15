@@ -215,7 +215,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			//ytSubList( $scope.userid, 1, pushVideos );
+			ytSubList( $scope.userid, 1, pushVideos );
 		};
 
 		$scope.loadBottom = function () {
