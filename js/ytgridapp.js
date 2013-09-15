@@ -50,7 +50,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 		$store.bind( $scope, 'userid', '' );
 		$store.bind( $rootScope, 'videocache', {} );
-		$store.bind( $rootScope, 'videos', {} );
+		$store.bind( $rootScope, 'videos', [] );
 		$store.bind( $rootScope, 'settings', {} );
 		$store.bind( $rootScope, 'channelstate', {} );
 		$store.bind( $rootScope, 'filters', {} );
@@ -375,7 +375,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 		angular.element($document).bind("keyup", function(event) {
 			if (event.which === 82) {
-				$rootScope.refresh();
+				$scope.refresh();
 			}
 		});
 
