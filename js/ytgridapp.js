@@ -7,37 +7,6 @@ ytsubgridApp.controller( 'AppCtrl',
 
 		$rootScope.$on( '$routeChangeStart', function () {
 			appLoading.loading();
-
-			$store.bind( $rootScope, 'settings', {} );
-			$store.bind( $rootScope, 'channelstate', {} );
-			$store.bind( $rootScope, 'filters', {} );
-
-			if ( $.isEmptyObject( $rootScope.settings ) ) {
-				$rootScope.settings = {
-					hidewatched: false,
-					hidemuted:   true,
-					theme:       'default'
-				}
-			}
-
-			if ( $.isEmptyObject( $rootScope.channelstate ) ) {
-				$rootScope.channelstate = {};
-				$rootScope.channelstate.hidden = {};
-				$rootScope.channelstate.zipped = {};
-			}
-
-			if ( $.isEmptyObject( $rootScope.filters ) ) {
-				$rootScope.filters = {};
-				$rootScope.filters.count = 0;
-				$rootScope.filters.caught = 0;
-				$rootScope.filters.global = [];
-				$rootScope.filters.channels = {};
-			}
-
-			if ( $.isArray( $rootScope.videocache ) ) {
-				$rootScope.videocache = {};
-			}
-
 		} );
 	}]
 );
@@ -55,6 +24,35 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		$store.bind( $rootScope, 'channelstate', {} );
 		$store.bind( $rootScope, 'filters', {} );
 
+		if ( typeof $rootScope.videos == 'object' ) {
+			$rootScope.videos = [];
+		}
+
+		if ( $.isEmptyObject( $rootScope.settings ) ) {
+			$rootScope.settings = {
+				hidewatched: false,
+				hidemuted:   true,
+				theme:       'default'
+			}
+		}
+
+		if ( $.isEmptyObject( $rootScope.channelstate ) ) {
+			$rootScope.channelstate = {};
+			$rootScope.channelstate.hidden = {};
+			$rootScope.channelstate.zipped = {};
+		}
+
+		if ( $.isEmptyObject( $rootScope.filters ) ) {
+			$rootScope.filters = {};
+			$rootScope.filters.count = 0;
+			$rootScope.filters.caught = 0;
+			$rootScope.filters.global = [];
+			$rootScope.filters.channels = {};
+		}
+
+		if ( $.isArray( $rootScope.videocache ) ) {
+			$rootScope.videocache = {};
+		}
 		var datesort = function ( a, b ) {
 			var datea = new Date( a.published );
 			var dateb = new Date( b.published );
