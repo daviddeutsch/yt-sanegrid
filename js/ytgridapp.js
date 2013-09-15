@@ -50,6 +50,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.filters.channels = {};
 		}
 
+		if ( typeof $rootScope.filters.global == 'undefined' ) {
+			$rootScope.filters = {};
+			$rootScope.filters.count = 0;
+			$rootScope.filters.caught = 0;
+			$rootScope.filters.global = [];
+			$rootScope.filters.channels = {};
+		}
+
 		if ( $.isArray( $rootScope.videocache ) ) {
 			$rootScope.videocache = {};
 		}
