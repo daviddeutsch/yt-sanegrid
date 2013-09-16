@@ -12,12 +12,12 @@ ytsubgridApp.controller( 'AppCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$modal', '$store', '$document', 'ytSubList', 'ytChannelList', 'ytChannelVideos', 'appLoading', 'Videolist',
-	function ( $rootScope, $scope, $modal, $store, $document, ytSubList, ytChannelList, ytChannelVideos, appLoading, Videolist ) {
+	['$rootScope', '$scope', '$modal', '$store', '$document', 'ytData', 'appLoading', 'Videolist',
+	function ( $rootScope, $scope, $modal, $store, $document, ytData, appLoading, Videolist ) {
 
 		$scope.start = true;
 
-		$store.bind( $scope, 'userid', '' );
+		$store.bind( $rootScope, 'userid', '' );
 		$store.bind( $rootScope, 'videocache', {} );
 		$store.bind( $rootScope, 'videos', [] );
 		$store.bind( $rootScope, 'settings', {} );
@@ -90,11 +90,11 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				$rootScope.videocache[u] = [];
 			}
 
-			$scope.userid = u;
+			$rootScope.userid = u;
 
 			$scope.videos = $rootScope.videocache[u];
 
-			ytChannelList( $scope.userid, loadChannels );
+			ytData.channels( $rootScope.userid, loadChannels );
 		};
 
 		var loadChannels = function ( data, code ) {
@@ -221,7 +221,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytSubList( $scope.userid, 1, pushVideos );
+			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
 		};
 
 		$scope.loadBottom = function () {
@@ -233,7 +233,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytSubList( $scope.userid, $rootScope.videos.length + 1, pushVideos );
+			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
 		};
 
 		var updateSidebar = function () {
@@ -316,80 +316,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		};
 
 		$scope.videolist = Videolist.getVideos();
-		/*$scope.videolist = function() {
-
-			var ids = [];
-			var list = [];
-
-			var len = $scope.videos.length;
-
-			for( i=0; i<len; i++ ) {
-				var video = $scope.videos[i];
-
-				if ( $.inArray( video.id, ids ) != -1  ) {
-					$scope.videos.splice(i, 1);
-
-					list[i] = null;
-					continue;
-				}
-
-				if (
-					( ( video.muted && ($scope.settings.hidemuted == "1") )
-						|| ( video.watched && ($scope.settings.hidewatched == "1") ) )
-					) {
-					continue;
-				}
-
-				var auth = video.authorlink.split("/");
-				var key = auth[auth.length-1].toLowerCase();
-
-				if ( $scope.channelstate.hidden[key] === "1" ) {
-					continue;
-				}
-
-				var filtered = false;
-
-				$.each( $scope.filters.global, function ( i, v ) {
-					if ( video.title.indexOf( v.string ) != -1 ) {
-						filtered = true;
-					}
-				});
-
-				if ( !filtered && $scope.filters.channels.hasOwnProperty(video.authorid) ) {
-					$.each( $scope.filters.channels[video.authorid].filters, function ( i, v ) {
-						if ( video.title.indexOf( v.string) != -1 ) {
-							filtered = true;
-						}
-					});
-				}
-
-				if ( filtered ) {
-					$scope.filters.caught++;
-
-					$scope.videos[i].muted = true;
-
-					continue;
-				}
-
-				ids.push(video.id);
-
-				list[i] = video;
-			}
-
-			return list;
-		};*/
 
 		angular.element($document).bind("keyup", function(event) {
-			if (event.which === 82) {
-				$scope.refresh();
-			}
+			if (event.which === 82) $scope.refresh();
 		});
 
-		if ( $scope.userid ) {
+		if ( $rootScope.userid ) {
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
 
-			setUserid( $scope.userid );
+			setUserid( $rootScope.userid );
 
 			loadTop();
 
@@ -640,87 +576,75 @@ ytsubgridApp.factory( 'appLoading',
 	}]
 );
 
-ytsubgridApp.factory( 'ytSubList',
-	['$q',
-	function ( $q ) {
-		var searchToken = '{SEARCH}';
+ytsubgridApp.factory( 'ytData',
+	['$q', '$rootScope', '$store',
+		function ( $q, $rootScope, $store ) {
+			return {
+				subscriptionvideos: function ( q, s, fn ) {
+					var searchToken = '{SEARCH}';
 
-		var startToken = '{START}';
+					var startToken = '{START}';
 
-		var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-			+ searchToken
-			+ "/newsubscriptionvideos?alt=json&start-index="
-			+ startToken
-			+ "&max-results=50";
+					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+						+ searchToken
+						+ "/newsubscriptionvideos?alt=json&start-index="
+						+ startToken
+						+ "&max-results=50"
+						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
 
-		return function ( q, s, fn ) {
-			var defer = $q.defer();
+					var defer = $q.defer();
 
-			var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
+					var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
 
-			$.getJSON( url )
-				.fail( function ( j, t, e ) {
-					fn( e, j.status );
-				} )
-				.done( function ( json ) {
-					fn( json.feed.entry, 200 );
-				} )
-			;
-		};
-	}]
-);
+					$.getJSON( url )
+						.fail( function ( j, t, e ) {
+							fn( e, j.status );
+						} )
+						.done( function ( json ) {
+							fn( json.feed.entry, 200 );
+						} );
+				},
+				channels: function ( q, fn ) {
+					var searchToken = '{SEARCH}';
 
-ytsubgridApp.factory( 'ytChannelList',
-	['$q',
-	function ( $q ) {
-		var searchToken = '{SEARCH}';
+					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+						+ searchToken
+						+ "/subscriptions?alt=json"
+						+ "&max-results=50"
+						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
+					var defer = $q.defer();
 
-		var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-			+ searchToken
-			+ "/subscriptions?alt=json"
-			+ "&max-results=50";
+					var url = baseUrl.replace( searchToken, q );
 
-		return function ( q, fn ) {
-			var defer = $q.defer();
+					$.getJSON( url )
+						.fail( function ( j, t, e ) {
+							fn( e, j.status );
+						} )
+						.done( function ( json ) {
+							fn( json.feed.entry, 200 );
+						} );
+				},
+				channelvideos: function ( q, fn ) {
+					var searchToken = '{SEARCH}';
 
-			var url = baseUrl.replace( searchToken, q );
+					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
+						+ searchToken
+						+ "/uploads?alt=json"
+						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
+					var defer = $q.defer();
 
-			$.getJSON( url )
-				.fail( function ( j, t, e ) {
-					fn( e, j.status );
-				} )
-				.done( function ( json ) {
-					fn( json.feed.entry, 200 );
-				} )
-			;
-		};
-	}]
-);
+					var url = baseUrl.replace( searchToken, q );
 
-ytsubgridApp.factory( 'ytChannelVideos',
-	['$q',
-	function ( $q ) {
-		var searchToken = '{SEARCH}';
-
-		var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-			+ searchToken
-			+ "/uploads?alt=json";
-
-		return function ( q, fn ) {
-			var defer = $q.defer();
-
-			var url = baseUrl.replace( searchToken, q );
-
-			$.getJSON( url )
-				.fail( function ( j, t, e ) {
-					fn( e, j.status );
-				} )
-				.done( function ( json ) {
-					fn( json.feed.entry, 200 );
-				} )
-			;
-		};
-	}]
+					$.getJSON( url )
+						.fail( function ( j, t, e ) {
+							fn( e, j.status );
+						} )
+						.done( function ( json ) {
+							fn( json.feed.entry, 200 );
+						} );
+				}
+			};
+		}]
 );
 
 ytsubgridApp.directive( 'scroll',
