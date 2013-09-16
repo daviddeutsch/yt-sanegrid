@@ -92,7 +92,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.userid = u;
 
-			$scope.videos = $rootScope.videocache[u];
+			$rootScope.videos = $rootScope.videocache[u];
 
 			ytData.channels( $rootScope.userid, loadChannels );
 		};
