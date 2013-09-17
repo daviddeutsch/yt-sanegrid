@@ -12,8 +12,8 @@ ytsubgridApp.controller( 'AppCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$modal', '$store', '$document', 'ytData', 'appLoading', 'Videolist',
-	function ( $rootScope, $scope, $modal, $store, $document, ytData, appLoading, Videolist ) {
+	['$rootScope', '$scope', '$store', '$document', 'ytData', 'appLoading', 'Videolist',
+	function ( $rootScope, $scope, $store, $document, ytData, appLoading, Videolist ) {
 
 		$scope.start = true;
 
@@ -337,11 +337,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 ytsubgridApp.factory( 'Videolist',
 	['$rootScope', '$store',
 		function ( $rootScope, $store ) {
-			$store.bind( $rootScope, 'videos', {} );
-			$store.bind( $rootScope, 'settings', {} );
-			$store.bind( $rootScope, 'channelstate', {} );
-			$store.bind( $rootScope, 'filters', {} );
-
 			return {
 				getVideos: function() {
 					return function() {
