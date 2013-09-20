@@ -94,7 +94,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.videos = $rootScope.videocache[u];
 
-			ytData.channels( $rootScope.userid, loadChannels );
+			//ytData.channels( $rootScope.userid, loadChannels );
 		};
 
 		var loadChannels = function ( data, code ) {
@@ -221,7 +221,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
+			//ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
 		};
 
 		$scope.loadBottom = function () {
@@ -233,7 +233,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
+			//ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
 		};
 
 		var updateSidebar = function () {
@@ -404,6 +404,14 @@ ytsubgridApp.factory( 'Videolist',
 			};
 		}]
 );
+
+ytsubgridApp.directive('videoItem', function() {
+	return {
+		restrict: 'C',
+		require: '^videolist',
+		templateUrl: 'templates/item.html'
+	}
+});
 
 ytsubgridApp.controller( 'SettingsModalCtrl',
 	[ '$scope', '$store', '$modal',
