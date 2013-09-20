@@ -221,7 +221,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
+			//ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
 		};
 
 		$scope.loadBottom = function () {
