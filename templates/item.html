@@ -8,22 +8,22 @@
 	</div>
 
 	<a href="{{ video.link }}"
-	   ng-mouseup="watch(video.id, $event)"
+	   ng-mouseup="watch($event)"
 	   target="__blank"
 	   title="{{video.title}}">
 		<div class="img-container-overlay"></div>
 	</a>
 
 	<div class="video-buttons">
-				<span ng-controller="FilterModalCtrl">
-					<a ng-click="open(video)"
-					   class="click-filter"
-					   title="create a filter"><i class="icon-filter"></i></a>
-				</span>
-		<a ng-click="mute(video.id)"
+		<span ng-controller="FilterModalCtrl">
+			<a ng-click="open(video)"
+			   class="click-filter"
+			   title="create a filter"><i class="icon-filter"></i></a>
+		</span>
+		<a ng-click="mute()"
 		   class="click-mute"
 		   title="mute and hide"><i class="icon-remove"></i></a>
-		<a ng-click="watched(video.id, true)"
+		<a ng-click="watched(true)"
 		   class="click-watched"
 		   title="mark as watched"><i class="icon-ok"></i></a>
 	</div>
@@ -31,7 +31,7 @@
 	<div class="thumbnail-body">
 		<div class="title">
 			<a href="{{ video.link }}"
-			   ng-mouseup="watch(video.id, $event)"
+			   ng-mouseup="watch($event)"
 			   target="__blank"
 			   title="{{video.title}}">{{video.title}}</a>
 		</div>

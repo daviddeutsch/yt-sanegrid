@@ -61,6 +61,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		if ( $.isArray( $rootScope.videocache ) ) {
 			$rootScope.videocache = {};
 		}
+
 		var datesort = function ( a, b ) {
 			var datea = new Date( a.published );
 			var dateb = new Date( b.published );
@@ -224,6 +225,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			//ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
 		};
 
+		var updateSidebar = function () {
+			if ( $rootScope.settings.sidebar === true ) {
+				$('.sidebar' ).css({"height":$document.height()});
+			} else {
+				$('.sidebar' ).css({"height":"40px"});
+			}
+		};
+
 		$scope.loadBottom = function () {
 			if ( $scope.start ) return;
 
@@ -234,14 +243,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.filters.caught = 0;
 
 			//ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
-		};
-
-		var updateSidebar = function () {
-			if ( $rootScope.settings.sidebar === true ) {
-				$('.sidebar' ).css({"height":$document.height()});
-			} else {
-				$('.sidebar' ).css({"height":"40px"});
-			}
 		};
 
 		$scope.selectUserid = function ( q ) {
@@ -260,24 +261,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			loadTop();
 		};
 
-		$scope.mute = function ( id ) {
-			$.each( $rootScope.videos, function ( i, v ) {
-				if ( v.id == id ) {
-					$rootScope.videos[i].muted = !$rootScope.videos[i].muted;
-					$rootScope.videos[i].muteddate = new Date().toISOString();
-				}
-			} );
-		};
-
-		$scope.mute = function ( id ) {
-			$.each( $rootScope.videos, function ( i, v ) {
-				if ( v.id == id ) {
-					$rootScope.videos[i].muted = !$rootScope.videos[i].muted;
-					$rootScope.videos[i].muteddate = new Date().toISOString();
-				}
-			} );
-		};
-
 		$scope.hideChannel = function ( name ) {
 			var pos = $.inArray( name, $rootScope.channeloptions.hidden );
 
@@ -288,26 +271,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			}
 		};
 
-		$scope.watch = function ( id, $event ) {
-			if ( ($event.button == 2) ) {
-				return;
-			}
-
-			$scope.watched(id, false);
-		};
-
-		$scope.watched = function ( id, force ) {
-			for( i=0; i<$rootScope.videos.length; i++ ) {
-				if ( $rootScope.videos[i].id == id ) {
-					if ( $rootScope.videos[i].watched && !force ) {
-						return;
-					}
-
-					$rootScope.videos[i].watched = !$rootScope.videos[i].watched;
-					$rootScope.videos[i].watcheddate = new Date().toISOString();
-				}
-			}
-		};
 
 		$scope.togglesidebar = function () {
 			$rootScope.settings.sidebar = !$rootScope.settings.sidebar;
@@ -408,8 +371,33 @@ ytsubgridApp.factory( 'Videolist',
 ytsubgridApp.directive('videoItem', function() {
 	return {
 		restrict: 'C',
-		require: '^videolist',
-		templateUrl: 'templates/item.html'
+		scope: {
+			video: '='
+		},
+		templateUrl: 'templates/item.html',
+		controller: function( $scope ) {
+			$scope.mute = function () {
+				$scope.video.muted = !$scope.video.muted;
+				$scope.video.muteddate = new Date().toISOString();
+			};
+
+			$scope.watch = function ( $event ) {
+				if ( ($event.button == 2) ) {
+					return;
+				}
+
+				$scope.video.watched(id, false);
+			};
+
+			$scope.watched = function ( force ) {
+				if ( $scope.video.watched && !force ) {
+					return;
+				}
+
+				$scope.video.watched = !$scope.video.watched;
+				$scope.video.watcheddate = new Date().toISOString();
+			};
+		}
 	}
 });
 

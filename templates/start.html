@@ -2,65 +2,73 @@
 	 class="col-md-6 col-md-offset-3 ng-cloak"
 	 ng-if="start"
 	 ng-cloak>
-	<h2>
-		<img class="brand"
-			 src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
-		Sane Grid
-	</h2>
+	<div class="page-header">
+		<h2>
+			<img class="brand"
+				 src="https://www.youtube.com/yt/brand/media/image/yt-brand-flattype-2.png"/>
+			Sane&nbsp;Grid
+		</h2>
+		<h6>The subscription grid for<br />people who like to stay sane</h6>
+	</div>
 
 	<p>
-		Hi there,<br/>This is a small app that helps you <strong>manage and
-		enjoy
-		your YouTube Subscriptions</strong> while keeping your sanity.
+		<strong>If you have a lot of subscriptions on YouTube</strong>, you know that it's
+		hard to keep your sanity with the current interface, let alone the
+		constant stream of user-hostile changes coming your way.
 	</p>
 
 	<p>
-		I built it after the much beloved /my_subscriptions grid was killed off
-		mercilessly and it is now almost en par, feature wise.
+		Now, you <em>could</em> use a browser script to make the horrible "feeds"
+		page a little easier on the eye&hellip; and always play catch-up with YouTube,
+		<strong>or you could use YT Sanegrid</strong>.
 	</p>
 
-	<p>
-		"En par" is French for "it does the job"*, although it's ok if you're
-		uncomfortable with somebody speaking French, especially if he's actually
-		German.
-	</p>
-
-	<p>
-		<strong>To get started, simply enter your youtube username
-			below</strong>.
-	</p>
-
-	<p>
-		<strong>Don't worry</strong>, nothing is stored on the server, this page
-		works completely from and only stores data in your browser.
-	</p>
-
-	<p class="pull-right">*not really</p>
-
-	<br/>
 	<hr/>
-	<br/>
 
-	<form class="form-inline" role="form" ng-submit="selectUserid(userid)">
-		<div class="form-group">
-			<label class="sr-only" for="userid">Your Username</label>
-			<input
-				ng-model="userid"
-				id="userid"
-				type="text"
-				class="form-control"
-				autofocus
-				placeholder="Your YouTube Username">
-			<button
-				class="btn btn-default"
-				type="submit"
-				ng-click="selectUserid(userid)">
-				Ok!
-			</button>
-		</div>
+	<p>
+		<span class="highlight"><strong>Here is why it's better than a browser script:</strong></span>
+	</p>
+
+	<ul>
+		<li>It has a <span class="highlight">minimal, pleasant, full-screen</span> interface</li>
+		<li>It <span class="highlight">never forgets a video</span> once it's in your subscription inbox</li>
+		<li>You can <span class="highlight">mark an item as watched or hide it</span> with one click</li>
+		<li>It has <span class="highlight">advanced features like automatic filters</span> based on keywords</li>
+		<li>It's <span class="highlight">actively developed</span> and if you have a good idea, I'll put it in</li>
+	</ul>
+
+	<hr/>
+
+	<form class="form-inline" style="text-align: center;" role="form" ng-submit="selectUserid(userid)">
+		<p>
+			<strong>To get started, simply enter your youtube username:</strong>&nbsp;&nbsp;&nbsp;
+			<span class="form-group">
+				<label class="sr-only" for="userid">Your Username</label>
+				<input
+					ng-model="userid"
+					id="userid"
+					type="text"
+					class="form-control"
+					autofocus
+					placeholder="Your YouTube Username">
+				<button
+					class="btn btn-default"
+					type="submit"
+					ng-click="selectUserid(userid)">
+					Ok!
+				</button>
+			</span>
+
+		</p>
+
 	</form>
 
-	<br/>
+	<hr/>
+
+	<p>
+		<strong>Don't worry</strong>, nothing is stored on a server because this
+		page works completely from (and only stores data in) your browser.
+	</p>
 
 	<div id="errors" ng-if="forbidden||notfound||!start">
 		<div class="account-error alert " ng-if="forbidden">
@@ -82,11 +90,12 @@
 		</div>
 	</div>
 
-	<br/>
 	<hr/>
 	<p>
-		All code is free and open source software, you can check out the details
-		below:
+		All code is free and open source software. If you want to help out by
+		filing a bug report, a feature request, or if you just want to check
+		out what is going on while I'm working on this, feel free to check out
+		the project on Github:
 	</p>
 	<ul ng-social-buttons
 		data-url="'http://daviddeutsch.github.io/yt-sanegrid/'">
