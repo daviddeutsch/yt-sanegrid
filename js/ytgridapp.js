@@ -236,6 +236,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		$scope.loadBottom = function () {
 			if ( $scope.start ) return;
 
+			if ( $rootScope.videos.length > 50 ) return;
+
 			resetErrors();
 
 			appLoading.loading();
