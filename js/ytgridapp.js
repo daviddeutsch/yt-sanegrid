@@ -388,7 +388,7 @@ ytsubgridApp.directive('videoItem', function() {
 					return;
 				}
 
-				$scope.video.watched(id, false);
+				$scope.watched(false);
 			};
 
 			$scope.watched = function ( force ) {
