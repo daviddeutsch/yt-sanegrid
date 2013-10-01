@@ -7,6 +7,21 @@
 		>
 		<h4>Channels</h4>
 	</div>
+	<div id="stats">
+		<div id="filterstats"
+			 ng-if="filters.count">
+					<span class="filters-active"
+						  title="{{ filters.count }} filter(s) active">
+						{{ filters.count }}&nbsp;<i class="icon-filter"></i>
+					</span>
+
+					<span class="filters-caught"
+						  ng-if="filters.caught"
+						  title="{{ filters.caught }} item(s) filtered in the last request">
+						&nbsp;{{ filters.caught }}
+					</span>
+		</div>
+	</div>
 	<div class="row">
 		<div class="col-md-3">
 			<div class="btn-group">
@@ -21,7 +36,7 @@
 				</button>
 			</div>
 		</div>
-		<div class="col-md-5">
+		<div class="col-md-4">
 			<div class="btn-group">
 				<button
 					type="button"
@@ -68,38 +83,33 @@
 				<i ng-class="{'icon-spinner icon-spin':status, 'icon-refresh':!status}"></i>
 			</button>
 
-			<div id="stats">
-				<div id="filterstats"
-					 ng-if="filters.count">
-					<span class="filters-active"
-						  title="{{ filters.count }} filter(s) active">
-						{{ filters.count }}&nbsp;<i class="icon-filter"></i>
-					</span>
-
-					<span class="filters-caught"
-						  ng-if="filters.caught"
-						  title="{{ filters.caught }} item(s) filtered in the last request">
-						&nbsp;{{ filters.caught }}
-					</span>
-				</div>
-			</div>
-
 		</div>
 
-		<div id="support" class="col-md-4">
+		<div id="support" class="col-md-2 footer-right">
 			<div ng-controller="SupportModalCtrl">
 				<div class="btn-group">
 					<button class="btn btn-success" ng-click="open()">
-						<strong>
-							<i class="icon-heart" style="color:#cd4427"></i>
-						</strong>
 						<span>
-							<strong>support the developer</strong>
+							<strong><i class="icon-heart" style="color:#cd4427"></i> support the developer</strong>
 						</span>
 					</button>
 				</div>
 			</div>
 		</div>
+
+		<div id="app" class="col-md-3 footer-right">
+			<div ng-controller="UpdatesModalCtrl">
+				<div class="btn-group">
+					<button class="btn btn-warning" disabled="disabled">
+						<strong><span style="color:#cd4427">yt</span>SaneGrid v{{ info.version }}</strong>
+					</button>
+					<button class="btn quiet" ng-class="{'btn-danger':info.updates.outdated}" ng-click="open()" title="{{ info.updates.title }}">
+						<i ng-class="{'icon-circle':info.updates.outdated, 'icon-circle-blank':!info.updates.outdated}"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	</div>
 
 </footer>

@@ -12,8 +12,8 @@ ytsubgridApp.controller( 'AppCtrl',
 );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$store', '$document', 'ytData', 'appLoading', 'Videolist',
-	function ( $rootScope, $scope, $store, $document, ytData, appLoading, Videolist ) {
+	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading', 'Videolist',
+	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading, Videolist ) {
 
 		$scope.start = true;
 
@@ -24,16 +24,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		$store.bind( $rootScope, 'channelstate', {} );
 		$store.bind( $rootScope, 'filters', {} );
 
-		if ( typeof $rootScope.videos == 'object' ) {
-			$rootScope.videos = [];
-		}
-
 		if ( $.isEmptyObject( $rootScope.settings ) ) {
 			$rootScope.settings = {
 				hidewatched: false,
 				hidemuted:   true,
 				theme:       'default'
 			}
+		}
+
+		if ( typeof $rootScope.videos == 'object' ) {
+			$rootScope.videos = [];
 		}
 
 		if ( $.isEmptyObject( $rootScope.channelstate ) ) {
@@ -95,7 +95,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.videos = $rootScope.videocache[u];
 
-			ytData.channels( $rootScope.userid, loadChannels );
+			//ytData.channels( $rootScope.userid, loadChannels );
 		};
 
 		var loadChannels = function ( data, code ) {
@@ -222,7 +222,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
+			//ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
+			appLoading.ready( 1 );
 		};
 
 		var updateSidebar = function () {
@@ -244,7 +245,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
+			//ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
 		};
 
 		$scope.selectUserid = function ( q ) {
@@ -259,6 +260,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 		$scope.refresh = function() {
 			appLoading.loading();
+
+			ytApp.update();
 
 			loadTop();
 		};
@@ -534,6 +537,34 @@ ytsubgridApp.controller( 'FilterModalInstanceCtrl',
 		}]
 );
 
+ytsubgridApp.controller( 'UpdatesModalCtrl',
+	[ '$rootScope', '$scope', '$store', '$modal', 'ytApp',
+		function ($rootScope, $scope, $store, $modal, ytApp) {
+			$scope.open = function () {
+				var modalInstance = $modal.open({
+					templateUrl: 'templates/updates.html',
+					backdrop: false,
+					dialogFade:true,
+					controller: 'UpdatesModalInstanceCtrl',
+					scope: $scope
+				});
+			};
+		}]
+);
+
+ytsubgridApp.controller( 'UpdatesModalInstanceCtrl',
+	[ '$rootScope', '$scope', '$store', '$modalInstance', 'ytApp',
+		function ($rootScope, $scope, $store, $modalInstance, ytApp) {
+			$modalInstance.opened.then(function (selectedItem) {
+				jQuery( ".updates abbr.timeago" ).timeago();
+			});
+
+			$scope.cancel = function () {
+				$modalInstance.dismiss('cancel');
+			};
+		}]
+);
+
 ytsubgridApp.factory( 'appLoading',
 	['$rootScope',
 	function ( $rootScope ) {
@@ -637,6 +668,97 @@ ytsubgridApp.factory( 'ytData',
 						} );
 				}
 			};
+		}]
+);
+
+ytsubgridApp.service( 'ytApp',
+	['$q', '$rootScope',
+		function ( $q, $rootScope ) {
+			var versionHigher = function (v1, v2) {
+				var v1parts = v1.split('.');
+				var v2parts = v2.split('.');
+
+				for (var i = 0; i < v1parts.length; ++i) {
+					if (v1parts[i] > v2parts[i]) return true;
+				}
+
+				return false;
+			};
+
+			this.appinfo = function ( fn ) {
+				var url = "/info.json";
+
+				var defer = $q.defer();
+
+				$.getJSON( url )
+					.fail( function ( j, t, e ) {
+						fn( e, j.status );
+					} )
+					.done( function ( json ) {
+						fn( json, 200 );
+					} );
+			};
+
+			this.appupdates = function ( fn ) {
+				var daviddeutsch = new Gh3.User("daviddeutsch");
+
+				var sanegrid = new Gh3.Repository("yt-sanegrid", daviddeutsch);
+
+				sanegrid.fetch(function (err, res) {
+					if(err) { fn( err, 500 ); }
+				});
+
+				sanegrid.fetchClosedIssues(function (err, res) {
+					if(err) { fn( err, 500 ); }
+
+					fn( sanegrid.getIssues(), 200 );
+				});
+			};
+
+			that = this;
+
+			this.update = function() {
+				that.appinfo( function( data, code ) {
+					if ( !versionHigher( data.version, $rootScope.info.version ) ) {
+						return;
+					}
+
+					$rootScope.info.update = data.version;
+					$rootScope.info.updates.outdated = true;
+					$rootScope.info.updates.new = 0;
+					$rootScope.info.updates.title = "Fresh Update(s)!";
+
+					that.appupdates( function( list, code ) {
+						$rootScope.info.updates.list = list;
+
+						$.each( $rootScope.info.updates.list, function ( i, v ) {
+							var date = new Date( v.updated_at );
+
+							if ( date > $rootScope.info.date ) {
+								$rootScope.info.updates.list[i].new = true;
+
+								$rootScope.info.updates.new++;
+							} else {
+								$rootScope.info.updates.list[i].new = false;
+							}
+						});
+					});
+				})
+			};
+
+
+			this.appinfo( function( data, code ) {
+				$rootScope.info = {
+					version: data.version,
+					updates: {list: []},
+					date: new Date()
+				};
+
+				that.appupdates( function( list, code ) {
+					$rootScope.info.updates.list = list;
+				});
+			});
+
 		}]
 );
 

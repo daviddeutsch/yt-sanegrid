@@ -1,0 +1,58 @@
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3>Updates</h3>
+			<button class="btn btn-danger cancel pull-right" ng-click="cancel()">
+				Close
+			</button>
+		</div>
+		<div class="modal-body">
+			<div class="version-check">
+				<div ng-if="info.updates.outdated">
+					<p>Your Version: {{ info.version }}</p>
+					<p>Latest Version: {{ info.update }}</p>
+				</div>
+				<div ng-if="!info.updates.outdated">
+					<p>You are on the latest Version: {{ info.version }}</p>
+				</div>
+			</div>
+			<hr />
+			<div class="updates clearfix">
+				<h4>What's in the update?</h4>
+				<p ng-if="info.updates.outdated && info.updates.new">
+					Bugfixes and a couple new features (check the highlighted
+					entries for details).
+				</p>
+				<p ng-if="info.updates.outdated && !info.updates.new">
+					No big stuff, just a couple of bugfixes.
+				</p>
+				<p ng-if="info.updates.outdated">
+					Simply <a href="#" onclick="location.reload(true)">refresh</a> this page to get the latest version.
+				</p>
+				<h4>Recently closed tickets:</h4>
+				<ul class="updates-list">
+					<li ng-repeat="update in info.updates.list">
+						<div class="update-content" ng-class="{'update-new':update.new}">
+							<a href="{{ update.html_url }}"><h4>#{{ update.number }}: {{ update.title }}</h4></a>
+							<div class="update-body" ng-if="update.body">
+								<p>{{ update.body }}</p>
+							</div>
+							<div class="update-footer">
+								<p>suggested by: <a href="{{ update.user.html_url }}" target="{{ update.user.login }}"><img src="{{ update.user.avatar_url }}"/><strong>{{ update.user.login }}</strong></a></p>
+								<p class="time">
+									<abbr class="timeago" title="{{ update.closed_at }}"></abbr>
+								</p>
+							</div>
+						</div>
+
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="clearfix modal-footer">
+			<button class="btn btn-danger cancel" ng-click="cancel()">
+				Close
+			</button>
+		</div>
+	</div>
+</div>
