@@ -686,7 +686,7 @@ ytsubgridApp.service( 'ytApp',
 			};
 
 			this.appinfo = function ( fn ) {
-				var url = "/info.json";
+				var url = "/yt-sanegrid/info.json";
 
 				var defer = $q.defer();
 
