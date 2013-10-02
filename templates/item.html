@@ -9,7 +9,7 @@
 
 	<a href="{{ video.link }}"
 	   ng-mouseup="watch($event)"
-	   target="__blank"
+	   target="video-{{ video.id }}"
 	   title="{{video.title}}">
 		<div class="img-container-overlay"></div>
 	</a>
@@ -32,7 +32,7 @@
 		<div class="title">
 			<a href="{{ video.link }}"
 			   ng-mouseup="watch($event)"
-			   target="__blank"
+			   target="video-{{ video.id }}"
 			   title="{{video.title}}">{{video.title}}</a>
 		</div>
 		<p class="author text-muted">

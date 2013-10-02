@@ -33,7 +33,7 @@
 				<ul class="updates-list">
 					<li ng-repeat="update in info.updates.list">
 						<div class="update-content" ng-class="{'update-new':update.new}">
-							<a href="{{ update.html_url }}"><h4>#{{ update.number }}: {{ update.title }}</h4></a>
+							<a href="{{ update.html_url }}" target="issue-{{ update.number }}"><h4>#{{ update.number }}: {{ update.title }}</h4></a>
 							<div class="update-body" ng-if="update.body">
 								<p>{{ update.body }}</p>
 							</div>
