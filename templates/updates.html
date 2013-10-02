@@ -1,10 +1,10 @@
 <div class="modal-dialog">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h3>Updates</h3>
 			<button class="btn btn-danger cancel pull-right" ng-click="cancel()">
 				Close
 			</button>
+			<h3>Updates</h3>
 		</div>
 		<div class="modal-body">
 			<div class="version-check">
@@ -34,14 +34,16 @@
 					<li ng-repeat="update in info.updates.list">
 						<div class="update-content" ng-class="{'update-new':update.new}">
 							<a href="{{ update.html_url }}" target="issue-{{ update.number }}"><h4>#{{ update.number }}: {{ update.title }}</h4></a>
+							<p class="time">
+								<abbr title='{{update.closed_at | timestamp | date:medium}}'>
+									<time-ago from-time='{{update.closed_at | timestamp}}'></time-ago>
+								</abbr>
+							</p>
 							<div class="update-body" ng-if="update.body">
 								<p>{{ update.body }}</p>
 							</div>
 							<div class="update-footer">
 								<p>suggested by: <a href="{{ update.user.html_url }}" target="{{ update.user.login }}"><img src="{{ update.user.avatar_url }}"/><strong>{{ update.user.login }}</strong></a></p>
-								<p class="time">
-									<abbr class="timeago" title="{{ update.closed_at }}"></abbr>
-								</p>
 							</div>
 						</div>
 

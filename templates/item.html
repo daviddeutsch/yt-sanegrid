@@ -41,6 +41,9 @@
 
 		<p class="time">
 			<abbr class="timeago" title="{{video.published}}"></abbr>
+			<abbr title='{{video.published | timestamp | date:medium}}'>
+				<time-ago from-time='{{video.published | timestamp}}'></time-ago>
+			</abbr>
 		</p>
 	</div>
 </div>
