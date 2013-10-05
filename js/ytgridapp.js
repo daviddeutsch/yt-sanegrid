@@ -125,7 +125,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				$scope.notfound = 1;
 			}
 
-			appLoading.ready();
+			appLoading.ready( 100 );
 		};
 
 		var pushVideos = function ( data, code ) {
@@ -147,7 +147,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				$scope.notfound = 1;
 			}
 
-			appLoading.ready();
+			appLoading.ready( 100 );
 		};
 
 		var pushVideo = function ( o ) {
@@ -211,7 +211,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 				$scope.forbidden = 0;
 				$scope.notfound = 0;
 
-				appLoading.ready( 1 );
+				appLoading.ready( 100 );
 			}
 		};
 
@@ -223,7 +223,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.filters.caught = 0;
 
 			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
-			appLoading.ready( 1 );
+
+			appLoading.ready( 100 );
 		};
 
 		var updateSidebar = function () {
