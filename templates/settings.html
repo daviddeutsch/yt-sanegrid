@@ -1,9 +1,56 @@
 <div class="modal-dialog">
 	<div class="modal-content">
 		<div class="modal-header">
-			<h3>Settings (only filters for now)</h3>
+			<h3>Settings</h3>
+			<script src="js/jquery.idTabs.min.js"></script>
+			<ul class="idTabs">
+				<li><a href="#general">General</a></li>
+				<li><a href="#filters">Filters</a></li>
+				<li><a href="#channels">Channels</a></li>
+				<li><a href="#support">Support</a></li>
+				<li><a href="#updates">Updates</a></li>
+			</ul>
 		</div>
-		<div class="modal-body">
+		<div id="general" class="modal-body">
+			<div class="btn-group">
+				<button class="btn btn-info" disabled="disabled">
+					<i class="icon-user"></i>
+					<span title="{{ userid }}">
+						<strong>{{ userid }}</strong>
+					</span>
+				</button>
+				<button class="btn quiet" ng-click="selectUserid('')">
+					<i class="icon-signout" title="Change User"></i>
+				</button>
+			</div>
+			<div class="btn-group">
+				<button
+					type="button"
+					class="btn"
+					ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
+					ng-model="settings.hidemuted"
+					btn-checkbox
+					btn-checkbox-true="0"
+					btn-checkbox-false="1"
+					>
+					<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+					<span>Muted</span>
+				</button>
+				<button
+					type="button"
+					class="btn"
+					ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
+					ng-model="settings.hidewatched"
+					btn-checkbox
+					btn-checkbox-true="0"
+					btn-checkbox-false="1"
+					>
+					<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+					<span>Watched</span>
+				</button>
+			</div>
+		</div>
+		<div id="filters" class="modal-body">
 			<div class="global-filters clearfix">
 				<h4>Global Filters</h4>
 				<ul class="filter-list">
@@ -24,6 +71,141 @@
 						  ng-repeat="filter in channel.filters track by $index">
 						<a ng-click="removeFilter(channel.title, $index)">&times;</a>
 						{{ filter.string }}
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div id="channels" class="modal-body">
+			<div class="channel" ng-repeat="channel in channels track by $index">
+				<i class="icon-eye-closed"
+				   ng-if="!channelstate.hidden[channel.name]"></i>
+				<h5>{{ channel.name }}</h5>
+				<input
+					type="checkbox"
+					id="channel-mute-{{ channel.id }}"
+					ng-true-value="1"
+					ng-false-value="0"
+					ng-model="channelstate.hidden[channel.name]"
+					ng-click="hideChannel(channel.name)"
+					/>
+				<label for="channel-mute-{{ channel.id }}">Hide Videos</label>
+			</div>
+		</div>
+		<div id="support" class="modal-body">
+			<h4>Hey, thanks a lot for using YT Sane Grid!</h4>
+
+			<p>Please help me make it even better:</p>
+			<hr>
+			<div class="row">
+				<div class="col-md-6">
+					<p>Tell others about it:</p>
+					<ul ng-social-buttons
+						data-url="'http://daviddeutsch.github.io/yt-sanegrid/'"
+						data-title="'Check out this sweet YouTube grid for your subscriptions'"
+						data-description="'Check out this sweet YouTube grid for your subscriptions'"
+						data-image="'test'">
+						<li class="ng-social-facebook">Facebook</li>
+						<li class="ng-social-twitter">Twitter</li>
+						<li class="ng-social-google-plus">Google+</li>
+						<li class="ng-social-pinterest">Pinterest</li>
+					</ul>
+				</div>
+				<div class="col-md-2"></div>
+				<div class="col-md-6">
+					<p>Donate to the<br> "David buys awesome tea" fund</p>
+					<iframe style="border: 0; margin: 0; padding: 0;"
+							src="https://www.gittip.com/daviddeutsch/widget.html"
+							width="48pt" height="22pt"></iframe>
+
+					&nbsp;&nbsp;&nbsp;
+
+					<script id='flattrbtn'>
+						(function ( i ) {
+							var f, s = document.getElementById( i );
+							f = document.createElement( 'iframe' );
+							f.src = '//api.flattr.com/button/view/?uid=skore&button=compact&url=' + encodeURIComponent( document.URL );
+							f.title = 'Flattr';
+							f.height = 20;
+							f.width = 110;
+							f.style.borderWidth = 0;
+							s.parentNode.insertBefore( f, s );
+						})( 'flattrbtn' );
+					</script>
+
+					&nbsp;&nbsp;&nbsp;
+
+					<div class="alert alert-warning">
+						<p><i class="icon-bitcoin"></i> Crypto Donations:</p>
+
+						<p class="btc">1DLAnAVQjtZA6PRKomnumr27Km7ENPtgLc</p>
+					</div>
+
+					<div class="alert alert-warning">
+						<p><i class="icon-bitcoin"></i> Non-Crypto Donations:</p>
+
+						<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=V46BPCR4XW68Y" target="paypal"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="PayPal - The safer, easier way to pay online!" /></a>
+					</div>
+
+				</div>
+			</div>
+
+			<hr>
+
+			<p>Of course, you can also help directly by filing bug reports
+				and/or feature request on GitHub:</p>
+			<ul ng-social-buttons
+				data-url="'http://daviddeutsch.github.io/yt-sanegrid/'">
+				<li class="ng-social-github"
+					user="daviddeutsch"
+					repository="yt-sanegrid">GitHub
+				</li>
+				<li class="ng-social-github-forks"
+					user="daviddeutsch"
+					repository="yt-sanegrid">Forks
+				</li>
+			</ul>
+		</div>
+		<div id="updates" class="modal-body">
+			<div class="version-check">
+				<div ng-if="info.updates.outdated">
+					<p>Your Version: {{ info.version }}</p>
+					<p>Latest Version: {{ info.update }}</p>
+				</div>
+				<div ng-if="!info.updates.outdated">
+					<p>You are on the latest Version: {{ info.version }}</p>
+				</div>
+			</div>
+			<hr />
+			<div class="updates clearfix">
+				<h4>What's in the update?</h4>
+				<p ng-if="info.updates.outdated && info.updates.new">
+					Bugfixes and a couple new features (check the highlighted
+					entries for details).
+				</p>
+				<p ng-if="info.updates.outdated && !info.updates.new">
+					No big stuff, just a couple of bugfixes.
+				</p>
+				<p ng-if="info.updates.outdated">
+					Simply <a href="#" onclick="location.reload(true)">refresh</a> this page to get the latest version.
+				</p>
+				<h4>Recently closed tickets:</h4>
+				<ul class="updates-list">
+					<li ng-repeat="update in info.updates.list">
+						<div class="update-content" ng-class="{'update-new':update.new}">
+							<a href="{{ update.html_url }}" target="issue-{{ update.number }}"><h4>#{{ update.number }}: {{ update.title }}</h4></a>
+							<p class="time">
+								<abbr title='{{update.closed_at | timestamp | date:medium}}'>
+									<time-ago from-time='{{update.closed_at | timestamp}}'></time-ago>
+								</abbr>
+							</p>
+							<div class="update-body" ng-if="update.body">
+								<p>{{ update.body }}</p>
+							</div>
+							<div class="update-footer">
+								<p>suggested by: <a href="{{ update.user.html_url }}" target="{{ update.user.login }}"><img src="{{ update.user.avatar_url }}"/><strong>{{ update.user.login }}</strong></a></p>
+							</div>
+						</div>
+
 					</li>
 				</ul>
 			</div>
