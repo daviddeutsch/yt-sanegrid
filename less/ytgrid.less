@@ -589,3 +589,38 @@ ul.updates-list {
 .row .ng-social li {
 	display: block;
 }
+
+.idTabs li {
+	list-style: none;
+	float: left;
+	position: relative;
+	bottom: 5px;
+	background-color: #F0F0F0
+	margin-right: 5px;
+	padding: 0px 5px;
+	border-radius: 5px 5px 0px 0px;
+
+	a {
+		&.selected {
+			color: #d9534f;
+		}
+
+		&:hover {
+			text-decoration: none;
+			color: #d9534f !important;
+		}
+	}
+}
+#settings-btn {
+	position: fixed;
+	text-align: center;
+	bottom: 0;
+	left: 0;
+	padding: 10px 24px;
+	box-shadow: -1px -2px 4px rgba(0,0,0,0.2);
+	border-radius: 6px 6px 0px 0px;
+
+	&:hover {
+		cursor:pointer;
+	}
+}
