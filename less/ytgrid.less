@@ -453,6 +453,16 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
+.hidden-xs {
+	display: inline-block !important;
+}
+
+@media (max-width: 767px) {
+	.hidden-xs {
+		display: none !important;
+	}
+}
+
 footer {
 	position: fixed;
 	width: 100%;
@@ -462,8 +472,12 @@ footer {
 	z-index: 200;
 	box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
 
+	div {
+		display: inline-block !important;
+	}
+
 	.btn-group {
-		margin: 6px;
+		margin: 6px 4px;
 	}
 
 	.btn-info {
@@ -588,4 +602,8 @@ ul.updates-list {
 
 .row .ng-social li {
 	display: block;
+}
+
+.tab-pane {
+	padding: 10px;
 }
