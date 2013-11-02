@@ -15,6 +15,10 @@
 	transform: @b;
 }
 
+body {
+	background: #f5f5f5;
+}
+
 .account-error {
 	width: 40%;
 	margin-left: auto;
@@ -22,8 +26,7 @@
 }
 
 .author {
-	margin-top: 4px;
-	margin-left: 4px;
+	margin-right: 4px;
 	font-size: 80%;
 	font-weight: 300;
 	float: right;
@@ -43,7 +46,7 @@
 	&:active,
 	&.active,
 	.active {
-		box-shadow: inset 0 3px 5px rgba(0,0,0,0.5) !important;
+		box-shadow: inset 0 2px 3px rgba(0,0,0,0.5) !important;
 	}
 
 	i {
@@ -223,7 +226,7 @@
 
 .time {
 	margin-top: -10px;
-	margin-left: 4px;
+	margin-right: 4px;
 	float: right;
 	font-size: 75%;
 	font-weight: 300;
@@ -270,7 +273,7 @@
 
 	&:hover {
 		background: #fafafa;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.4), 1px -1px 0 rgba(255,255,255,0.9) inset, -1px -1px 0 rgba(127,127,127,0.6) inset;
+		box-shadow: 0 1.2px 1.5px rgba(0,0,0,0.3), 0 -1px 0 rgba(255,255,255,0.9) inset, 0 -1px 0 rgba(127,127,127,0.6) inset;
 
 		a {
 			opacity: 1;
@@ -288,7 +291,7 @@
 		}
 
 		.img-container-overlay {
-			box-shadow: 0 2px 6px rgba(0,0,0,0.6) inset;
+			box-shadow: 0 1px 2px rgba(0,0,0,0.4) inset;
 		}
 	}
 
@@ -296,6 +299,7 @@
 		opacity: 0.9;
 		width: 192px;
 		margin-top: -18px;
+		.transition(opacity, 0.05s, ease-out);
 	}
 
 	.img-container {
@@ -344,19 +348,22 @@
 
 	a {
 		opacity: 0;
-		color: #444;
+		color: #666;
 		display: inline-block;
-		font-size: 200%;
-		background: #eee;
+		font-size: 180%;
+		background: #fff;
 		border-radius: 24px;
-		border-bottom-left-radius:24px;
-		border-bottom-right-radius:24px;
 		line-height: 0.6em;
 		padding: 16px 4px 6px;
-		margin-top: -12px;
-		margin-right: 4px;
-		box-shadow: 0 2px 3px rgba(0,0,0,0.6), 1px 0 0 rgba(255,255,255,0.6) inset, -1px -1px 0 rgba(127,127,127,0.8) inset;
+		margin-top: -13px;
+		margin-right: 3px;
+		box-shadow: 0 1px 2px rgba(0,0,0,0.6) inset, 1px 0 0 rgba(255,255,255,0.6) inset, -1px -1px 0 rgba(127,127,127,0.8) inset;
 		.transition(opacity, .15s, ease-in-out);
+
+		&.click-watched {
+			font-size: 190%;
+			color: #000;
+		}
 
 		&:hover {
 			text-decoration: none;
@@ -371,10 +378,6 @@
 
 .watched {
 	opacity: 0.5;
-
-	.click-watched {
-		background-color: #9b9;
-	}
 }
 
 #channel-btn {
@@ -470,7 +473,7 @@ footer {
 	bottom: 0;
 	background: #e2e2e2;
 	z-index: 200;
-	box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+	box-shadow: 0 -2px 2px rgba(0,0,0,0.1);
 
 	div {
 		display: inline-block !important;

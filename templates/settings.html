@@ -20,6 +20,7 @@
 								<i class="icon-signout" title="Change User"></i>
 							</button>
 						</div>
+						<br />
 						<h4>Visibility</h4>
 						<hr />
 						<div class="btn-group">
@@ -46,6 +47,26 @@
 								>
 								<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
 								<span>Watched</span>
+							</button>
+						</div>
+						<br />
+						<h4>AdBlock Override</h4>
+						<hr />
+						<p>Support the channels you follow by disabling adblock only for them.</p>
+						<p>Add the following rule by going to AdBlock&rarr;Filter Preferences&rarr;Custom Filters&rarr;Add Filter</p>
+						<p><strong>@@||youtube.com*&adblock={{settings.adblocksecret}}|$document</strong></p>
+						<div class="btn-group">
+							<button
+								type="button"
+								class="btn"
+								ng-class="{'btn-primary':settings.adblockoverride, 'btn-success':!settings.adblockoverride}"
+								ng-model="settings.adblockoverride"
+								btn-checkbox
+								btn-checkbox-true="0"
+								btn-checkbox-false="1"
+								>
+								<i ng-class="{'icon-ok':settings.adblockoverride, 'icon-remove':!settings.adblockoverride}"></i>
+								<span>Override AdBlock</span>
 							</button>
 						</div>
 						<div class="visible-xs">
