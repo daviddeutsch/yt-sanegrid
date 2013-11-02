@@ -62,6 +62,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.videocache = {};
 		}
 
+		if ( typeof $rootScope.settings.adblocksecret == 'undefined' ) {
+			$rootScope.settings.adblocksecret = Math.random().toString(36).substr(2);
+
+			$rootScope.settings.adblockoverride = false;
+		}
+
+
+
 		var datesort = function ( a, b ) {
 			var datea = new Date( a.published );
 			var dateb = new Date( b.published );
@@ -381,7 +389,7 @@ ytsubgridApp.directive('videoItem', function() {
 			video: '='
 		},
 		templateUrl: 'templates/item.html',
-		controller: function( $scope ) {
+		controller: function( $scope, $rootScope ) {
 			$scope.mute = function () {
 				$scope.video.muted = !$scope.video.muted;
 				$scope.video.muteddate = new Date().toISOString();
@@ -393,6 +401,15 @@ ytsubgridApp.directive('videoItem', function() {
 				}
 
 				$scope.watched(false);
+			};
+
+			$scope.link = function () {
+				if ( $rootScope.settings.adblockoverride ) {
+					return $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
+				} else {
+					return $scope.video.link;
+				}
+
 			};
 
 			$scope.watched = function ( force ) {
@@ -430,6 +447,10 @@ ytsubgridApp.controller( 'SettingsModalInstanceCtrl',
 			$scope.cancel = function () {
 				$modalInstance.dismiss('cancel');
 			};
+
+			$scope.redoadblocksecret = function () {
+				$rootScope.settings.adblocksecret = Math.random().toString(36).substr(2);
+			}
 
 			$scope.removeFilter = function (channel, id) {
 				if ( channel.length ) {
@@ -568,23 +589,21 @@ ytsubgridApp.controller( 'SettingsTabsCtrl',
 			$scope.tabs = [];
 
 			$scope.navType = 'pills';
+
+			$scope.adblockadvice = 'firefox';
+
+			$scope.adblockswitch = function( type ) {
+				$scope.adblockadvice = type;
+			};
 		}]
 );
 
-var TabsDemoCtrl = function ($scope) {
-	$scope.tabs = [
-		{ title:"Dynamic Title 1", content:"Dynamic content 1" },
-		{ title:"Dynamic Title 2", content:"Dynamic content 2", disabled: true }
-	];
-
-	$scope.alertMe = function() {
-		setTimeout(function() {
-			alert("You've selected the alert tab!");
-		});
-	};
-
-	$scope.navType = 'pills';
-};
+ytsubgridApp.controller( 'SettingsAccordionCtrl',
+	[ '$scope',
+		function ($scope) {
+			$scope.oneAtATime = true;
+		}]
+);
 
 ytsubgridApp.factory( 'appLoading',
 	['$rootScope',
@@ -927,3 +946,11 @@ ytsubgridApp.directive('timeAgo',
 		}
 	]
 );
+
+ytsubgridApp.directive('selectOnClick', function () {
+	return function (scope, element, attrs) {
+		element.bind('click', function () {
+			this.select();
+		});
+	};
+});
