@@ -15,6 +15,11 @@
 	</a>
 
 	<div class="video-buttons">
+		<span ng-controller="ZipModalCtrl">
+			<a ng-click="open(video)"
+			   class="click-zip"
+			   title="zip series"><i class="icon-list-alt"></i></a>
+		</span>
 		<span ng-controller="FilterModalCtrl">
 			<a ng-click="open(video)"
 			   class="click-filter"

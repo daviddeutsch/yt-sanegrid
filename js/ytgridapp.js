@@ -1,19 +1,9 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
-ytsubgridApp.controller( 'AppCtrl',
-	['$rootScope', 'appLoading',
-	function ( $rootScope, appLoading ) {
-		$rootScope.topScope = $rootScope;
-
-		$rootScope.$on( '$routeChangeStart', function () {
-			appLoading.loading();
-		} );
-	}]
-);
-
 ytsubgridApp.controller( 'AppRepeatCtrl',
 	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading', 'Videolist',
 	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading, Videolist ) {
+		appLoading.loading();
 
 		$scope.start = true;
 
@@ -67,8 +57,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.settings.adblockoverride = false;
 		}
-
-
 
 		var datesort = function ( a, b ) {
 			var datea = new Date( a.published );
@@ -559,6 +547,74 @@ ytsubgridApp.controller( 'FilterModalInstanceCtrl',
 		}]
 );
 
+ytsubgridApp.controller( 'ZipModalCtrl',
+	[ '$scope', '$store', '$modal',
+		function ($scope, $store, $modal) {
+			$scope.open = function (video) {
+				var modalInstance = $modal.open({
+					templateUrl: 'templates/zip.html',
+					backdrop: false,
+					dialogFade:true,
+					controller: 'ZipModalInstanceCtrl',
+					scope: $scope,
+					resolve: {
+						item: function () {
+							return video;
+						}
+					}
+				});
+			};
+		}]
+);
+
+ytsubgridApp.controller( 'ZipModalInstanceCtrl',
+	[ '$rootScope', '$scope', '$store', '$modalInstance', 'item',
+		function ($rootScope, $scope, $store, $modalInstance, item) {
+
+			if ( item.authorid ) {
+				$scope.filter = {
+					title: item.title,
+					channel: item.authorid,
+					author: item.author,
+					authorid: item.authorid
+				};
+			} else {
+				$scope.filter = {
+					title: item.title,
+					channel: item.author,
+					author: item.author,
+					authorid: item.author
+				};
+			}
+
+
+			$scope.cancel = function () {
+				$modalInstance.dismiss('cancel');
+			};
+
+			$scope.ok = function (item) {
+				$store.bind( $rootScope, 'filters', {} );
+
+				if ( $scope.filter.channel.length ) {
+					if ( typeof $rootScope.filters.channels[$scope.filter.channel] == 'undefined' ) {
+						$rootScope.filters.channels[$scope.filter.channel] = {
+							title: $scope.filter.channel,
+							filters: []
+						};
+					}
+
+					$rootScope.filters.channels[$scope.filter.channel].filters.push({string:$scope.filter.title});
+				} else {
+					$rootScope.filters.global.push({string:$scope.filter.title});
+				}
+
+				$rootScope.filters.count++;
+
+				$modalInstance.dismiss('ok');
+			};
+		}]
+);
+
 ytsubgridApp.controller( 'UpdatesModalCtrl',
 	[ '$rootScope', '$scope', '$store', '$modal', 'ytApp',
 		function ($rootScope, $scope, $store, $modal, ytApp) {
@@ -609,19 +665,16 @@ ytsubgridApp.factory( 'appLoading',
 	['$rootScope',
 	function ( $rootScope ) {
 		var timer;
+
 		return {
 			loading: function () {
 				clearTimeout( timer );
 
 				$rootScope.status = 1;
-
-				if ( !$rootScope.$$phase ) $rootScope.$apply();
 			},
 			ready:   function ( delay ) {
 				function ready() {
 					$rootScope.status = 0;
-
-					if ( !$rootScope.$$phase ) $rootScope.$apply();
 				}
 
 				clearTimeout( timer );

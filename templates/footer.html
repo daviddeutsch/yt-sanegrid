@@ -80,7 +80,7 @@
 			ng-click="refresh()"
 			title="Refresh"
 			>
-			<i class="icon-refresh" ng-class="{'icon-spinner icon-spin':status}"></i>
+			<i ng-class="{'icon-spinner icon-spin': $scope.status, 'icon-refresh': !$scope.status}"></i>
 		</button>
 	</div>
 
