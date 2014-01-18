@@ -275,6 +275,13 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			loadTop();
 		};
 
+		$scope.reset = function() {
+			$rootScope.videos = [];
+			$rootScope.videocache = {};
+			$rootScope.userid = "";
+			$scope.start = true;
+		};
+
 		$scope.hideChannel = function ( name ) {
 			var pos = $.inArray( name, $rootScope.channeloptions.hidden );
 
