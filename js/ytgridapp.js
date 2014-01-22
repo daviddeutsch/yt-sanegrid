@@ -1,16 +1,5 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
-ytsubgridApp.controller( 'AppCtrl',
-	['$rootScope', 'appLoading',
-	function ( $rootScope, appLoading ) {
-		$rootScope.topScope = $rootScope;
-
-		$rootScope.$on( '$routeChangeStart', function () {
-			appLoading.loading();
-		} );
-	}]
-);
-
 ytsubgridApp.controller( 'AppRepeatCtrl',
 	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading', 'Videolist',
 	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading, Videolist ) {
@@ -67,8 +56,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.settings.adblockoverride = false;
 		}
-
-
 
 		var datesort = function ( a, b ) {
 			var datea = new Date( a.published );
@@ -232,7 +219,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
 
-			appLoading.ready( 100 );
+			appLoading.ready( 500 );
 		};
 
 		var updateSidebar = function () {
@@ -605,23 +592,23 @@ ytsubgridApp.controller( 'SettingsAccordionCtrl',
 		}]
 );
 
-ytsubgridApp.factory( 'appLoading',
-	['$rootScope',
-	function ( $rootScope ) {
-		var timer;
-		return {
-			loading: function () {
+ytsubgridApp
+	.service( 'appLoading',
+		[
+		'$rootScope',
+		function ( $rootScope )
+		{
+			var timer;
+
+			this.loading = function () {
 				clearTimeout( timer );
 
 				$rootScope.status = 1;
+			};
 
-				if ( !$rootScope.$$phase ) $rootScope.$apply();
-			},
-			ready:   function ( delay ) {
+			this.ready = function ( delay ) {
 				function ready() {
 					$rootScope.status = 0;
-
-					if ( !$rootScope.$$phase ) $rootScope.$apply();
 				}
 
 				clearTimeout( timer );
@@ -633,14 +620,15 @@ ytsubgridApp.factory( 'appLoading',
 				} else {
 					ready();
 				}
-			}
-		};
-	}]
-);
+			};
+		}
+		]
+	);
+
 
 ytsubgridApp.factory( 'ytData',
-	['$q', '$rootScope', '$store',
-		function ( $q, $rootScope, $store ) {
+	['$q',
+		function ( $q ) {
 			return {
 				subscriptionvideos: function ( q, s, fn ) {
 					var searchToken = '{SEARCH}';
