@@ -323,7 +323,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			if ( filtered ) {
 				$rootScope.filters.caught++;
 
-				videos[i].muted = true;
+				video.muted = true;
 
 				return null;
 			}
