@@ -1,8 +1,8 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading', 'Videolist',
-	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading, Videolist ) {
+	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading',
+	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading ) {
 
 		$scope.start = true;
 
@@ -343,27 +343,14 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			checkList();
 
-			//loadTop();
+			loadTop();
 
-			//updateSidebar();
+			updateSidebar();
 		}
 	}]
 );
 
-ytsubgridApp.factory( 'Videolist',
-	['$rootScope', '$store',
-		function ( $rootScope, $store ) {
-			return {
-				getVideos: function() {
-					return function() {
-
-					}
-				}
-			};
-		}]
-);
-
-ytsubgridApp.directive('videoItem', function() {
+ytsubgridApp.directive('videoItem', function($timeout) {
 	return {
 		restrict: 'C',
 		scope: {
@@ -381,17 +368,14 @@ ytsubgridApp.directive('videoItem', function() {
 					return;
 				}
 
-				$scope.watched(false);
+				$timeout(function(){$scope.watched(false);}, 400);
 			};
 
-			$scope.link = function () {
-				if ( $rootScope.settings.adblockoverride ) {
-					return $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
-				} else {
-					return $scope.video.link;
-				}
-
-			};
+			if ( $rootScope.settings.adblockoverride ) {
+				$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
+			} else {
+				$scope.link = $scope.video.link;
+			}
 
 			$scope.watched = function ( force ) {
 				if ( $scope.video.watched && !force ) {
