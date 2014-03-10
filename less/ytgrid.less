@@ -291,6 +291,27 @@ h4 .btn-group {
 	}
 }
 
+.more-items {
+	float: left;
+	position: relative;
+	width: 200px;
+	height: 200px;
+	margin: 12px 4px;
+	border: none;
+	overflow: hidden;
+	background: #f0f0f0;
+	p {
+		text-align: center;
+	}
+	.limit-controls {
+		.transition(opacity, 0.4s, ease-out);
+		opacity: 0.1;
+	}
+	&:hover .limit-controls {
+		opacity: 1;
+	}
+}
+
 .thumbnail {
 	float: left;
 	position: relative;

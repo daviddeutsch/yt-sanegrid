@@ -6,5 +6,38 @@
 	}"
 	ng-if="!start"
 	>
-	<div ng-repeat="video in videolist() track by $index" class="video-item" video="video"></div>
+	<div ng-repeat="video in videos| orderBy:'published':true | filter:videoFilter | limitTo:settings.videolimit" class="video-item" video="video"></div>
+	<div class="more-items well" ng-controller="VideoListCtrl">
+		<br /><br />
+		<p>
+			Showing {{abslength}} of {{videos.length}} entries
+		</p>
+		<div class="progress">
+			<div class="progress-bar progress-bar-info"
+				 role="progressbar"
+				 aria-valuenow="{{percentage}}"
+				 aria-valuemin="0"
+				 aria-valuemax="{{videos.length}}"
+				 ng-style="{width: percentage+'%'}">
+				<span>{{abslength}}</span>
+			</div>
+		</div>
+		<p class="limit-controls">
+			<span>&nbsp;&nbsp;&nbsp;show less &lt;&gt; show more</span>
+			<br />
+			<span>
+				<a ng-click="setLimit(-50)">50</a>
+				·
+				<a ng-click="setLimit(-10)">10</a>
+				·
+				<a ng-click="setLimit(-5)">5</a>
+				&nbsp;|&nbsp;
+				<a ng-click="setLimit(5)">5</a>
+				·
+				<a ng-click="setLimit(10)">10</a>
+				·
+				<a ng-click="setLimit(50)">50</a>
+			</span>
+		</p>
+	</div>
 </div>
