@@ -1,8 +1,8 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$store', '$document', '$q', 'ytApp', 'ytData', 'appLoading',
-	function ( $rootScope, $scope, $store, $document, $q, ytApp, ytData, appLoading ) {
+	['$rootScope', '$scope', '$store', '$document', '$q', 'ytApp', 'googleAPI', 'ytData', 'appLoading',
+	function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, appLoading ) {
 
 		$scope.start = true;
 
@@ -61,7 +61,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.settings.videolimit = 100;
 		}
 
-		var fetchError = function ( status ) {
+		var httpError = function ( status ) {
 			if ( status == 403 ) {
 				$scope.forbidden = 1;
 			} else {
@@ -88,7 +88,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					loadChannels(data, status);
 				})
 				.error(function(data, status){
-					fetchError(status);
+					httpError(status);
 				});
 		};
 
@@ -237,7 +237,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					pushVideos(data, status);
 				})
 				.error(function(data, status){
-					fetchError(status);
+					httpError(status);
 				});
 		};
 
@@ -265,7 +265,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					pushVideos(data, status);
 				})
 				.error(function(data, status){
-					fetchError(status);
+					httpError(status);
 				});
 		};
 
@@ -345,6 +345,11 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			return video;
 		};
 
+		$scope.connect = function()
+		{
+			googleAPI.authorize();
+		};
+
 		angular.element($document).bind("keyup", function(event) {
 			if (event.which === 82) $scope.refresh();
 		});
@@ -353,13 +358,15 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
 
-			setUserid( $rootScope.userid );
+			//setUserid( $rootScope.userid );
 
-			checkList();
+			//checkList();
 
-			loadTop();
+			//loadTop();
 
-			updateSidebar();
+			//updateSidebar();
+
+			//googleAPI.checkAuth();
 		}
 	}]
 );
@@ -664,42 +671,125 @@ ytsubgridApp
 
 ytsubgridApp.service( 'ytData',
 	[
-		'$http',
-		function ( $http ) {
+		'$q', 'googleAPI',
+		function ( $q, googleAPI ) {
 			var self = this;
 
 			this.get = function ( url ) {
-				url += "&max-results=50"
-					+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
+				var deferred = $q.defer();
 
-				return $http.get(url);
+				var request = googleAPI.gapi.client.youtube.subscriptions.list({
+					mine: true,
+					part: 'contentDetails'
+				});
+
+				request.execute(function(response) {
+					deferred.resolve();
+				});
+
+				return deferred.promise;
 			};
 
 			this.subscriptionvideos = function ( username, index ) {
 				return self.get(
-					"https://gdata.youtube.com/feeds/api/users/"
-						+ username
-						+ "/newsubscriptionvideos?alt=json&start-index="
-						+ index
-					);
+					username
+					+ "/newsubscriptionvideos?alt=json&start-index="
+					+ index
+				);
 			};
 
 			this.channels = function ( username ) {
 				return self.get(
-						"https://gdata.youtube.com/feeds/api/users/"
-							+ username
-							+ "/subscriptions?alt=json"
-					);
+					username
+					+ "/subscriptions?alt=json"
+				);
 			};
 
 			this.channelvideos = function ( username ) {
 				return self.get(
-					"https://gdata.youtube.com/feeds/api/users/"
-						+ username
-						+ "/uploads?alt=json"
+					username
+					+ "/uploads?alt=json"
 				);
 			};
 
+		}
+	]
+);
+
+ytsubgridApp.service( 'googleAPI',
+	[
+		'$q',
+		function ( $q ) {
+			var self = this;
+
+			this.clientId = '950592637430.apps.googleusercontent.com';
+
+			this.apiKey = 'AIzaSyA3Sp_UFPXnqaEFyChRHBjN7x3d2n4Xthg';
+
+			this.scopes = 'https://www.googleapis.com/auth/youtube';
+
+			this.gapi = gapi;
+
+			this.result = {};
+
+			this.checkAuth = function() {
+				if ( typeof self.gapi.client == 'undefined' ) {
+					self.init();
+				}
+
+				var deferred = $q.defer();
+
+				self.gapi.auth.authorize({
+					client_id: this.clientId,
+					scope: this.scopes,
+					immediate: true
+				}, function( result ) {
+					self.result = result;
+
+					if ( result ) {
+						self.gapi.client.load('youtube', 'v3', function(response) {
+							deferred.resolve();
+						});
+					} else {
+						deferred.reject();
+					}
+				});
+
+				return deferred.promise
+			};
+
+			this.authorize = function() {
+				if ( typeof self.gapi.client == 'undefined' ) {
+					self.init();
+				}
+
+				var deferred = $q.defer();
+
+				self.gapi.auth.authorize({
+					client_id: this.clientId,
+					scope: this.scopes,
+					immediate: false
+				}, function( result ) {
+					self.result = result;
+
+					if ( result ) {
+						self.gapi.client.load('youtube', 'v3', function(response) {
+							deferred.resolve();
+						});
+					} else {
+						deferred.reject();
+					}
+				});
+
+				return deferred.promise
+			};
+
+			this.init = function()
+			{
+				this.gapi.load();
+
+				self.gapi.client.setApiKey(self.apiKey);
+			};
 		}
 	]
 );
