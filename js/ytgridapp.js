@@ -737,14 +737,14 @@ ytsubgridApp.service( 'googleAPI',
 			{
 				var deferred = $q.defer();
 
+				self.gapi.client.setApiKey(self.apiKey);
+
 				self.gapi.auth.authorize({
 					client_id: this.clientId,
 					scope: this.scopes,
 					immediate: true
 				}, function( result ) {
 					self.result = result;
-
-					var token = self.gapi.auth.getToken();
 
 					if ( result === null ) {
 						self.gapi.client.load('youtube', 'v3', function(response) {
