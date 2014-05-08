@@ -358,6 +358,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
 
+			googleAPI.checkAuth();
+
 			setUserid( $rootScope.userid );
 
 			checkList();
@@ -365,8 +367,6 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			loadTop();
 
 			updateSidebar();
-
-			googleAPI.checkAuth();
 		}
 	}]
 );
