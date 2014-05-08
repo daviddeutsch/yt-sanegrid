@@ -132,13 +132,15 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		};
 
 		var pushVideos = function ( data, code ) {
+			var count = 0;
+
 			if ( code == 200 ) {
 				if ( typeof data != 'undefined' ) {
 					var len = $rootScope.videos.length;
 
 					for ( var i = 0; i < data.length; i++ ) {
-						if ( pushVideo( data[i], len ) === true ) {
-							len++;
+						if ( pushVideo( data[i], $rootScope.videos.length+count ) === true ) {
+							count++;
 						}
 					}
 				}
@@ -151,6 +153,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			}
 
 			appLoading.ready( 100 );
+
+			return count;
 		};
 
 		var pushVideo = function ( o, id ) {
