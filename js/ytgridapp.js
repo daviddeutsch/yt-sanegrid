@@ -1,8 +1,8 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
 ytsubgridApp.controller( 'AppRepeatCtrl',
-	['$rootScope', '$scope', '$store', '$document', 'ytApp', 'ytData', 'appLoading',
-	function ( $rootScope, $scope, $store, $document, ytApp, ytData, appLoading ) {
+	['$rootScope', '$scope', '$store', '$document', '$q', 'ytApp', 'ytData', 'appLoading',
+	function ( $rootScope, $scope, $store, $document, $q, ytApp, ytData, appLoading ) {
 
 		$scope.start = true;
 
@@ -134,6 +134,8 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		var pushVideos = function ( data, code ) {
 			var count = 0;
 
+			var deferred = $q.defer();
+
 			if ( code == 200 ) {
 				if ( typeof data != 'undefined' ) {
 					var len = $rootScope.videos.length;
@@ -232,7 +234,10 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, 1, pushVideos );
+			ytData.subscriptionvideos( $rootScope.userid, 1 )
+				.then(function(){
+					pushVideos();
+				});
 
 			appLoading.ready( 500 );
 		};
@@ -652,75 +657,46 @@ ytsubgridApp
 	);
 
 
-ytsubgridApp.factory( 'ytData',
-	['$q',
-		function ( $q ) {
-			return {
-				subscriptionvideos: function ( q, s, fn ) {
-					var searchToken = '{SEARCH}';
+ytsubgridApp.service( 'ytData',
+	[
+		'$http',
+		function ( $http ) {
+			var self = that;
 
-					var startToken = '{START}';
+			this.get = function ( url ) {
+				url += "&max-results=50"
+					+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
 
-					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-						+ searchToken
-						+ "/newsubscriptionvideos?alt=json&start-index="
-						+ startToken
-						+ "&max-results=50"
-						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
-
-					var defer = $q.defer();
-
-					var url = baseUrl.replace( searchToken, q ).replace( startToken, s );
-
-					$.getJSON( url )
-						.fail( function ( j, t, e ) {
-							fn( e, j.status );
-						} )
-						.done( function ( json ) {
-							fn( json.feed.entry, 200 );
-						} );
-				},
-				channels: function ( q, fn ) {
-					var searchToken = '{SEARCH}';
-
-					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-						+ searchToken
-						+ "/subscriptions?alt=json"
-						+ "&max-results=50"
-						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
-					var defer = $q.defer();
-
-					var url = baseUrl.replace( searchToken, q );
-
-					$.getJSON( url )
-						.fail( function ( j, t, e ) {
-							fn( e, j.status );
-						} )
-						.done( function ( json ) {
-							fn( json.feed.entry, 200 );
-						} );
-				},
-				channelvideos: function ( q, fn ) {
-					var searchToken = '{SEARCH}';
-
-					var baseUrl = "https://gdata.youtube.com/feeds/api/users/"
-						+ searchToken
-						+ "/uploads?alt=json"
-						+ "&key=AIzaSyBx53eovwXsAoIp_KhsiGpHAG4bKFFGfTM";
-					var defer = $q.defer();
-
-					var url = baseUrl.replace( searchToken, q );
-
-					$.getJSON( url )
-						.fail( function ( j, t, e ) {
-							fn( e, j.status );
-						} )
-						.done( function ( json ) {
-							fn( json.feed.entry, 200 );
-						} );
-				}
+				return $http.get(url);
 			};
-		}]
+
+			this.subscriptionvideos = function ( username, index ) {
+				return self.http(
+					"https://gdata.youtube.com/feeds/api/users/"
+						+ username
+						+ "/newsubscriptionvideos?alt=json&start-index="
+						+ index
+					);
+			};
+
+			this.channels = function ( username ) {
+				return self.http(
+						"https://gdata.youtube.com/feeds/api/users/"
+							+ username
+							+ "/subscriptions?alt=json"
+					);
+			};
+
+			this.channelvideos = function ( username ) {
+				return self.http(
+					"https://gdata.youtube.com/feeds/api/users/"
+						+ username
+						+ "/uploads?alt=json"
+				);
+			};
+
+		}
+	]
 );
 
 ytsubgridApp.service( 'ytApp',
