@@ -769,7 +769,7 @@ ytsubgridApp.service( 'googleAPI',
 
 			this.init = function()
 			{
-				this.gapi.load();
+				self.gapi.load();
 
 				self.gapi.client.setApiKey(self.apiKey);
 			};
