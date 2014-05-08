@@ -347,7 +347,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 		$scope.connect = function()
 		{
-			googleAPI.authorize();
+			googleAPI.authorize()
+				.then(function(){
+					setUserid( $rootScope.userid );
+
+					checkList();
+
+					loadTop();
+
+					updateSidebar();
+				});
 		};
 
 		angular.element($document).bind("keyup", function(event) {
@@ -358,15 +367,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
 
-			googleAPI.checkAuth();
+			googleAPI.checkAuth()
+				.then(function(){
+					setUserid( $rootScope.userid );
 
-			setUserid( $rootScope.userid );
+					checkList();
 
-			checkList();
+					loadTop();
 
-			loadTop();
-
-			updateSidebar();
+					updateSidebar();
+				});
 		}
 	}]
 );
