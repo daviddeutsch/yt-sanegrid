@@ -31,7 +31,6 @@
 
 	<ul>
 		<li>It has a <span class="highlight">minimal, pleasant, full-screen</span> interface</li>
-		<li>It uses the old API, the one that <span class="highlight">doesn't randomly miss new videos</span></li>
 		<li>It <span class="highlight">never forgets a video</span> once it's in your subscription inbox</li>
 		<li>You can <span class="highlight">mark an item as watched or hide it</span> with one click</li>
 		<li>It has <span class="highlight">advanced features like automatic filters</span> based on keywords</li>
@@ -40,28 +39,18 @@
 
 	<hr/>
 
-	<form class="form-inline" style="text-align: center;" role="form" ng-submit="selectUserid(userid)">
+	<form class="form-inline text-center">
 		<p>
-			<strong>To get started, simply enter your youtube username:</strong>&nbsp;&nbsp;&nbsp;
+			<strong>To get started, connect with your YouTube account:</strong>&nbsp;&nbsp;&nbsp;
 			<span class="form-group">
-				<label class="sr-only" for="userid">Your Username</label>
-				<input
-					ng-model="userid"
-					id="userid"
-					type="text"
-					class="form-control"
-					autofocus
-					placeholder="Your YouTube Username">
 				<button
 					class="btn btn-default"
 					type="submit"
-					ng-click="selectUserid(userid)">
-					Ok!
+					ng-click="connect()">
+					Let's go!
 				</button>
 			</span>
-
 		</p>
-
 	</form>
 
 	<hr/>
