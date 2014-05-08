@@ -73,7 +73,19 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.videos = $rootScope.videocache[u];
 
-			ytData.channels( $rootScope.userid, loadChannels );
+			ytData.channels( $rootScope.userid )
+				.success(function(data, status){
+					loadChannels(data, status);
+				})
+				.error(function(data, status){
+					if ( status == 403 ) {
+						$scope.forbidden = 1;
+					} else {
+						$scope.notfound = 1;
+					}
+
+					appLoading.ready( 100 );
+				});
 		};
 
 		var checkList = function() {
@@ -102,30 +114,24 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		};
 
 		var loadChannels = function ( data, code ) {
-			if ( code == 200 ) {
-				if ( typeof data != 'undefined' ) {
-					$scope.channels = [];
+			if ( typeof data != 'undefined' ) {
+				$scope.channels = [];
 
-					var idents = [];
+				var idents = [];
 
-					$.each( data, function ( i, v ) {
-						if ( $.inArray( v['yt$username'], idents ) == -1 ) {
-							$scope.channels.push(
-								{
-									id: v['yt$channelId']['$t'],
-									name: v['yt$username']['$t'],
-									thumbnail: v['media$thumbnail']['url']
-								}
-							);
+				$.each( data, function ( i, v ) {
+					if ( $.inArray( v['yt$username'], idents ) == -1 ) {
+						$scope.channels.push(
+							{
+								id: v['yt$channelId']['$t'],
+								name: v['yt$username']['$t'],
+								thumbnail: v['media$thumbnail']['url']
+							}
+						);
 
-							idents.push( v['yt$username'] );
-						}
-					} );
-				}
-			} else if ( code == 403 ) {
-				$scope.forbidden = 1;
-			} else {
-				$scope.notfound = 1;
+						idents.push( v['yt$username'] );
+					}
+				} );
 			}
 
 			appLoading.ready( 100 );
@@ -134,24 +140,12 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 		var pushVideos = function ( data, code ) {
 			var count = 0;
 
-			var deferred = $q.defer();
-
-			if ( code == 200 ) {
-				if ( typeof data != 'undefined' ) {
-					var len = $rootScope.videos.length;
-
-					for ( var i = 0; i < data.length; i++ ) {
-						if ( pushVideo( data[i], $rootScope.videos.length+count ) === true ) {
-							count++;
-						}
+			if ( typeof data != 'undefined' ) {
+				for ( var i = 0; i < data.length; i++ ) {
+					if ( pushVideo( data[i], $rootScope.videos.length+count ) === true ) {
+						count++;
 					}
 				}
-			} else if ( code == 403 ) {
-				$scope.start = true;
-				$scope.forbidden = 1;
-			} else {
-				$scope.start = true;
-				$scope.notfound = 1;
 			}
 
 			appLoading.ready( 100 );
@@ -235,11 +229,18 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.filters.caught = 0;
 
 			ytData.subscriptionvideos( $rootScope.userid, 1 )
-				.then(function(){
-					pushVideos();
-				});
+				.success(function(data, status){
+					pushVideos(data, status);
+				})
+				.error(function(data, status){
+					if ( status == 403 ) {
+						$scope.forbidden = 1;
+					} else {
+						$scope.notfound = 1;
+					}
 
-			appLoading.ready( 500 );
+					appLoading.ready( 100 );
+				});
 		};
 
 		var updateSidebar = function () {
@@ -261,7 +262,19 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1, pushVideos );
+			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1 )
+				.success(function(data, status){
+					pushVideos(data, status);
+				})
+				.error(function(data, status){
+					if ( status == 403 ) {
+						$scope.forbidden = 1;
+					} else {
+						$scope.notfound = 1;
+					}
+
+					appLoading.ready( 100 );
+				});
 		};
 
 		$scope.selectUserid = function ( q ) {
