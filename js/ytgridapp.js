@@ -732,7 +732,7 @@ ytsubgridApp.service( 'googleAPI',
 		function ( $q ) {
 			var self = this;
 
-			this.clientId = '950592637430';
+			this.clientId = '950592637430.apps.googleusercontent.com';
 
 			this.apiKey = 'AIzaSyA3Sp_UFPXnqaEFyChRHBjN7x3d2n4Xthg';
 
