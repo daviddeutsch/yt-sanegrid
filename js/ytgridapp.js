@@ -742,7 +742,7 @@ ytsubgridApp.service( 'googleAPI',
 				self.gapi.auth.authorize({
 					client_id: this.clientId,
 					scope: this.scopes,
-					immediate: true
+					immediate: false
 				}, function( result ) {
 					self.result = result;
 
