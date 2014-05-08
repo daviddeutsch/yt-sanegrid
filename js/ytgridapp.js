@@ -1,5 +1,7 @@
 var ytsubgridApp = angular.module( "ytsubgridApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
 
+gapi.load();
+
 ytsubgridApp.controller( 'AppRepeatCtrl',
 	['$rootScope', '$scope', '$store', '$document', '$q', 'ytApp', 'googleAPI', 'ytData', 'appLoading',
 	function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, appLoading ) {
@@ -84,10 +86,9 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.videos = $rootScope.videocache[u];
 
 			ytData.channels( $rootScope.userid )
-				.success(function(data, status){
+				.then(function(data, status){
 					loadChannels(data, status);
-				})
-				.error(function(data, status){
+				}, function(data, status){
 					httpError(status);
 				});
 		};
@@ -232,11 +233,10 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, 1 )
-				.success(function(data, status){
+			ytData.subscriptionvideos( 1 )
+				.then(function(data, status){
 					pushVideos(data, status);
-				})
-				.error(function(data, status){
+				}, function(data, status){
 					httpError(status);
 				});
 		};
@@ -260,11 +260,10 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 
 			$rootScope.filters.caught = 0;
 
-			ytData.subscriptionvideos( $rootScope.userid, $rootScope.videos.length + 1 )
-				.success(function(data, status){
+			ytData.subscriptionvideos( $rootScope.videos.length + 1 )
+				.then(function(data, status){
 					pushVideos(data, status);
-				})
-				.error(function(data, status){
+				}, function(data, status){
 					httpError(status);
 				});
 		};
@@ -685,10 +684,12 @@ ytsubgridApp.service( 'ytData',
 		function ( $q, googleAPI ) {
 			var self = this;
 
-			this.get = function ( url ) {
+			this.get = function ( r ) {
 				var deferred = $q.defer();
 
-				var request = googleAPI.gapi.client.youtube.subscriptions.list({
+				googleAPI.gapi.client.setApiKey(googleAPI.apiKey);
+
+				var request = googleAPI.gapi.client.youtube[r].list({
 					mine: true,
 					part: 'contentDetails'
 				});
@@ -700,26 +701,16 @@ ytsubgridApp.service( 'ytData',
 				return deferred.promise;
 			};
 
-			this.subscriptionvideos = function ( username, index ) {
-				return self.get(
-					username
-					+ "/newsubscriptionvideos?alt=json&start-index="
-					+ index
-				);
+			this.subscriptionvideos = function (index) {
+				return self.get('subscriptions');
 			};
 
-			this.channels = function ( username ) {
-				return self.get(
-					username
-					+ "/subscriptions?alt=json"
-				);
+			this.channels = function () {
+				return self.get('channels');
 			};
 
-			this.channelvideos = function ( username ) {
-				return self.get(
-					username
-					+ "/uploads?alt=json"
-				);
+			this.channelvideos = function () {
+				return self.get('channelvideos');
 			};
 
 		}
@@ -744,10 +735,6 @@ ytsubgridApp.service( 'googleAPI',
 
 			this.connect = function()
 			{
-				if ( typeof self.gapi.client == 'undefined' ) {
-					self.init();
-				}
-
 				var deferred = $q.defer();
 
 				self.gapi.auth.authorize({
@@ -756,6 +743,8 @@ ytsubgridApp.service( 'googleAPI',
 					immediate: true
 				}, function( result ) {
 					self.result = result;
+
+					var token = self.gapi.auth.getToken();
 
 					if ( result === null ) {
 						self.gapi.client.load('youtube', 'v3', function(response) {
@@ -770,20 +759,52 @@ ytsubgridApp.service( 'googleAPI',
 			};
 
 			this.checkAuth = function() {
-				return self.connect();
+				if ( typeof self.gapi.client == 'undefined' ) {
+					var deferred = $q.defer();
+
+					self.init()
+						.then(function(){
+							self.connect()
+								.then(function(){
+									deferred.resolve();
+								});
+						});
+
+					return deferred.promise;
+				} else {
+					return self.connect();
+				}
 			};
 
 			this.authorize = function() {
-				return self.connect();
+				if ( typeof self.gapi.client == 'undefined' ) {
+					var deferred = $q.defer();
+
+					self.init()
+						.then(function(){
+							self.connect()
+								.then(function(){
+									deferred.resolve();
+								});
+						});
+
+					return deferred.promise;
+				} else {
+					return self.connect();
+				}
 			};
 
 			this.init = function()
 			{
-				self.gapi.load();
+				var deferred = $q.defer();
 
-				if ( typeof self.gapi.client !== 'undefined' ) {
+				self.gapi.load(function(){
 					self.gapi.client.setApiKey(self.apiKey);
-				}
+
+					deferred.resolve();
+				});
+
+				return deferred.promise;
 			};
 
 			this.init();
