@@ -732,7 +732,7 @@ ytsubgridApp.service( 'googleAPI',
 		function ( $q ) {
 			var self = this;
 
-			this.clientId = '950592637430.apps.googleusercontent.com';
+			this.clientId = '950592637430';
 
 			this.apiKey = 'AIzaSyA3Sp_UFPXnqaEFyChRHBjN7x3d2n4Xthg';
 
@@ -781,7 +781,9 @@ ytsubgridApp.service( 'googleAPI',
 			{
 				self.gapi.load();
 
-				self.gapi.client.setApiKey(self.apiKey);
+				if ( typeof self.gapi.client !== 'undefined' ) {
+					self.gapi.client.setApiKey(self.apiKey);
+				}
 			};
 
 			this.init();
