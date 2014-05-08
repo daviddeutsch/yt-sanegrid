@@ -732,7 +732,8 @@ ytsubgridApp.service( 'googleAPI',
 
 			this.result = {};
 
-			this.checkAuth = function() {
+			this.connect = function()
+			{
 				if ( typeof self.gapi.client == 'undefined' ) {
 					self.init();
 				}
@@ -755,33 +756,15 @@ ytsubgridApp.service( 'googleAPI',
 					}
 				});
 
-				return deferred.promise
+				return deferred.promise;
+			};
+
+			this.checkAuth = function() {
+				return self.connect();
 			};
 
 			this.authorize = function() {
-				if ( typeof self.gapi.client == 'undefined' ) {
-					self.init();
-				}
-
-				var deferred = $q.defer();
-
-				self.gapi.auth.authorize({
-					client_id: this.clientId,
-					scope: this.scopes,
-					immediate: false
-				}, function( result ) {
-					self.result = result;
-
-					if ( result ) {
-						self.gapi.client.load('youtube', 'v3', function(response) {
-							deferred.resolve();
-						});
-					} else {
-						deferred.reject();
-					}
-				});
-
-				return deferred.promise
+				return self.connect();
 			};
 
 			this.init = function()
