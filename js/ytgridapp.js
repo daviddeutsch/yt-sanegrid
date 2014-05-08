@@ -61,6 +61,16 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$rootScope.settings.videolimit = 100;
 		}
 
+		var fetchError = function ( status ) {
+			if ( status == 403 ) {
+				$scope.forbidden = 1;
+			} else {
+				$scope.notfound = 1;
+			}
+
+			appLoading.ready( 100 );
+		};
+
 		var setUserid = function ( u ) {
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
@@ -78,13 +88,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					loadChannels(data, status);
 				})
 				.error(function(data, status){
-					if ( status == 403 ) {
-						$scope.forbidden = 1;
-					} else {
-						$scope.notfound = 1;
-					}
-
-					appLoading.ready( 100 );
+					fetchError(status);
 				});
 		};
 
@@ -233,13 +237,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					pushVideos(data, status);
 				})
 				.error(function(data, status){
-					if ( status == 403 ) {
-						$scope.forbidden = 1;
-					} else {
-						$scope.notfound = 1;
-					}
-
-					appLoading.ready( 100 );
+					fetchError(status);
 				});
 		};
 
@@ -267,13 +265,7 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 					pushVideos(data, status);
 				})
 				.error(function(data, status){
-					if ( status == 403 ) {
-						$scope.forbidden = 1;
-					} else {
-						$scope.notfound = 1;
-					}
-
-					appLoading.ready( 100 );
+					fetchError(status);
 				});
 		};
 
@@ -674,7 +666,7 @@ ytsubgridApp.service( 'ytData',
 	[
 		'$http',
 		function ( $http ) {
-			var self = that;
+			var self = this;
 
 			this.get = function ( url ) {
 				url += "&max-results=50"
@@ -684,7 +676,7 @@ ytsubgridApp.service( 'ytData',
 			};
 
 			this.subscriptionvideos = function ( username, index ) {
-				return self.http(
+				return self.get(
 					"https://gdata.youtube.com/feeds/api/users/"
 						+ username
 						+ "/newsubscriptionvideos?alt=json&start-index="
@@ -693,7 +685,7 @@ ytsubgridApp.service( 'ytData',
 			};
 
 			this.channels = function ( username ) {
-				return self.http(
+				return self.get(
 						"https://gdata.youtube.com/feeds/api/users/"
 							+ username
 							+ "/subscriptions?alt=json"
@@ -701,7 +693,7 @@ ytsubgridApp.service( 'ytData',
 			};
 
 			this.channelvideos = function ( username ) {
-				return self.http(
+				return self.get(
 					"https://gdata.youtube.com/feeds/api/users/"
 						+ username
 						+ "/uploads?alt=json"
