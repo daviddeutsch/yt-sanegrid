@@ -358,15 +358,15 @@ ytsubgridApp.controller( 'AppRepeatCtrl',
 			$scope.start = false;
 			$rootScope.settings.sidebar = false;
 
-			//setUserid( $rootScope.userid );
+			setUserid( $rootScope.userid );
 
-			//checkList();
+			checkList();
 
-			//loadTop();
+			loadTop();
 
-			//updateSidebar();
+			updateSidebar();
 
-			//googleAPI.checkAuth();
+			googleAPI.checkAuth();
 		}
 	}]
 );
