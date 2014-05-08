@@ -773,6 +773,8 @@ ytsubgridApp.service( 'googleAPI',
 
 				self.gapi.client.setApiKey(self.apiKey);
 			};
+
+			this.init();
 		}
 	]
 );
