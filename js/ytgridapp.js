@@ -695,6 +695,7 @@ ytsubgridApp.service( 'ytData',
 				});
 
 				request.execute(function(response) {
+					console.log(result);
 					deferred.resolve();
 				});
 
@@ -744,10 +745,6 @@ ytsubgridApp.service( 'googleAPI',
 					scope: this.scopes,
 					immediate: false
 				}, function( result ) {
-					self.result = result;
-
-					console.log(result);
-
 					if ( result && !result.error ) {
 						self.gapi.client.load('youtube', 'v3', function(response) {
 							deferred.resolve();
