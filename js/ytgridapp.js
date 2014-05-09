@@ -1,20 +1,15 @@
-var sanityApp = angular.module( "sanityApp", ['ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'] );
+var sanityApp = angular.module(
+	"sanityApp",
+	[
+		'ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'
+	]
+);
 
-gapi.load();
-
-sanityApp.controller('AppRepeatCtrl',
+sanityApp.run(
 [
-'$rootScope', '$scope', '$store', '$document', '$q', 'ytApp', 'googleAPI', 'ytData', 'appLoading',
-function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, appLoading ) {
-
-	$scope.start = true;
-
-	$store.bind( $rootScope, 'userid', '' );
-	$store.bind( $rootScope, 'videocache', {} );
-	$store.bind( $rootScope, 'videos', [] );
-	$store.bind( $rootScope, 'settings', {} );
-	$store.bind( $rootScope, 'channelstate', {} );
-	$store.bind( $rootScope, 'filters', {} );
+'$rootScope', 'googleApi',
+function( $rootScope, googleApi ) {
+	$rootScope.apiReady = true;
 
 	if ( $.isEmptyObject( $rootScope.settings ) ) {
 		$rootScope.settings = {
@@ -63,6 +58,23 @@ function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, 
 	if ( typeof $rootScope.settings.videolimit == 'undefined' ) {
 		$rootScope.settings.videolimit = 100;
 	}
+}
+]
+);
+
+sanityApp.controller('AppRepeatCtrl',
+[
+'$rootScope', '$scope', '$store', '$document', 'ytApp', 'googleApi', 'ytData', 'appLoading',
+function ( $rootScope, $scope, $store, $document, ytApp, googleApi, ytData, appLoading ) {
+
+	$scope.start = true;
+
+	$store.bind( $rootScope, 'userid', '' );
+	$store.bind( $rootScope, 'videocache', {} );
+	$store.bind( $rootScope, 'videos', [] );
+	$store.bind( $rootScope, 'settings', {} );
+	$store.bind( $rootScope, 'channelstate', {} );
+	$store.bind( $rootScope, 'filters', {} );
 
 	var httpError = function ( status ) {
 		if ( status == 403 ) {
@@ -347,7 +359,7 @@ function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, 
 
 	$scope.connect = function()
 	{
-		googleAPI.authorize()
+		googleApi.authorize()
 			.then(function(){
 				setUserid( $rootScope.userid );
 
@@ -367,7 +379,7 @@ function ( $rootScope, $scope, $store, $document, $q, ytApp, googleAPI, ytData, 
 		$scope.start = false;
 		$rootScope.settings.sidebar = false;
 
-		googleAPI.checkAuth()
+		googleApi.checkAuth()
 			.then(function(){
 				setUserid( $rootScope.userid );
 
@@ -699,16 +711,16 @@ function ( $rootScope )
 
 sanityApp.service('ytData',
 [
-'$q', 'googleAPI',
-function ( $q, googleAPI ) {
+'$q', 'googleApi',
+function ( $q, googleApi ) {
 	var self = this;
 
 	this.get = function ( r ) {
 		var deferred = $q.defer();
 
-		googleAPI.gapi.client.setApiKey(googleAPI.apiKey);
+		googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
-		var request = googleAPI.gapi.client.youtube[r].list({
+		var request = googleApi.gapi.client.youtube[r].list({
 			mine: true,
 			part: 'snippet'
 		});
@@ -742,10 +754,7 @@ function ( $q, googleAPI ) {
 ]
 );
 
-sanityApp.service('googleAPI',
-[
-'$q',
-function ( $q ) {
+sanityApp.provider('googleApi', function GoogleApiProvider () {
 	var self = this;
 
 	this.clientId = '950592637430.apps.googleusercontent.com';
@@ -756,84 +765,61 @@ function ( $q ) {
 
 	this.gapi = gapi;
 
-	this.result = {};
+	this.q = {};
 
 	this.connect = function()
 	{
-		var deferred = $q.defer();
+		var deferred = self.q.defer();
 
-		self.gapi.client.setApiKey(self.apiKey);
-
-		self.gapi.auth.authorize({
+		this.gapi.auth.authorize(
+			{
 			client_id: this.clientId,
 			scope: this.scopes,
 			immediate: false
-		}, function( result ) {
-			if ( result && !result.error ) {
-				self.gapi.client.load('youtube', 'v3', function(response) {
-					deferred.resolve();
-				});
-			} else {
-				deferred.reject();
+			},
+			function( result ) {
+				if ( result && !result.error ) {
+					self.gapi.client.load('youtube', 'v3', function(response) {
+						deferred.resolve();
+					});
+				} else {
+					deferred.reject();
+				}
 			}
-		});
+		);
 
 		return deferred.promise;
 	};
 
 	this.checkAuth = function() {
-		if ( typeof self.gapi.client == 'undefined' ) {
-			var deferred = $q.defer();
-
-			self.init()
-				.then(function(){
-					self.connect()
-						.then(function(){
-							deferred.resolve();
-						});
-				});
-
-			return deferred.promise;
-		} else {
-			return self.connect();
-		}
+		return this.connect();
 	};
 
 	this.authorize = function() {
-		if ( typeof self.gapi.client == 'undefined' ) {
-			var deferred = $q.defer();
+		return this.connect();
+	};
 
-			self.init()
-				.then(function(){
-					self.connect()
-						.then(function(){
-							deferred.resolve();
-						});
-				});
+	this.load = function() {
+		this.gapi.load();
 
-			return deferred.promise;
-		} else {
-			return self.connect();
+		this.gapi.client.setApiKey(this.apiKey);
+	};
+
+	this.$get = [
+		'$q',
+		function ( $q )
+		{
+			var provider = new GoogleApiProvider();
+
+			provider.q = $q;
+
+			return provider;
 		}
-	};
+	];
 
-	this.init = function()
-	{
-		var deferred = $q.defer();
+});
 
-		self.gapi.load(function(){
-			self.gapi.client.setApiKey(self.apiKey);
 
-			deferred.resolve();
-		});
-
-		return deferred.promise;
-	};
-
-	this.init();
-}
-]
-);
 
 sanityApp.service('ytApp',
 [
@@ -926,7 +912,7 @@ function ( $q, $rootScope ) {
 ]
 );
 
-sanityApp.directive( 'scroll',
+sanityApp.directive('scroll',
 [
 '$window', '$document',
 function ( $window, $document ) {
@@ -1087,3 +1073,16 @@ function () {
 	};
 }
 );
+
+sanityApp.config(
+	[
+		'googleApiProvider',
+		function( googleApiProvider ) {
+			googleApiProvider.load();
+		}
+	]
+);
+
+function googleOnLoadCallback() {
+	angular.bootstrap(document, ["sanityApp"]);
+}
