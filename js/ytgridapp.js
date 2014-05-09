@@ -695,7 +695,7 @@ ytsubgridApp.service( 'ytData',
 				});
 
 				request.execute(function(response) {
-					console.log(result);
+					console.log(response);
 					deferred.resolve();
 				});
 
