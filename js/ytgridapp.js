@@ -726,7 +726,7 @@ ytsubgridApp.service( 'googleAPI',
 
 			this.clientId = '950592637430.apps.googleusercontent.com';
 
-			this.apiKey = 'AIzaSyA3Sp_UFPXnqaEFyChRHBjN7x3d2n4Xthg';
+			this.apiKey = 'AIzaSyCvgbEI4Q6bkkRi6AI1zwiv5oWpZQw9Sxc';
 
 			this.scopes = 'https://www.googleapis.com/auth/youtube';
 
