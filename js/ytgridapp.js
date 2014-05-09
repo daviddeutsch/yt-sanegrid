@@ -748,7 +748,7 @@ ytsubgridApp.service( 'googleAPI',
 
 					console.log(result);
 
-					if ( result === null ) {
+					if ( result && !result.error ) {
 						self.gapi.client.load('youtube', 'v3', function(response) {
 							deferred.resolve();
 						});
