@@ -156,7 +156,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var len = $scope.channels.length - 1;
 
 		for ( var i = 0; i < $scope.channels.length; i++ ) {
-			channelVideos($scope.channels[i].id);
+			channelVideos($scope.channels[i].channelId);
 
 			if ( i === len ) {
 				deferred.resolve();
@@ -322,7 +322,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 					{
 						id: items[i].id,
 						title: items[i].snippet.title,
-						description: items[i].snippet.description
+						description: items[i].snippet.description,
+						channelId: items[i].snippet.resourceId.channelId
 					}
 				);
 
