@@ -31,7 +31,7 @@ function( $rootScope, googleApi ) {
 			hidewatched: false,
 			hidemuted:   true,
 			theme:       'default'
-		}
+		};
 	}
 
 	if ( typeof $rootScope.videos == 'object' ) {
@@ -123,7 +123,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 						loadVideos()
 							.then(function() {
 								appLoading.ready();
-							})
+							});
 					});
 			});
 	};
@@ -168,7 +168,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	{
 		ytData.subscription( channel )
 			.then(function(data) {
-				pushVideos(data.items)
+				pushVideos(data.items);
 			});
 	};
 
@@ -365,7 +365,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	};
 
 	$scope.selectUserid = function ( q ) {
-		if ( q == false ) {
+		if ( q === false ) {
 			$scope.start = true;
 		} else {
 			initAccount( q );
@@ -399,10 +399,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	};
 
 	$scope.videoFilter = function (video) {
-		if (
-			( ( video.muted && ($rootScope.settings.hidemuted == "1") )
-				|| ( video.watched && ($rootScope.settings.hidewatched == "1") ) )
-			) {
+		if ( ( (video.muted && ($rootScope.settings.hidemuted == "1")) || (video.watched && ($rootScope.settings.hidewatched == "1")) ) ) {
 			return null;
 		}
 
@@ -591,11 +588,11 @@ function ($rootScope, $scope, $store, $modalInstance) {
 		if ( channel.length ) {
 			$rootScope.filters.channels[channel].filters.splice(id,1);
 
-			if ( $rootScope.filters.channels[channel].filters.length == 0 ) {
+			if ( $rootScope.filters.channels[channel].filters.length === 0 ) {
 				delete $rootScope.filters.channels[channel];
 			}
 		} else {
-			$rootScope.filters.global.splice(id,1)
+			$rootScope.filters.global.splice(id,1);
 		}
 
 		$rootScope.filters.count--;
@@ -991,7 +988,7 @@ function ( $q, $rootScope ) {
 					}
 				});
 			});
-		})
+		});
 	};
 
 	this.appinfo( function( data, code ) {
@@ -1069,7 +1066,7 @@ function($timeout) {
 			$timeout(ref.doTimeout, ref.settings.refreshMillis);
 		},
 		init: function() {
-			if (this.initted == false) {
+			if (this.initted === false) {
 				this.initted = true;
 				this.nowTime = (new Date()).getTime();
 				ref = this;
@@ -1115,7 +1112,7 @@ function($timeout) {
 			var separator = $l.wordSeparator === undefined ?  " " : $l.wordSeparator;
 			return $.trim([prefix, words, suffix].join(separator));
 		}
-	}
+	};
 }
 );
 
@@ -1141,7 +1138,7 @@ function(timeago) {
 				});
 			}
 		}
-	}
+	};
 }
 ]
 );
