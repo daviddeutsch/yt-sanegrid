@@ -137,7 +137,10 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		ytData.channels()
 			.then(function(data){
-				accounts.push(data.items[0].id);
+				accounts.push({
+					id: data.items[0].id,
+					title: data.items[0].snippet.title
+				});
 
 				deferred.resolve(data.items[0].id);
 			});
@@ -807,7 +810,9 @@ function ( $q, googleApi ) {
 		}
 
 		if ( typeof channel != 'undefined' ) {
-			options.channelId = channel;
+			if ( channel != null ) {
+				options.channelId = channel;
+			}
 		}
 
 		var request = googleApi.gapi.client.youtube[type].list(options);
@@ -819,8 +824,8 @@ function ( $q, googleApi ) {
 		return deferred.promise;
 	};
 
-	this.subscriptions = function (channel) {
-		return self.get('subscriptions', null, channel);
+	this.subscriptions = function (page) {
+		return self.get('subscriptions', page);
 	};
 
 	this.subscription = function (channel) {
