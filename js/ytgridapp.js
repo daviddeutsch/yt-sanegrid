@@ -805,7 +805,7 @@ function ( $q, googleApi ) {
 		googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
 		var options = {
-			part: 'snippet',
+			part: (type == 'activities') ? 'contentDetails' : 'snippet',
 			mine: true,
 			maxResults: 50
 		};
