@@ -84,7 +84,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	$scope.start = true;
 
-	$store.bind( $rootScope, 'userid', '' );
+	//$store.bind( $rootScope, 'userid', '' );
 	$store.bind( $rootScope, 'videocache', {} );
 	//$store.bind( $rootScope, 'videos', [] );
 	$store.bind( $rootScope, 'settings', {} );
@@ -92,6 +92,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	$store.bind( $rootScope, 'filters', {} );
 
 	$rootScope.videos = [];
+	$rootScope.userid = '';
 
 	var accounts = [];
 
@@ -136,7 +137,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		ytData.channels()
 			.then(function(data){
-				accounts.append(data.items[0].id);
+				accounts.push(data.items[0].id);
 
 				deferred.resolve(data.items[0].id);
 			});
