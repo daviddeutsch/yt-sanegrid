@@ -101,73 +101,21 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		$scope.channels = [];
 
-		syncChannels();
-	};
-
-	var checkList = function() {
-		var len = $rootScope.videos.length;
-
-		for ( i=0; i<len; i++ ) {
-			// Upgrade old style list where id was the hash
-			if ( typeof $rootScope.videos[i].hash == 'undefined' ) {
-				$rootScope.videos[i].hash = $rootScope.videos[i].id;
-			}
-
-			// Remove hashKey if it has been stored by accident
-			if ( typeof $rootScope.videos[i].$$hashKey != 'undefined' ) {
-				delete $rootScope.videos[i].$$hashKey;
-			}
-
-			// Lazy way to prevent dupes
-			$rootScope.videos[i].id = i;
-
-			// Upgrade old format where we didn't have watched and muted
-			if ( typeof $rootScope.videos[i].watched == 'undefined' ) {
-				$rootScope.videos[i].watched = $rootScope.videos[i].muted;
-				$rootScope.videos[i].muted = false;
-			}
-		}
-	};
-
-	var syncChannels = function(page)
-	{
-		if ( typeof page == 'undefined' ) {
-			page = null;
-		}
-
-		ytData.channels(page)
-			.then(function(data){
-				loadChannels(data);
+		syncChannels()
+			.then(function() {
+				loadVideos()
+					.then(function() {
+						appLoading.ready();
+					})
 			});
 	};
 
-	var loadChannels = function ( data ) {
-		if ( typeof data.items != 'undefined' ) {
-			appendChannels(data.items)
-				.then(function() {
-					if ( $scope.channels.length < data.pageInfo.totalResults ) {
-						syncChannels(data.nextPageToken);
-					} else {
-						appLoading.ready();
-					}
-				});
-		} else {
-			appLoading.ready();
-		}
-	};
-
-	var appendChannels = function ( items )
+	var loadVideos = function()
 	{
 		var deferred = $q.defer();
 
-		for ( var i = 0; i < items.length; i++ ) {
-			$scope.channels.push(
-				{
-					id: items[i].id,
-					title: items[i].snippet.title,
-					description: items[i].snippet.description
-				}
-			);
+		for ( var i = 0; i < $scope.channels.length; i++ ) {
+			channelVideos($scope.channels[i]);
 
 			if ( i === items.length ) {
 				deferred.resolve();
@@ -177,7 +125,15 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var pushVideos = function ( data, code ) {
+	var channelVideos = function( channel )
+	{
+		ytData.subscription( channel )
+			.then(function(data) {
+				pushVideos(data.items)
+			});
+	};
+
+	var pushVideos = function ( data ) {
 		var count = 0;
 
 		if ( typeof data != 'undefined' ) {
@@ -187,8 +143,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				}
 			}
 		}
-
-		appLoading.ready();
 
 		return count;
 	};
@@ -250,6 +204,90 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		}
 	};
 
+	var checkList = function() {
+		var len = $rootScope.videos.length;
+
+		for ( i=0; i<len; i++ ) {
+			// Upgrade old style list where id was the hash
+			if ( typeof $rootScope.videos[i].hash == 'undefined' ) {
+				$rootScope.videos[i].hash = $rootScope.videos[i].id;
+			}
+
+			// Remove hashKey if it has been stored by accident
+			if ( typeof $rootScope.videos[i].$$hashKey != 'undefined' ) {
+				delete $rootScope.videos[i].$$hashKey;
+			}
+
+			// Lazy way to prevent dupes
+			$rootScope.videos[i].id = i;
+
+			// Upgrade old format where we didn't have watched and muted
+			if ( typeof $rootScope.videos[i].watched == 'undefined' ) {
+				$rootScope.videos[i].watched = $rootScope.videos[i].muted;
+				$rootScope.videos[i].muted = false;
+			}
+		}
+	};
+
+	var syncChannels = function(page)
+	{
+		var deferred = $q.defer();
+
+		if ( typeof page == 'undefined' ) {
+			page = null;
+		}
+
+		ytData.channels(page)
+			.then(function(data){
+				loadChannels(data)
+					.then(function() {
+						deferred.resolve();
+					});
+			});
+
+		return deferred.promise;
+	};
+
+	var loadChannels = function ( data ) {
+		var deferred = $q.defer();
+
+		if ( typeof data.items != 'undefined' ) {
+			appendChannels(data.items)
+				.then(function() {
+					if ( $scope.channels.length < data.pageInfo.totalResults ) {
+						syncChannels(data.nextPageToken);
+					} else {
+						deferred.resolve();
+					}
+				});
+		} else {
+			deferred.resolve();
+		}
+
+		return deferred.promise;
+	};
+
+	var appendChannels = function ( items )
+	{
+		var deferred = $q.defer();
+
+		for ( var i = 0; i < items.length; i++ ) {
+			$scope.channels.push(
+				{
+					id: items[i].id,
+					title: items[i].snippet.title,
+					description: items[i].snippet.description
+				}
+			);
+
+			if ( i === items.length ) {
+				deferred.resolve();
+			}
+		}
+
+		return deferred.promise;
+	};
+
 	var resetErrors = function () {
 		if ( $scope.forbidden == 1 || $scope.notfound == 1 ) {
 			appLoading.loading();
@@ -268,12 +306,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		$rootScope.filters.caught = 0;
 
-		ytData.subscriptionvideos( 1 )
-			.then(function(data, status){
-				pushVideos(data, status);
-			}, function(data, status){
-				httpError(status);
-			});
+		loadVideos();
 	};
 
 	var updateSidebar = function () {
@@ -284,32 +317,13 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		}
 	};
 
-	$scope.loadBottom = function () {
-		if ( $scope.start ) return;
-
-		if ( $rootScope.videos.length > 50 ) return;
-
-		resetErrors();
-
-		appLoading.loading();
-
-		$rootScope.filters.caught = 0;
-
-		ytData.subscriptionvideos( $rootScope.videos.length + 1 )
-			.then(function(data, status){
-				pushVideos(data, status);
-			}, function(data, status){
-				httpError(status);
-			});
-	};
-
 	$scope.selectUserid = function ( q ) {
 		if ( q == false ) {
 			$scope.start = true;
 		} else {
 			initAccount( q );
 
-			loadTop();
+			//loadTop();
 		}
 	};
 
@@ -385,9 +399,9 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			.then(function(){
 				initAccount( $rootScope.userid );
 
-				checkList();
+				//checkList();
 
-				loadTop();
+				//loadTop();
 
 				updateSidebar();
 			});
@@ -406,9 +420,9 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			.then(function(){
 				initAccount( $rootScope.userid );
 
-				checkList();
+				//checkList();
 
-				loadTop();
+				//loadTop();
 
 				updateSidebar();
 			});
@@ -738,7 +752,7 @@ sanityApp.service('ytData',
 function ( $q, googleApi ) {
 	var self = this;
 
-	this.get = function ( type, page ) {
+	this.get = function ( type, page, channel ) {
 		var deferred = $q.defer();
 
 		googleApi.gapi.client.setApiKey(googleApi.apiKey);
@@ -750,7 +764,13 @@ function ( $q, googleApi ) {
 		};
 
 		if ( typeof page != 'undefined' ) {
-			options.page = page;
+			if ( page != null ) {
+				options.page = page;
+			}
+		}
+
+		if ( typeof channel != 'undefined' ) {
+			options.channelId = channel;
 		}
 
 		var request = googleApi.gapi.client.youtube[type].list(options);
@@ -762,8 +782,8 @@ function ( $q, googleApi ) {
 		return deferred.promise;
 	};
 
-	this.subscriptionvideos = function (page) {
-		return self.get('subscriptions', page);
+	this.subscription = function (channel) {
+		return self.get('subscriptions', null, channel);
 	};
 
 	this.channels = function (page) {
@@ -932,21 +952,6 @@ function ( $q, $rootScope ) {
 			$rootScope.info.updates.list = list;
 		});
 	});
-}
-]
-);
-
-sanityApp.directive('scroll',
-[
-'$window', '$document',
-function ( $window, $document ) {
-	return function ( scope, elem, attrs ) {
-		angular.element( $window ).bind('scroll', function () {
-			if ( $document.height() <= $window.innerHeight + $window.pageYOffset ) {
-				scope.$apply( attrs.scroll );
-			}
-		});
-	};
 }
 ]
 );
