@@ -93,6 +93,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	$rootScope.videos = [];
 
+	var accounts = [];
+
 	var httpError = function ( status ) {
 		if ( status == 403 ) {
 			$scope.forbidden = 1;
@@ -103,7 +105,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		appLoading.ready();
 	};
 
-	var initAccount = function ( u ) {
+	var initAccount = function () {
 		$scope.start = false;
 
 		$rootScope.settings.sidebar = false;
@@ -112,19 +114,40 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			$rootScope.videocache[u] = [];
 		}
 
-		$rootScope.userid = u;
-
 		//$rootScope.videos = $rootScope.videocache[u];
 
 		$scope.channels = [];
 
-		syncChannels()
-			.then(function() {
-				loadVideos()
+		mainChannel()
+			.then(function(id) {
+				$rootScope.userid = id;
+
+				syncChannels()
 					.then(function() {
-						appLoading.ready();
-					})
+						loadVideos()
+							.then(function() {
+								appLoading.ready();
+							})
+					});
 			});
+	};
+
+	var mainChannel = function(page)
+	{
+		var deferred = $q.defer();
+
+		if ( typeof page == 'undefined' ) {
+			page = null;
+		}
+
+		ytData.channels()
+			.then(function(data){
+				accounts.append(data.items[0].id);
+
+				deferred.resolve(data.items[0].id);
+			});
+
+		return deferred.promise;
 	};
 
 	var loadVideos = function()
@@ -256,7 +279,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			page = null;
 		}
 
-		ytData.channels(page)
+		ytData.subscriptions(page)
 			.then(function(data){
 				loadChannels(data)
 					.then(function() {
@@ -416,7 +439,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	{
 		googleApi.authorize()
 			.then(function(){
-				initAccount( $rootScope.userid );
+				initAccount();
 
 				//checkList();
 
@@ -437,7 +460,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		googleApi.checkAuth()
 			.then(function(){
-				initAccount( $rootScope.userid );
+				initAccount();
 
 				//checkList();
 
@@ -799,6 +822,10 @@ function ( $q, googleApi ) {
 		});
 
 		return deferred.promise;
+	};
+
+	this.subscriptions = function (channel) {
+		return self.get('subscriptions', null, channel);
 	};
 
 	this.subscription = function (channel) {
