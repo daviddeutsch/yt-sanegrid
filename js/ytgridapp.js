@@ -110,12 +110,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		$rootScope.settings.sidebar = false;
 
-		if ( typeof $rootScope.videocache[u] == 'undefined' ) {
-			$rootScope.videocache[u] = [];
-		}
-
-		//$rootScope.videos = $rootScope.videocache[u];
-
 		$scope.channels = [];
 
 		mainChannel()
