@@ -8,15 +8,15 @@
 
 	<div class="channel" ng-repeat="channel in channels track by $index">
 		<i class="icon-eye-closed"
-		   ng-if="!channelstate.hidden[channel.name]"></i>
-		<h5>{{ channel.name }}</h5>
+		   ng-if="!channelstate.hidden[channel.title]"></i>
+		<h5>{{ channel.title }}</h5>
 		<input
 			type="checkbox"
 			id="channel-mute-{{ channel.id }}"
 			ng-true-value="1"
 			ng-false-value="0"
-			ng-model="channelstate.hidden[channel.name]"
-			ng-click="hideChannel(channel.name)"
+			ng-model="channelstate.hidden[channel.id]"
+			ng-click="hideChannel(channel.id)"
 			/>
 		<label for="channel-mute-{{ channel.id }}">Hide Videos</label>
 	</div>
