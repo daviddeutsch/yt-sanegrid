@@ -767,6 +767,8 @@ sanityApp.provider('googleApi', function GoogleApiProvider () {
 
 	this.q = {};
 
+	this.response = {};
+
 	this.connect = function()
 	{
 		var deferred = self.q.defer();
@@ -780,6 +782,8 @@ sanityApp.provider('googleApi', function GoogleApiProvider () {
 			function( result ) {
 				if ( result && !result.error ) {
 					self.gapi.client.load('youtube', 'v3', function(response) {
+						self.response = response;
+
 						deferred.resolve();
 					});
 				} else {
