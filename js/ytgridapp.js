@@ -311,6 +311,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	{
 		var deferred = $q.defer();
 
+		var len = items.length-1;
+
 		for ( var i = 0; i < items.length; i++ ) {
 			$scope.channels.push(
 				{
@@ -320,7 +322,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				}
 			);
 
-			if ( i === items.length ) {
+			if ( i === len ) {
 				deferred.resolve();
 			}
 		}
