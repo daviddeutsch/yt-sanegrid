@@ -112,6 +112,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		$rootScope.settings.sidebar = false;
 
 		$scope.channels = [];
+		$scope.channelids = [];
 
 		mainChannel()
 			.then(function(id) {
@@ -314,13 +315,17 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var len = items.length-1;
 
 		for ( var i = 0; i < items.length; i++ ) {
-			$scope.channels.push(
-				{
-					id: items[i].id,
-					title: items[i].snippet.title,
-					description: items[i].snippet.description
-				}
-			);
+			if ( $.inArray( items[i].id, $scope.channelids ) ) {
+				$scope.channels.push(
+					{
+						id: items[i].id,
+						title: items[i].snippet.title,
+						description: items[i].snippet.description
+					}
+				);
+
+				$scope.channelids.push(items[i].id);
+			}
 
 			if ( i === len ) {
 				deferred.resolve();
@@ -806,13 +811,13 @@ function ( $q, googleApi ) {
 		};
 
 		if ( typeof page != 'undefined' ) {
-			if ( page != null ) {
+			if ( page !== null ) {
 				options.page = page;
 			}
 		}
 
 		if ( typeof channel != 'undefined' ) {
-			if ( channel != null ) {
+			if ( channel !== null ) {
 				options.channelId = channel;
 			}
 		}
