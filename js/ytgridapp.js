@@ -71,7 +71,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	$store.bind( $rootScope, 'userid', '' );
 	$store.bind( $rootScope, 'videocache', {} );
-	$store.bind( $rootScope, 'videos', [] );
+	//$store.bind( $rootScope, 'videos', [] );
 	$store.bind( $rootScope, 'settings', {} );
 	$store.bind( $rootScope, 'channelstate', {} );
 	$store.bind( $rootScope, 'filters', {} );
