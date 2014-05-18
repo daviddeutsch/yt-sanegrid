@@ -117,7 +117,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		for ( var i = 0; i < $scope.channels.length; i++ ) {
 			channelVideos($scope.channels[i].id);
 
-			if ( i === items.length ) {
+			if ( i === $scope.channels.length ) {
 				deferred.resolve();
 			}
 		}
