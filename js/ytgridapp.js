@@ -1,8 +1,23 @@
 var sanityApp = angular.module(
 	"sanityApp",
 	[
-		'ngAnimate', 'ui.bootstrap', 'ngSocial', 'localStorage'
+		'ngAnimate', 'ui.bootstrap', 'ngSocial',
+		'localStorage', 'LocalForageModule'
 	]
+);
+
+sanityApp.config(
+[
+'$localForageProvider',
+function( $localForageProvider ) {
+	$localForageProvider.config({
+		name        : 'SanityGrid',
+		version     : 1.0,
+		storeName   : 'default',
+		description : 'The grid for people who like to stay sane'
+	});
+}
+]
 );
 
 sanityApp.run(
@@ -75,6 +90,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	$store.bind( $rootScope, 'settings', {} );
 	$store.bind( $rootScope, 'channelstate', {} );
 	$store.bind( $rootScope, 'filters', {} );
+
+	$rootScope.videos = [];
 
 	var httpError = function ( status ) {
 		if ( status == 403 ) {
