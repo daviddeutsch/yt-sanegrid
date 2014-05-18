@@ -97,7 +97,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		$rootScope.userid = u;
 
-		$rootScope.videos = $rootScope.videocache[u];
+		//$rootScope.videos = $rootScope.videocache[u];
 
 		$scope.channels = [];
 
@@ -760,8 +760,8 @@ function ( $q, googleApi ) {
 		googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
 		var options = {
-			mine: true,
 			part: 'snippet',
+			mine: true,
 			maxResults: 50
 		};
 
