@@ -64,8 +64,8 @@ function( $rootScope, googleApi ) {
 
 sanityApp.controller('AppRepeatCtrl',
 [
-'$rootScope', '$scope', '$store', '$document', 'ytApp', 'googleApi', 'ytData', 'appLoading',
-function ( $rootScope, $scope, $store, $document, ytApp, googleApi, ytData, appLoading ) {
+'$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData', 'appLoading',
+function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, appLoading ) {
 
 	$scope.start = true;
 
