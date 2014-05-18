@@ -153,10 +153,12 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	{
 		var deferred = $q.defer();
 
+		var len = $scope.channels.length - 1;
+
 		for ( var i = 0; i < $scope.channels.length; i++ ) {
 			channelVideos($scope.channels[i].id);
 
-			if ( i === $scope.channels.length ) {
+			if ( i === len ) {
 				deferred.resolve();
 			}
 		}
@@ -166,7 +168,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	var channelVideos = function( channel )
 	{
-		ytData.subscription( channel )
+		ytData.channelvideos( channel )
 			.then(function(data) {
 				pushVideos(data.items);
 			});
@@ -777,7 +779,7 @@ function ( $rootScope )
 
 		clearTimeout( timer );
 
-		delay = delay == null ? 500 : false;
+		delay = delay === null ? 500 : false;
 
 		if ( delay ) {
 			timer = setTimeout( ready, delay );
@@ -816,6 +818,8 @@ function ( $q, googleApi ) {
 		if ( typeof channel != 'undefined' ) {
 			if ( channel !== null ) {
 				options.channelId = channel;
+
+				delete options.mine;
 			}
 		}
 
@@ -840,8 +844,8 @@ function ( $q, googleApi ) {
 		return self.get('channels', page);
 	};
 
-	this.channelvideos = function (page) {
-		return self.get('channelvideos', page);
+	this.channelvideos = function (channel) {
+		return self.get('activities', null, channel);
 	};
 
 }
@@ -1131,7 +1135,7 @@ function(timeago) {
 				scope.timeago = timeago;
 				scope.timeago.init();
 				scope.$watch("timeago.nowTime-fromTime",function(value) {
-					if (scope.timeago.nowTime != undefined) {
+					if (scope.timeago.nowTime !== undefined) {
 						value = scope.timeago.nowTime-scope.fromTime;
 						$(linkElement).text(scope.timeago.inWords(value));
 					}
