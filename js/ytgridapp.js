@@ -114,6 +114,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		$scope.channels = [];
 		$scope.channelids = [];
 
+		appLoading.loading();
+
 		mainChannel()
 			.then(function(id) {
 				$rootScope.userid = id;
