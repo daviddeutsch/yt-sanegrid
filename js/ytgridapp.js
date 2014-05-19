@@ -255,7 +255,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			hash:        video.id,
 			link:        'https://www.youtube.com/watch?v=' + video.id,
 			title:       video.snippet.title,
-			img:         {
+			img:         video.snippet.thumbnails.medium,
+			thumbnails:         {
 				default: video.snippet.thumbnails.default,
 				medium: video.snippet.thumbnails.medium,
 				high: video.snippet.thumbnails.high
