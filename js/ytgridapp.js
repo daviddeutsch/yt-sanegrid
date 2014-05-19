@@ -517,6 +517,34 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			});
 	};
 
+	$scope.setLimit = function (increment) {
+		$rootScope.settings.videolimit =
+			Number($rootScope.settings.videolimit) + Number(increment)
+		;
+
+		if ( $rootScope.settings.videolimit < 1 ) {
+			$rootScope.settings.videolimit = 5;
+		}
+	};
+
+	var getPercentage = function () {
+		if ( $rootScope.settings.videolimit < $scope.videos.length ) {
+			$scope.percentage = parseInt(100 * $rootScope.settings.videolimit / $scope.videos.length);
+
+			$scope.abslength = $rootScope.settings.videolimit;
+		} else {
+			$scope.percentage = 100;
+
+			$scope.abslength = $scope.videos.length;
+		}
+	};
+
+	$scope.$watch('videos', getPercentage, true);
+
+	$scope.$watch('settings', getPercentage, true);
+
+	$scope.percentage = getPercentage();
+
 	angular.element($document).bind("keyup", function(event) {
 		if (event.which === 82) $scope.refresh();
 	});
@@ -580,42 +608,6 @@ sanityApp.directive('videoItem',
 		}
 	}
 });
-
-sanityApp.controller('VideoListCtrl',
-[
-'$scope', '$rootScope',
-function ($scope, $rootScope) {
-	$scope.setLimit = function (increment) {
-		$rootScope.settings.videolimit =
-			Number($rootScope.settings.videolimit) + Number(increment)
-		;
-
-		if ( $rootScope.settings.videolimit < 1 ) {
-			$rootScope.settings.videolimit = 5;
-		}
-	};
-
-	var getPercentage = function () {
-		if ( $rootScope.settings.videolimit < $rootScope.videos.length ) {
-			$scope.percentage = parseInt(100 * $rootScope.settings.videolimit / $rootScope.videos.length);
-
-			$scope.abslength = $rootScope.settings.videolimit;
-		} else {
-			$scope.percentage = 100;
-
-			$scope.abslength = $rootScope.videos.length;
-		}
-	};
-
-	$rootScope.$watch('videos', getPercentage, true);
-
-	$rootScope.$watch('settings', getPercentage, true);
-
-	$scope.percentage = getPercentage();
-}
-]
-);
-
 
 
 
