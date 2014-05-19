@@ -1088,10 +1088,10 @@ sanityApp.filter('duration',
 function () {
 	return function ( d ) {
 
-		var duration = d.split('#');
+		var duration = d.split('M'); // PT35M2S
 
-		duration[1] = Number(duration[1]);
-		duration[2] = Number(duration[2]);
+		duration[1] = Number(duration[0].slice(2));
+		duration[2] = Number(duration[1].slice(0,-1));
 
 		var h = Math.floor( duration[1] / 60 );
 		var m = Math.floor( duration[1] % 60 );
