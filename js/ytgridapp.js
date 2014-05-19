@@ -121,15 +121,15 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				syncChannels()
 					.then(function() {
 						loadVideos()
-							.then(function() {
+							.then(function(count) {
+								// TODO: display count
 								appLoading.ready();
 							});
 					});
 			});
 	};
 
-	var mainChannel = function(page)
-	{
+	var mainChannel = function(page) {
 		var deferred = $q.defer();
 
 		if ( typeof page == 'undefined' ) {
@@ -137,7 +137,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		}
 
 		ytData.channels()
-			.then(function(data){
+			.then(function(data) {
 				accounts.push({
 					id: data.items[0].id,
 					title: data.items[0].snippet.title
@@ -149,78 +149,128 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var loadVideos = function()
-	{
+	var loadVideos = function() {
 		var deferred = $q.defer();
+
+		var count = 0;
 
 		var len = $scope.channels.length - 1;
 
 		for ( var i = 0; i < $scope.channels.length; i++ ) {
-			channelVideos($scope.channels[i].channelId);
+			channelVideos($scope.channels[i].channelId)
+				.then(function(entries) {
+					count += entries;
 
-			if ( i === len ) {
-				deferred.resolve();
+					if ( i === len ) {
+						deferred.resolve(count);
+					}
+				}(i));
+		}
+
+		return deferred.promise;
+	};
+
+	var channelVideos = function( channel ) {
+		var deferred = $q.defer();
+
+		ytData.channelvideos( channel )
+			.then(function(data) {
+				pushVideos(data.items)
+					.then(function() {
+						deferred.resolve(count);
+					});
+			});
+
+		return deferred.promise;
+	};
+
+	var pushVideos = function ( data ) {
+		var deferred = $q.defer();
+
+		if ( typeof data != 'undefined' ) {
+			extractVideoIds(data)
+				.then(function(ids){
+					pushVideoIds(ids)
+						.then(function(count){
+							deferred.resolve(count);
+						});
+				});
+		} else {
+			deferred.reject();
+		}
+
+		return deferred.promise;
+	};
+
+	var extractVideoIds = function ( array ) {
+		var deferred = $q.defer();
+
+		var list = [];
+
+		var len = array.length - 1;
+
+		for ( var i = 0; i < array.length; i++ ) {
+			if ( typeof array[i].contentDetails.upload != 'undefined' ) {
+				list.push(array[i].contentDetails.upload.videoId);
+
+				if ( i === len ) {
+					deferred.resolve(list);
+				}
+			} else if ( i === len ) {
+				deferred.resolve(list);
 			}
 		}
 
 		return deferred.promise;
 	};
 
-	var channelVideos = function( channel )
-	{
-		ytData.channelvideos( channel )
+	var pushVideoIds = function ( array ) {
+		var deferred = $q.defer();
+
+		ytData.videos( array )
 			.then(function(data) {
-				pushVideos(data.items);
-			});
-	};
+				var len = data.length - 1;
 
-	var pushVideos = function ( data ) {
-		var count = 0;
+				var count = 0;
 
-		if ( typeof data != 'undefined' ) {
-			for ( var i = 0; i < data.length; i++ ) {
-				if ( pushVideo( data[i], $rootScope.videos.length+count ) === true ) {
-					count++;
+				for ( var i = 0; i < data.length; i++ ) {
+					if ( pushVideo(data.items) ) {
+						count++;
+					}
+
+					if ( i === len ) {
+						deferred.resolve(count);
+					}
 				}
-			}
-		}
+			});
 
-		return count;
+		return deferred.promise;
 	};
 
-	var pushVideo = function ( o, id ) {
-		return;
-
-		var hash = o['id']['$t']
-			.replace( 'https://gdata.youtube.com/feeds/api/videos/', '' )
-			.replace( 'http://gdata.youtube.com/feeds/api/videos/', '' );
-
-		var authid = o['author'][0]['uri']['$t']
-			.replace( 'https://gdata.youtube.com/feeds/api/users/', '' );
-
+	var pushVideo = function ( video ) {
 		var details = {
-			id:          id,
-			hash:        hash,
-			link:        'https://www.youtube.com/watch?v=' + hash,
-			title:       o['title']['$t'],
-			img:         o['media$group']['media$thumbnail'][0]['url'],
-			authorid:    authid,
-			author:      o['author'][0]['name']['$t'],
-			authorlink:  'https://www.youtube.com/user/' + authid,
-			published:   o['published']['$t'],
-			duration:    o['media$group']['yt$duration']['seconds'],
-			muted:       false,
-			muteddate:   null,
-			watched:     false,
-			watcheddate: null
+			id:          video.id,
+			hash:        video.id,
+			link:        'https://www.youtube.com/watch?v=' + video.id,
+			title:       video.snippet.title,
+			img:         {
+				default: video.snippet.thumbnails.default,
+				medium: video.snippet.thumbnails.medium,
+				high: video.snippet.thumbnails.high
+			},
+			authorid:    video.snippet.channelId,
+			author:      video.snippet.channelTitle,
+			authorlink:  'https://www.youtube.com/channel/' + video.snippet.channelId,
+			published:   video.snippet.publishedAt,
+			duration:    video.contentDetails.duration
 		};
 
 		var existing = false;
 
 		var eid = 0;
 
-		$.each( $rootScope.videos, function ( i, v ) {
-			if ( $rootScope.videos[i].hash == hash ) {
+		$.each( $scope.videos, function ( i, v ) {
+			if ( $scope.videos[i].hash == hash ) {
 				existing = true;
 
 				eid = i;
@@ -235,13 +285,13 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 					'author', 'authorlink', 'published', 'duration'
 				],
 				function ( i, v ) {
-					$rootScope.videos[eid][v] = details[v];
+					$scope.videos[eid][v] = details[v];
 				}
 			);
 
 			return null;
 		} else {
-			$rootScope.videos.push( details );
+			$scope.videos.push( details );
 
 			return true;
 		}
@@ -799,30 +849,10 @@ sanityApp.service('ytData',
 function ( $q, googleApi ) {
 	var self = this;
 
-	this.get = function ( type, page, channel ) {
+	this.get = function ( type, options ) {
 		var deferred = $q.defer();
 
 		googleApi.gapi.client.setApiKey(googleApi.apiKey);
-
-		var options = {
-			part: (type == 'activities') ? 'snippet,contentDetails' : 'snippet',
-			mine: true,
-			maxResults: 50
-		};
-
-		if ( typeof page != 'undefined' ) {
-			if ( page !== null ) {
-				options.page = page;
-			}
-		}
-
-		if ( typeof channel != 'undefined' ) {
-			if ( channel !== null ) {
-				options.channelId = channel;
-
-				delete options.mine;
-			}
-		}
 
 		var request = googleApi.gapi.client.youtube[type].list(options);
 
@@ -833,21 +863,60 @@ function ( $q, googleApi ) {
 		return deferred.promise;
 	};
 
-	this.subscriptions = function (page) {
+	this.subscriptions = function ( page ) {
+		var options = {
+			part: 'snippet',
+			mine: true,
+			maxResults: 50
+		};
+
+		if ( typeof page != 'undefined' ) {
+			if ( page !== null ) {
+				options.page = page;
+			}
+		}
+
 		return self.get('subscriptions', page);
 	};
 
-	this.subscription = function (channel) {
-		return self.get('subscriptions', null, channel);
+	this.channels = function ( page ) {
+		var options = {
+			part: 'snippet',
+			mine: true,
+			maxResults: 50
+		};
+
+		if ( typeof page != 'undefined' ) {
+			if ( page !== null ) {
+				options.page = page;
+			}
+		}
+
+		return self.get('channels', options);
 	};
 
-	this.channels = function (page) {
-		return self.get('channels', page);
+	this.channelvideos = function ( channel ) {
+		return self.get(
+			'activities',
+			{
+				part: 'contentDetails',
+				channelId: channel,
+				maxResults: 50
+			}
+		);
 	};
 
-	this.channelvideos = function (channel) {
-		return self.get('activities', null, channel);
-	};
+	this.videos = function ( ids )
+	{
+		return self.get(
+			'videos',
+			{
+				part: 'snippet,contentDetails,status,statistics',
+				mine: true,
+				id: ids.join
+			}
+		);
+	}
 
 }
 ]
