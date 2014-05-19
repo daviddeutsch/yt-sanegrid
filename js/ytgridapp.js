@@ -91,7 +91,18 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	$store.bind( $rootScope, 'channelstate', {} );
 	$store.bind( $rootScope, 'filters', {} );
 
+	$scope.channels = [];
+	$scope.channelids = [];
+
 	$scope.videos = [];
+	$scope.videoids = [];
+
+	$scope.archive = [];
+	$scope.archiveids = [];
+
+	$scope.trash = [];
+	$scope.trashids = [];
+
 	$rootScope.userid = '';
 
 	var accounts = [];
@@ -100,9 +111,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		$scope.start = false;
 
 		$rootScope.settings.sidebar = false;
-
-		$scope.channels = [];
-		$scope.channelids = [];
 
 		appLoading.loading();
 
@@ -248,7 +256,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	var pushVideo = function ( video ) {
 		var details = {
 			id:          video.id,
-			hash:        video.id,
 			link:        'https://www.youtube.com/watch?v=' + video.id,
 			title:       video.snippet.title,
 			thumbnail:   {
@@ -256,28 +263,19 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				medium:  video.snippet.thumbnails.medium.url,
 				high:    video.snippet.thumbnails.high.url
 			},
-			authorid:    video.snippet.channelId,
+			channelId:   video.snippet.channelId,
 			author:      video.snippet.channelTitle,
 			authorlink:  'https://www.youtube.com/channel/' + video.snippet.channelId,
 			published:   video.snippet.publishedAt,
 			duration:    video.contentDetails.duration
 		};
 
-		var existing = false;
-
-		var eid = 0;
-
-		$.each( $scope.videos, function ( i, v ) {
-			if ( $scope.videos[i].hash == video.id ) {
-				existing = true;
-
-				eid = i;
-			}
-		} );
+		var existing = $.inArray( items[i].id, $scope.videoids );
 
 		if ( existing ) {
+			// TODO: Revisit this later, might be pointless with only uploads
 			// Update existing data
-			$.each(
+			/*$.each(
 				[
 					'id', 'link', 'title', 'img', 'authorid',
 					'author', 'authorlink', 'published', 'duration'
@@ -285,37 +283,57 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				function ( i, v ) {
 					$scope.videos[eid][v] = details[v];
 				}
-			);
+			);*/
 
 			return null;
 		} else {
-			$scope.videos.push( details );
+			var trash = false;
+
+			if ( $rootScope.filters.channels.hasOwnProperty(details.channelId) ) {
+				$.each( $rootScope.filters.channels[video.channelId].filters, function ( i, v ) {
+					if ( video.title.indexOf( v.string) != -1 ) {
+						trash = true;
+					}
+				});
+			}
+
+			if ( trash ) {
+				$rootScope.filters.caught++;
+			}
+
+			if ( trash ) {
+				$scope.trash.push( details );
+				$scope.trashids.push( details.id );
+			} else {
+				$scope.videos.push( details );
+				$scope.videoids.push( details.id );
+			}
 
 			return true;
 		}
 	};
 
 	var checkList = function() {
-		var len = $rootScope.videos.length;
+		var len = $scope.videos.length;
 
 		for ( i=0; i<len; i++ ) {
 			// Upgrade old style list where id was the hash
-			if ( typeof $rootScope.videos[i].hash == 'undefined' ) {
-				$rootScope.videos[i].hash = $rootScope.videos[i].id;
+			if ( typeof $scope.videos[i].hash == 'undefined' ) {
+				$scope.videos[i].hash = $scope.videos[i].id;
 			}
 
 			// Remove hashKey if it has been stored by accident
-			if ( typeof $rootScope.videos[i].$$hashKey != 'undefined' ) {
-				delete $rootScope.videos[i].$$hashKey;
+			if ( typeof $scope.videos[i].$$hashKey != 'undefined' ) {
+				delete $scope.videos[i].$$hashKey;
 			}
 
 			// Lazy way to prevent dupes
-			$rootScope.videos[i].id = i;
+			$scope.videos[i].id = i;
 
 			// Upgrade old format where we didn't have watched and muted
-			if ( typeof $rootScope.videos[i].watched == 'undefined' ) {
-				$rootScope.videos[i].watched = $rootScope.videos[i].muted;
-				$rootScope.videos[i].muted = false;
+			if ( typeof $scope.videos[i].watched == 'undefined' ) {
+				$scope.videos[i].watched = $scope.videos[i].muted;
+				$scope.videos[i].muted = false;
 			}
 		}
 	};
@@ -457,14 +475,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	};
 
 	$scope.videoFilter = function (video) {
-		if ( ( (video.muted && ($rootScope.settings.hidemuted == "1")) || (video.watched && ($rootScope.settings.hidewatched == "1")) ) ) {
-			return null;
-		}
 
-		var auth = video.authorlink.split("/");
-		var key = auth[auth.length-1].toLowerCase();
-
-		if ( $rootScope.channelstate.hidden[key] === "1" ) {
+		if ( $rootScope.channelstate.hidden[video.channelId] === "1" ) {
 			return null;
 		}
 
@@ -475,22 +487,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 				filtered = true;
 			}
 		});
-
-		if ( !filtered && $rootScope.filters.channels.hasOwnProperty(video.authorid) ) {
-			$.each( $rootScope.filters.channels[video.authorid].filters, function ( i, v ) {
-				if ( video.title.indexOf( v.string) != -1 ) {
-					filtered = true;
-				}
-			});
-		}
-
-		if ( filtered ) {
-			$rootScope.filters.caught++;
-
-			video.muted = true;
-
-			return null;
-		}
 
 		return video;
 	};
