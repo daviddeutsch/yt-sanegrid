@@ -49,7 +49,6 @@ function( $rootScope, googleApi ) {
 		$rootScope.filters.count = 0;
 		$rootScope.filters.caught = 0;
 		$rootScope.filters.global = [];
-		$rootScope.filters.channels = {};
 	}
 
 	if ( typeof $rootScope.filters.global == 'undefined' ) {
@@ -57,6 +56,10 @@ function( $rootScope, googleApi ) {
 		$rootScope.filters.count = 0;
 		$rootScope.filters.caught = 0;
 		$rootScope.filters.global = [];
+		$rootScope.filters.channels = {};
+	}
+
+	if ( typeof $rootScope.filters.channels == 'undefined' ) {
 		$rootScope.filters.channels = {};
 	}
 
@@ -85,11 +88,11 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	$scope.start = true;
 
 	//$store.bind( $rootScope, 'userid', '' );
-	$store.bind( $rootScope, 'videocache', {} );
+	//$store.bind( $rootScope, 'videocache', {} );
 	//$store.bind( $rootScope, 'videos', [] );
-	$store.bind( $rootScope, 'settings', {} );
-	$store.bind( $rootScope, 'channelstate', {} );
-	$store.bind( $rootScope, 'filters', {} );
+	//$store.bind( $rootScope, 'settings', {} );
+	//$store.bind( $rootScope, 'channelstate', {} );
+	//$store.bind( $rootScope, 'filters', {} );
 
 	$scope.channels = [];
 	$scope.channelids = [];
@@ -272,7 +275,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		var existing = $.inArray( video.id, $scope.videoids );
 
-		if ( existing > -1 ) {
+		if ( existing != -1 ) {
 			// TODO: Revisit this later, might be pointless with only uploads
 			// Update existing data
 			/*$.each(
@@ -386,7 +389,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var len = items.length-1;
 
 		for ( var i = 0; i < items.length; i++ ) {
-			if ( $.inArray( items[i].id, $scope.channelids ) ) {
+			if ( $.inArray( items[i].id, $scope.channelids ) != -1 ) {
 				$scope.channels.push(
 					{
 						id: items[i].id,
@@ -620,7 +623,7 @@ sanityApp.controller('SettingsModalInstanceCtrl',
 [
 '$rootScope', '$scope', '$store', '$modalInstance',
 function ($rootScope, $scope, $store, $modalInstance) {
-	$store.bind( $rootScope, 'filters', {} );
+	//$store.bind( $rootScope, 'filters', {} );
 
 	$scope.cancel = function () {
 		$modalInstance.dismiss('cancel');
@@ -724,7 +727,7 @@ function ($rootScope, $scope, $store, $modalInstance, item)
 	};
 
 	$scope.ok = function (item) {
-		$store.bind( $rootScope, 'filters', {} );
+		//$store.bind( $rootScope, 'filters', {} );
 
 		if ( $scope.filter.channel.length ) {
 			if ( typeof $rootScope.filters.channels[$scope.filter.channel] == 'undefined' ) {
