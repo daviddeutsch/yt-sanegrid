@@ -913,7 +913,7 @@ function ( $q, googleApi ) {
 			{
 				part: 'snippet,contentDetails,status,statistics',
 				mine: true,
-				id: ids.join
+				id: ids.join()
 			}
 		);
 	}
