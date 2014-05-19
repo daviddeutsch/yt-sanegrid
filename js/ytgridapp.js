@@ -1090,12 +1090,12 @@ function () {
 
 		var duration = d.split('M'); // PT35M2S
 
-		duration[1] = Number(duration[0].slice(2));
-		duration[2] = Number(duration[1].slice(0,-1));
+		duration[0] = Number(duration[0].slice(2));
+		duration[1] = Number(duration[1].slice(0,-1));
 
-		var h = Math.floor( duration[1] / 60 );
-		var m = Math.floor( duration[1] % 60 );
-		var s = duration[2];
+		var h = Math.floor( duration[0] / 60 );
+		var m = Math.floor( duration[0] % 60 );
+		var s = duration[1];
 
 		return (
 			( h > 0 ? h + ":" : "" )
