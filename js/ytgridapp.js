@@ -255,8 +255,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			hash:        video.id,
 			link:        'https://www.youtube.com/watch?v=' + video.id,
 			title:       video.snippet.title,
-			img:         video.snippet.thumbnails.medium,
-			thumbnails:         {
+			thumbnail:         {
 				default: video.snippet.thumbnails.default,
 				medium: video.snippet.thumbnails.medium,
 				high: video.snippet.thumbnails.high
@@ -351,7 +350,10 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			appendChannels(data.items)
 				.then(function() {
 					if ( $scope.channels.length < data.pageInfo.totalResults ) {
-						syncChannels(data.nextPageToken);
+						syncChannels(data.nextPageToken)
+							.then(function() {
+								deferred.resolve();
+							})
 					} else {
 						deferred.resolve();
 					}
@@ -418,6 +420,14 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		} else {
 			$('.sidebar' ).css({"height":"40px"});
 		}
+	};
+
+	var migrateOldLS = function() {
+		// Find the old userid
+		// Convert old properties to new
+		// - Thumbnail
+		// - Duration
+		// Sort into right container
 	};
 
 	$scope.selectUserid = function ( q ) {
@@ -1085,11 +1095,15 @@ function ( $q, $rootScope ) {
 sanityApp.filter('duration',
 function () {
 	return function ( d ) {
-		d = Number( d );
 
-		var h = Math.floor( d / 3600 );
-		var m = Math.floor( d % 3600 / 60 );
-		var s = Math.floor( d % 3600 % 60 );
+		var duration = d.split('#');
+
+		duration[1] = Number(duration[1]);
+		duration[2] = Number(duration[2]);
+
+		var h = Math.floor( duration[1] / 60 );
+		var m = Math.floor( duration[1] % 60 );
+		var s = duration[2];
 
 		return (
 			( h > 0 ? h + ":" : "" )

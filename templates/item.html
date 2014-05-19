@@ -2,7 +2,7 @@
 	 ng-if="video.id"
 	 ng-class="{'muted':video.muted,'watched':video.watched}">
 	<div class="img-container">
-		<img src="{{video.img}}"/>
+		<img src="{{video.thumbnail.default}}"/>
 
 		<div class="duration">{{ video.duration | duration }}</div>
 	</div>
