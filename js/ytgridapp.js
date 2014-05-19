@@ -255,10 +255,10 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			hash:        video.id,
 			link:        'https://www.youtube.com/watch?v=' + video.id,
 			title:       video.snippet.title,
-			thumbnail:         {
+			thumbnail:   {
 				default: video.snippet.thumbnails.default.url,
-				medium: video.snippet.thumbnails.medium.url,
-				high: video.snippet.thumbnails.high.url
+				medium:  video.snippet.thumbnails.medium.url,
+				high:    video.snippet.thumbnails.high.url
 			},
 			authorid:    video.snippet.channelId,
 			author:      video.snippet.channelTitle,
