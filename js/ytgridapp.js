@@ -389,7 +389,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var len = items.length-1;
 
 		for ( var i = 0; i < items.length; i++ ) {
-			if ( $.inArray( items[i].id, $scope.channelids ) != -1 ) {
+			if ( $.inArray( items[i].id, $scope.channelids ) == -1 ) {
 				$scope.channels.push(
 					{
 						id: items[i].id,
