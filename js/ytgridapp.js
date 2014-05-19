@@ -923,7 +923,7 @@ sanityApp.provider('googleApi', function GoogleApiProvider () {
 
 	this.clientId = '950592637430.apps.googleusercontent.com';
 
-	this.apiKey = 'AIzaSyCvgbEI4Q6bkkRi6AI1zwiv5oWpZQw9Sxc';
+	this.apiKey = 'AIzaSyCs378KoxX1cX5_TTa5W65tTG396AkId0A';
 
 	this.scopes = 'https://www.googleapis.com/auth/youtube';
 
