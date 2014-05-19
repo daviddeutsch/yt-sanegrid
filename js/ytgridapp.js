@@ -272,7 +272,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var eid = 0;
 
 		$.each( $scope.videos, function ( i, v ) {
-			if ( $scope.videos[i].hash == hash ) {
+			if ( $scope.videos[i].hash == video.id ) {
 				existing = true;
 
 				eid = i;
