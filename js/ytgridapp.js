@@ -226,17 +226,17 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var pushVideoIds = function ( array ) {
+	var pushVideoIds = function ( list ) {
 		var deferred = $q.defer();
 
-		ytData.videos( array )
+		ytData.videos( list )
 			.then(function(data) {
-				var len = data.length - 1;
+				var len = data.items.length - 1;
 
 				var count = 0;
 
-				for ( var i = 0; i < data.length; i++ ) {
-					if ( pushVideo(data.items) ) {
+				for ( var i = 0; i < data.items.length; i++ ) {
+					if ( pushVideo(data.items[i]) ) {
 						count++;
 					}
 
