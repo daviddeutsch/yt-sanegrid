@@ -272,7 +272,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		var existing = $.inArray( video.id, $scope.videoids );
 
-		if ( existing ) {
+		if ( existing > -1 ) {
 			// TODO: Revisit this later, might be pointless with only uploads
 			// Update existing data
 			/*$.each(
