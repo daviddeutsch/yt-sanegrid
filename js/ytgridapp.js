@@ -270,7 +270,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 			duration:    video.contentDetails.duration
 		};
 
-		var existing = $.inArray( items[i].id, $scope.videoids );
+		var existing = $.inArray( video.id, $scope.videoids );
 
 		if ( existing ) {
 			// TODO: Revisit this later, might be pointless with only uploads
