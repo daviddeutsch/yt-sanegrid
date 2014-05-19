@@ -176,7 +176,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		ytData.channelvideos( channel )
 			.then(function(data) {
 				pushVideos(data.items)
-					.then(function() {
+					.then(function(count) {
 						deferred.resolve(count);
 					});
 			});
@@ -231,18 +231,22 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		ytData.videos( list )
 			.then(function(data) {
-				var len = data.items.length - 1;
+				if ( typeof data.items != 'undefined' ) {
+					var len = data.items.length - 1;
 
-				var count = 0;
+					var count = 0;
 
-				for ( var i = 0; i < data.items.length; i++ ) {
-					if ( pushVideo(data.items[i]) ) {
-						count++;
+					for ( var i = 0; i < data.items.length; i++ ) {
+						if ( pushVideo(data.items[i]) ) {
+							count++;
+						}
+
+						if ( i === len ) {
+							deferred.resolve(count);
+						}
 					}
-
-					if ( i === len ) {
-						deferred.resolve(count);
-					}
+				} else {
+					deferred.resolve(0);
 				}
 			});
 
