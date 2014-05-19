@@ -91,7 +91,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	$store.bind( $rootScope, 'channelstate', {} );
 	$store.bind( $rootScope, 'filters', {} );
 
-	$rootScope.videos = [];
+	$scope.videos = [];
 	$rootScope.userid = '';
 
 	var accounts = [];
@@ -210,6 +210,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		var len = array.length - 1;
 
 		for ( var i = 0; i < array.length; i++ ) {
+			if ( typeof array[i].contentDetails == 'undefined' ) continue;
+
 			if ( typeof array[i].contentDetails.upload != 'undefined' ) {
 				list.push(array[i].contentDetails.upload.videoId);
 
@@ -916,8 +918,7 @@ function ( $q, googleApi ) {
 				id: ids.join()
 			}
 		);
-	}
-
+	};
 }
 ]
 );
