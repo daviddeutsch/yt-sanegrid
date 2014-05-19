@@ -876,7 +876,7 @@ function ( $q, googleApi ) {
 			}
 		}
 
-		return self.get('subscriptions', page);
+		return self.get('subscriptions', options);
 	};
 
 	this.channels = function ( page ) {
