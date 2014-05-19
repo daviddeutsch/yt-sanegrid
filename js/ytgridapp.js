@@ -910,7 +910,7 @@ function ( $q, googleApi ) {
 			{
 				part: 'contentDetails',
 				channelId: channel,
-				maxResults: 50
+				maxResults: 20
 			}
 		);
 	};
