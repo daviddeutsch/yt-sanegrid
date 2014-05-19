@@ -96,16 +96,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	var accounts = [];
 
-	var httpError = function ( status ) {
-		if ( status == 403 ) {
-			$scope.forbidden = 1;
-		} else {
-			$scope.notfound = 1;
-		}
-
-		appLoading.ready();
-	};
-
 	var initAccount = function () {
 		$scope.start = false;
 
@@ -401,12 +391,8 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 	var resetErrors = function () {
 		if ( $scope.forbidden == 1 || $scope.notfound == 1 ) {
-			appLoading.loading();
-
 			$scope.forbidden = 0;
 			$scope.notfound = 0;
-
-			appLoading.ready();
 		}
 	};
 
