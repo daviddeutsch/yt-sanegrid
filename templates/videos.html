@@ -1,10 +1,3 @@
-<div class="alert alert-danger">
-	<p>
-		<strong>Please note:</strong>
-		<a href="https://github.com/daviddeutsch/yt-sanegrid/issues/137">Moving to the YouTube v3 API</a> was successful. However, <strong>storing videos is currently disabled</strong> until I have everything in place. Thanks for your patience!
-	</p>
-</div>
-
 <div
 	class="videolist col-md-10"
 	ng-class="{
@@ -13,6 +6,18 @@
 	}"
 	ng-if="!start"
 	>
+	<div class="alert alert-danger">
+		<p>
+			<strong>Please note:</strong>
+			<a href="https://github.com/daviddeutsch/yt-sanegrid/issues/137">Moving to the YouTube v3 API</a> was successful. However, <strong>storing videos is currently disabled</strong> until I have everything in place.
+		</p>
+		<p>
+			No worries - all your existing data is save and will be merged eventually. Please read the link above for more details
+		</p>
+		<p>
+			Thanks for your patience!
+		</p>
+	</div>
 	<div ng-repeat="video in videos | orderBy:'published':true | filter:videoFilter | limitTo:settings.videolimit" class="video-item" video="video"></div>
 	<div class="more-items well">
 		<br /><br />
