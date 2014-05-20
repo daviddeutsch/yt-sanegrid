@@ -351,7 +351,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 
 		ytData.subscriptions(page)
 			.then(function(data){
-				loadChannels(data)
+				loadChannels(data, page)
 					.then(function() {
 						deferred.resolve();
 					});
