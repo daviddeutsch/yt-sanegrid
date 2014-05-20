@@ -360,13 +360,15 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var loadChannels = function ( data ) {
+	var loadChannels = function ( data, page ) {
 		var deferred = $q.defer();
+
+		if ( typeof page == 'undefined' ) page = '';
 
 		if ( typeof data.items != 'undefined' ) {
 			appendChannels(data.items)
 				.then(function() {
-					if ( $scope.channels.length < data.pageInfo.totalResults ) {
+					if ( ($scope.channels.length < data.pageInfo.totalResults) && data.nextPageToken != page ) {
 						syncChannels(data.nextPageToken)
 							.then(function() {
 								deferred.resolve();
