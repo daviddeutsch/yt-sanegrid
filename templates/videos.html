@@ -7,7 +7,7 @@
 	ng-if="!start"
 	>
 	<div ng-repeat="video in videos| orderBy:'published':true | filter:videoFilter | limitTo:settings.videolimit" class="video-item" video="video"></div>
-	<div class="more-items well" ng-controller="VideoListCtrl">
+	<div unselectable="on" class="more-items well no-select" ng-controller="VideoListCtrl">
 		<br /><br />
 		<p>
 			Showing {{abslength}} of {{videos.length}} entries
