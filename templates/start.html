@@ -1,8 +1,7 @@
 <div id="start"
-	 class="col-md-6 col-md-offset-3 ng-cloak"
-	 ng-if="start"
+	 class="col-md-6 col-md-offset-3"
 	 ng-controller="StartCtrl"
-	 ng-cloak>
+	 >
 	<div class="page-header">
 		<h2>
 			<img class="brand"
@@ -64,7 +63,7 @@
 		page works completely from (and only stores data in) your browser.
 	</p>
 
-	<div id="errors" ng-if="forbidden||notfound||!start">
+	<div id="errors" ng-if="forbidden||notfound">
 		<div class="account-error alert " ng-if="forbidden">
 			<h4>Subscription List Private</h4>
 

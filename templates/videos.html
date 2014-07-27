@@ -1,42 +1,45 @@
-<div
-	class="videolist col-md-10"
-	ng-class="{
-		'col-md-10':settings.sidebar,
-		'col-md-12':!settings.sidebar
-	}"
-	ng-if="!start"
-	>
-	<div class="alert alert-danger">
-		<p>
-			<strong>Please note:</strong>
-			<a href="https://github.com/daviddeutsch/yt-sanegrid/issues/137">Moving to the YouTube v3 API</a> was successful. However, <strong>storing videos is currently disabled</strong> until I have everything in place.
-		</p>
-		<p>
-			No worries - all your existing data is safe and will be merged eventually. Please read the link above for more details
-		</p>
-		<p>
-			Thanks for your patience!
-		</p>
-	</div>
-	<div ng-repeat="video in videos | orderBy:'published':true | filter:videoFilter | limitTo:settings.videolimit" class="video-item" video="video"></div>
-	<div class="more-items well">
-		<br /><br />
-		<p>
-			Showing {{abslength}} of {{videos.length}} entries
-		</p>
-		<div class="progress">
-			<div class="progress-bar progress-bar-info"
-				 role="progressbar"
-				 aria-valuenow="{{percentage}}"
-				 aria-valuemin="0"
-				 aria-valuemax="{{videos.length}}"
-				 ng-style="{width: percentage+'%'}">
-				<span>{{abslength}}</span>
+<div id="wrap" class="container" ng-controller="AppRepeatCtrl">
+	<div class="row">
+		<div ng-include="'templates/channels.html'"></div>
+		<div
+			class="videolist col-md-10"
+			ng-class="{
+				'col-md-10' :settings.sidebar,
+				'col-md-12': !settings.sidebar
+			}"
+			ng-if="!start"
+			>
+			<div class="alert alert-danger">
+				<p>
+					<strong>Please note:</strong>
+					<a href="https://github.com/daviddeutsch/yt-sanegrid/issues/137">Moving to the YouTube v3 API</a> was successful. However, <strong>storing videos is currently disabled</strong> until I have everything in place.
+				</p>
+				<p>
+					No worries - all your existing data is safe and will be merged eventually. Please read the link above for more details
+				</p>
+				<p>
+					Thanks for your patience!
+				</p>
 			</div>
-		</div>
-		<p class="limit-controls">
-			<span>&nbsp;&nbsp;&nbsp;show less &lt;&gt; show more</span>
-			<br />
+			<div ng-repeat="video in videos | orderBy:'published':true | filter:videoFilter | limitTo:settings.videolimit" class="video-item" video="video"></div>
+			<div class="more-items well">
+				<br /><br />
+				<p>
+					Showing {{abslength}} of {{videos.length}} entries
+				</p>
+				<div class="progress">
+					<div class="progress-bar progress-bar-info"
+						 role="progressbar"
+						 aria-valuenow="{{percentage}}"
+						 aria-valuemin="0"
+						 aria-valuemax="{{videos.length}}"
+						 ng-style="{width: percentage+'%'}">
+						<span>{{abslength}}</span>
+					</div>
+				</div>
+				<p class="limit-controls">
+					<span>&nbsp;&nbsp;&nbsp;show less &lt;&gt; show more</span>
+					<br />
 			<span>
 				<a ng-click="setLimit(-50)">50</a>
 				·
@@ -50,6 +53,9 @@
 				·
 				<a ng-click="setLimit(50)">50</a>
 			</span>
-		</p>
+				</p>
+			</div>
+		</div>
 	</div>
 </div>
+

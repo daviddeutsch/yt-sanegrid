@@ -2,20 +2,46 @@ var sanityApp = angular.module(
 	"sanityApp",
 	[
 		'ngAnimate', 'ui.bootstrap', 'ngSocial',
-		'localStorage', 'LocalForageModule'
+		'localStorage', 'LocalForageModule', 'ui.router'
 	]
 );
 
 sanityApp.config(
 [
-'$localForageProvider',
-function( $localForageProvider ) {
+'$urlRouterProvider', '$stateProvider', '$localForageProvider',
+function( $urlRouterProvider, $stateProvider, $localForageProvider ) {
 	$localForageProvider.config({
 		name        : 'SanityGrid',
 		version     : 1.0,
 		storeName   : 'default',
 		description : 'The grid for people who like to stay sane'
 	});
+
+	$urlRouterProvider
+		.otherwise('/ready');
+
+	$stateProvider
+		.state('ready', {
+			url: '/ready',
+			views: {
+				"main": {
+					templateUrl: '/templates/start.html'
+				}
+			}
+		})
+
+		.state('list', {
+			url: '/list',
+			views: {
+				"main": {
+					templateUrl: '/templates/videos.html'
+				},
+				"footer": {
+					templateUrl: '/templates/footer.html'
+				}
+			}
+		})
+	;
 }
 ]
 );
@@ -80,13 +106,29 @@ function( $rootScope, googleApi ) {
 ]
 );
 
+sanityApp.controller('StartCtrl',
+[
+'$scope',
+function ($scope) {
+	$scope.gotimelist = [
+		'YEAH BOIIIII',
+		'Well, if you say so, I guess...',
+		'My body is ready for sanity!',
+		'Let\'s go!'
+	];
+
+	var rand = Math.floor((Math.random() * $scope.gotimelist.length) + 1);
+
+	$scope.gotime = $scope.gotimelist[rand];
+}
+]
+);
+
 sanityApp.controller('AppRepeatCtrl',
 [
 '$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData', 'appLoading',
-function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, appLoading ) {
-
-	$scope.start = true;
-
+function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, appLoading )
+{
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
 	//$store.bind( $rootScope, 'videos', [] );
@@ -111,8 +153,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	var accounts = [];
 
 	var initAccount = function () {
-		$scope.start = false;
-
 		$rootScope.settings.sidebar = false;
 
 		appLoading.loading();
@@ -411,13 +451,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var resetErrors = function () {
-		if ( $scope.forbidden == 1 || $scope.notfound == 1 ) {
-			$scope.forbidden = 0;
-			$scope.notfound = 0;
-		}
-	};
-
 	var loadTop = function () {
 		resetErrors();
 
@@ -442,16 +475,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		// - Thumbnail
 		// - Duration
 		// Sort into right container
-	};
-
-	$scope.selectUserid = function ( q ) {
-		if ( q === false ) {
-			$scope.start = true;
-		} else {
-			initAccount( q );
-
-			//loadTop();
-		}
 	};
 
 	$scope.refresh = function() {
@@ -495,20 +518,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return video;
 	};
 
-	$scope.connect = function()
-	{
-		googleApi.authorize()
-			.then(function(){
-				initAccount();
-
-				//checkList();
-
-				//loadTop();
-
-				updateSidebar();
-			});
-	};
-
 	$scope.setLimit = function (increment) {
 		$rootScope.settings.videolimit =
 			Number($rootScope.settings.videolimit) + Number(increment)
@@ -540,23 +549,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	angular.element($document).bind("keyup", function(event) {
 		if (event.which === 82) $scope.refresh();
 	});
-
-	if ( $rootScope.userid ) {
-		$scope.start = false;
-
-		$rootScope.settings.sidebar = false;
-
-		googleApi.checkAuth()
-			.then(function(){
-				initAccount();
-
-				//checkList();
-
-				//loadTop();
-
-				updateSidebar();
-			});
-	}
 }
 ]
 );
@@ -600,24 +592,6 @@ sanityApp.directive('videoItem',
 		}
 	}
 });
-
-sanityApp.controller('StartCtrl',
-[
-'$scope',
-function ($scope) {
-	$scope.gotimelist = [
-		'YEAH BOIIIII',
-		'Well, if you say so, I guess...',
-		'My body is ready for sanity!',
-		'Let\'s go!'
-	];
-
-	var rand = Math.floor((Math.random() * $scope.gotimelist.length) + 1);
-
-	$scope.gotime = $scope.gotimelist[rand];
-}
-]
-);
 
 sanityApp.controller('SettingsModalCtrl',
 [
