@@ -108,16 +108,16 @@ function( $rootScope, googleApi ) {
 
 sanityApp.controller('StartCtrl',
 [
-'$scope',
-function ($scope) {
+'$scope', '$rootScope',
+function ($scope, $rootScope) {
 	$scope.gotimelist = [
-		'YEAH BOIIIII',
+		'YEAH BOIIIII!!!',
 		'Well, if you say so, I guess...',
 		'My body is ready for sanity!',
 		'Let\'s go!'
 	];
 
-	var rand = Math.floor((Math.random() * $scope.gotimelist.length) + 1);
+	var rand = Math.floor((Math.random() * $scope.gotimelist.length));
 
 	$scope.gotime = $scope.gotimelist[rand];
 
@@ -174,8 +174,8 @@ function ($scope) {
 
 sanityApp.controller('AppRepeatCtrl',
 [
-'$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData', 'appLoading',
-function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, appLoading )
+'$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData',
+function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
 {
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
@@ -203,7 +203,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	var initAccount = function () {
 		$rootScope.settings.sidebar = false;
 
-		appLoading.loading();
+		ytApp.loading();
 
 		mainChannel()
 			.then(function(id) {
@@ -214,7 +214,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 						loadVideos()
 							.then(function(count) {
 								// TODO: display count
-								appLoading.ready();
+								ytApp.ready();
 							});
 					});
 			});
@@ -502,7 +502,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	var loadTop = function () {
 		resetErrors();
 
-		appLoading.loading();
+		ytApp.loading();
 
 		$rootScope.filters.caught = 0;
 
@@ -526,7 +526,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 	};
 
 	$scope.refresh = function() {
-		appLoading.loading();
+		ytApp.loading();
 
 		ytApp.update();
 
@@ -845,39 +845,6 @@ function ($scope) {
 ]
 );
 
-sanityApp.service('appLoading',
-[
-'$rootScope',
-function ( $rootScope )
-{
-	var timer;
-
-	this.loading = function () {
-		clearTimeout( timer );
-
-		$rootScope.status = 1;
-	};
-
-	this.ready = function ( delay ) {
-		function ready() {
-			$rootScope.status = 0;
-		}
-
-		clearTimeout( timer );
-
-		delay = delay === null ? 500 : false;
-
-		if ( delay ) {
-			timer = setTimeout( ready, delay );
-		} else {
-			ready();
-		}
-	};
-}
-]
-);
-
-
 sanityApp.service('ytData',
 [
 '$q', 'googleApi',
@@ -1038,6 +1005,8 @@ function ( $q, $rootScope ) {
 		return false;
 	};
 
+	var timer;
+
 	this.appinfo = function ( fn ) {
 		var url = "/yt-sanegrid/info.json";
 
@@ -1110,6 +1079,28 @@ function ( $q, $rootScope ) {
 			$rootScope.info.updates.list = list;
 		});
 	});
+
+	this.loading = function () {
+		clearTimeout( timer );
+
+		$rootScope.status = 1;
+	};
+
+	this.ready = function ( delay ) {
+		function ready() {
+			$rootScope.status = 0;
+		}
+
+		clearTimeout( timer );
+
+		delay = delay === null ? 500 : false;
+
+		if ( delay ) {
+			timer = setTimeout( ready, delay );
+		} else {
+			ready();
+		}
+	};
 }
 ]
 );
@@ -1268,15 +1259,6 @@ function () {
 		});
 	};
 }
-);
-
-sanityApp.config(
-	[
-		'googleApiProvider',
-		function( googleApiProvider ) {
-			googleApiProvider.load();
-		}
-	]
 );
 
 function googleOnLoadCallback() {
