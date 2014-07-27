@@ -575,7 +575,7 @@ sanityApp.directive('videoItem',
 				$scope.video.muteddate = new Date().toISOString();
 			};
 
-			$scope.watch = function ( $event ) {
+			$scope.watch = function( $event ) {
 				if ( ($event.button == 2) ) {
 					return;
 				}
@@ -1099,7 +1099,12 @@ function () {
 		var duration = d.split('M'); // PT35M2S
 
 		duration[0] = Number(duration[0].slice(2));
-		duration[1] = Number(duration[1].slice(0,-1));
+
+		if ( typeof duration[1] == 'undefined' ) {
+			duration[1] = 0;
+		} else {
+			duration[1] = Number(duration[1].slice(0,-1));
+		}
 
 		var h = Math.floor( duration[0] / 60 );
 		var m = Math.floor( duration[0] % 60 );
