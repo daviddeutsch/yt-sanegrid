@@ -384,8 +384,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData, 
 		return deferred.promise;
 	};
 
-	var appendChannels = function ( items )
-	{
+	var appendChannels = function ( items ) {
 		var deferred = $q.defer();
 
 		var len = items.length-1;
