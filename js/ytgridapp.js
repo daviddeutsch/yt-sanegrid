@@ -601,7 +601,23 @@ sanityApp.directive('videoItem',
 	}
 });
 
+sanityApp.controller('StartCtrl',
+[
+'$scope',
+function ($scope) {
+	$scope.gotimelist = [
+		'YEAH BOIIIII',
+		'Well, if you say so, I guess...',
+		'My body is ready!',
+		'Let\'s go!'
+	];
 
+	var rand = Math.floor((Math.random() * $scope.gotimelist.length) + 1);
+
+	$scope.gotime = $scope.gotimelist[rand];
+}
+]
+);
 
 sanityApp.controller('SettingsModalCtrl',
 [
