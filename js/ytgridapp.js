@@ -120,6 +120,54 @@ function ($scope) {
 	var rand = Math.floor((Math.random() * $scope.gotimelist.length) + 1);
 
 	$scope.gotime = $scope.gotimelist[rand];
+
+	var resetErrors = function () {
+		if ( $scope.forbidden == 1 || $scope.notfound == 1 ) {
+			$scope.forbidden = 0;
+			$scope.notfound = 0;
+		}
+	};
+
+	$scope.selectUserid = function ( q ) {
+		if ( q === false ) {
+			$scope.start = true;
+		} else {
+			initAccount( q );
+
+			//loadTop();
+		}
+	};
+
+	$scope.connect = function()
+	{
+		googleApi.authorize()
+			.then(function(){
+				initAccount();
+
+				//checkList();
+
+				//loadTop();
+
+				updateSidebar();
+			});
+	};
+
+	if ( $rootScope.userid ) {
+		$scope.start = false;
+
+		$rootScope.settings.sidebar = false;
+
+		googleApi.checkAuth()
+			.then(function(){
+				initAccount();
+
+				//checkList();
+
+				//loadTop();
+
+				updateSidebar();
+			});
+	}
 }
 ]
 );
