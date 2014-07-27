@@ -608,7 +608,7 @@ function ($scope) {
 	$scope.gotimelist = [
 		'YEAH BOIIIII',
 		'Well, if you say so, I guess...',
-		'My body is ready!',
+		'My body is ready for sanity!',
 		'Let\'s go!'
 	];
 
