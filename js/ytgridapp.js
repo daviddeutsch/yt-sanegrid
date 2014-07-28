@@ -460,7 +460,7 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
 						syncChannels(data.nextPageToken)
 							.then(function() {
 								deferred.resolve();
-							})
+							});
 					} else {
 						deferred.resolve();
 					}
@@ -500,8 +500,6 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
 	};
 
 	var loadTop = function () {
-		resetErrors();
-
 		ytApp.loading();
 
 		$rootScope.filters.caught = 0;
