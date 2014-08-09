@@ -198,7 +198,6 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, ytApp, ytData
 
 		mainChannel()
 			.then(function(id) {
-				if ( id ) {
 				$rootScope.userid = id;
 
 				syncChannels()
@@ -209,9 +208,8 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, ytApp, ytData
 								ytApp.ready();
 							});
 					});
-				} else {
-					$state.go('ready');
-				}
+			}, function() {
+				$state.go('ready');
 			});
 	};
 
@@ -230,6 +228,8 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, ytApp, ytData
 				});
 
 				deferred.resolve(data.items[0].id);
+			}, function() {
+				deferred.reject();
 			});
 
 		return deferred.promise;
@@ -787,11 +787,17 @@ function ytDataService( $q, googleApi )
 
 		googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
-		var request = googleApi.gapi.client.youtube[type].list(options);
+		if ( typeof googleApi.gapi.client.youtube !== 'undefined' ) {
+			var request = googleApi.gapi.client.youtube[type].list(options);
 
-		request.execute(function(response) {
-			deferred.resolve(response);
-		});
+			googleApi.gapi.client.youtube[type]
+				.list(options)
+				.execute(function(response) {
+					deferred.resolve(response);
+				});
+		} else {
+			deferred.reject();
+		}
 
 		return deferred.promise;
 	};
