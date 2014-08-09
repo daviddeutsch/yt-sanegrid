@@ -166,7 +166,7 @@ StartCtrl.$inject = ['$scope', '$rootScope', '$state', 'googleApi'];
 angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-function AppRepeatCtrl( $rootScope, $scope, $q, $document, $route, ytApp, ytData )
+function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, ytApp, ytData )
 {
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
@@ -210,7 +210,7 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, $route, ytApp, ytData
 							});
 					});
 				} else {
-					$route.go('ready');
+					$state.go('ready');
 				}
 			});
 	};
@@ -596,7 +596,7 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, $route, ytApp, ytData
 	updateSidebar();
 }
 
-AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$route', 'ytApp', 'ytData'];
+AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'ytApp', 'ytData'];
 angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
@@ -1176,7 +1176,7 @@ angular.module('sanityApp').directive('videoItem', videoItemDirective);
  *
  * @desc Use the timeago service to show when something has been posted
  */
-function timeAgoDirective( timeago )
+function timeAgoDirective( timeAgo )
 {
 	return {
 		replace: true,
@@ -1186,7 +1186,7 @@ function timeAgoDirective( timeago )
 		},
 		link: {
 			post: function(scope, linkElement, attrs) {
-				scope.timeago = timeago;
+				scope.timeago = timeAgo;
 				scope.timeago.init();
 				scope.$watch("timeago.nowTime-fromTime",function(value) {
 					if (scope.timeago.nowTime !== undefined) {
@@ -1199,7 +1199,7 @@ function timeAgoDirective( timeago )
 	};
 }
 
-timeAgoDirective.$inject = ['timeago'];
+timeAgoDirective.$inject = ['timeAgo'];
 angular.module('sanityApp').directive('timeAgo', timeAgoDirective);
 
 /**
