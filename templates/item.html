@@ -15,10 +15,15 @@
 	</a>
 
 	<div class="video-buttons">
-		<span ng-controller="FilterModalCtrl">
-			<a ng-click="open(video)"
-			   class="click-filter"
-			   title="create a filter"><i class="icon-filter"></i></a>
+		<span>
+			<a
+				data-template="templates/filter.html"
+				bs-modal="modal"
+				class="click-filter"
+				title="create a filter"
+				>
+				<i class="icon-filter"></i>
+			</a>
 		</span>
 		<a ng-click="mute()"
 		   class="click-mute"

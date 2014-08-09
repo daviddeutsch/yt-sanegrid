@@ -1,4 +1,4 @@
-<div class="modal-dialog">
+<div class="modal-dialog" ng-controller="SupportModalCtrl">
 	<div class="modal-content">
 		<div class="modal-body">
 			<h4>Hey, thanks a lot for using YT Sane Grid!</h4>
@@ -83,7 +83,7 @@
 		</div>
 
 		<div class="modal-footer">
-			<button class="btn btn-warning cancel" ng-click="cancel()">
+			<button class="btn btn-warning cancel" ng-click="$hide()">
 				Nope, nope, <strong><em>Noooope</em></strong>
 			</button>
 		</div>

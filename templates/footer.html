@@ -62,11 +62,12 @@
 		</button>
 	</div>
 
-	<div class="btn-group hidden-xs" ng-controller="SettingsModalCtrl">
+	<div class="btn-group hidden-xs">
 		<button
 			type="button"
 			class="btn btn-success"
-			ng-click="open()"
+			data-template="templates/settings.html"
+			bs-modal="modal"
 			>
 			<i class="icon-cogs"></i>
 			<span>Settings</span>
@@ -84,8 +85,12 @@
 		</button>
 	</div>
 
-	<div class="btn-group hidden-xs" ng-controller="SupportModalCtrl">
-		<button class="btn btn-success" ng-click="open()">
+	<div class="btn-group hidden-xs">
+		<button
+			class="btn btn-success"
+			data-template="templates/support.html"
+			bs-modal="modal"
+			>
 			<span>
 				<strong><i class="icon-heart" style="color:#cd4427"></i> support the developer</strong>
 			</span>
@@ -101,8 +106,8 @@
 		<button
 			type="button"
 			class="btn btn-success visible-xs"
-			ng-controller="SettingsModalCtrl"
-			ng-click="open()"
+			data-template="templates/updates.html"
+			bs-modal="modal"
 			>
 			<i class="icon-cogs"></i>
 		</button>

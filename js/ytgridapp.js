@@ -1,8 +1,8 @@
 (function () {
 
 angular.module('sanityApp', [
-	'ngAnimate', 'ui.bootstrap', 'ngSocial',
-	'localStorage', 'LocalForageModule', 'ui.router'
+	'ngAnimate', 'ui.router', 'mgcrea.ngStrap', 'ngSocial',
+	'localStorage', 'LocalForageModule'
 ]);
 
 
@@ -600,29 +600,12 @@ AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$route', 'y
 angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
-function SettingsModalCtrl( $scope, $modal )
-{
-	$scope.open = function () {
-		$modal.open({
-			templateUrl: 'templates/settings.html',
-			backdrop: false,
-			dialogFade:true,
-			controller: 'SettingsModalInstanceCtrl',
-			scope: $scope
-		});
-	};
-}
-
-SettingsModalCtrl.$inject = ['$scope', '$modal'];
-angular.module('sanityApp').controller('SettingsModalCtrl', SettingsModalCtrl);
-
-
-function SettingsModalInstanceCtrl( $rootScope, $scope, $modalInstance )
+function SettingsModalCtrl( $rootScope, $scope )
 {
 	//$store.bind( $rootScope, 'filters', {} );
 
 	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
+		$scope.$hide();
 	};
 
 	$scope.redoadblocksecret = function () {
@@ -644,80 +627,31 @@ function SettingsModalInstanceCtrl( $rootScope, $scope, $modalInstance )
 	};
 }
 
-SettingsModalCtrl.$inject = ['$rootScope', '$scope', '$modalInstance'];
-angular.module('sanityApp').controller('SettingsModalInstanceCtrl', SettingsModalInstanceCtrl);
+SettingsModalCtrl.$inject = ['$rootScope', '$scope'];
+angular.module('sanityApp').controller('SettingsModalCtrl', SettingsModalCtrl);
 
 
-function SupportModalCtrl( $scope, $modal )
+function FilterModalCtrl( $rootScope, $scope )
 {
-	$scope.open = function () {
-		$modal.open({
-			templateUrl: 'templates/support.html',
-			backdrop: false,
-			dialogFade:true,
-			controller: 'SupportModalInstanceCtrl'
-		});
-	};
-}
-
-SupportModalCtrl.$inject = ['$scope', '$modal'];
-angular.module('sanityApp').controller('SupportModalCtrl', SupportModalCtrl);
-
-
-function SupportModalInstanceCtrl( $scope, $modalInstance )
-{
-	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
-	};
-}
-
-SupportModalInstanceCtrl.$inject = ['$scope', '$modalInstance'];
-angular.module('sanityApp').controller('SupportModalInstanceCtrl', SupportModalInstanceCtrl);
-
-
-function FilterModalCtrl( $scope, $modal )
-{
-	$scope.open = function (video) {
-		$modal.open({
-			templateUrl: 'templates/filter.html',
-			backdrop: false,
-			dialogFade:true,
-			controller: 'FilterModalInstanceCtrl',
-			scope: $scope,
-			resolve: {
-				item: function () {
-					return video;
-				}
-			}
-		});
-	};
-}
-
-FilterModalCtrl.$inject = ['$scope', '$modal'];
-angular.module('sanityApp').controller('FilterModalCtrl', FilterModalCtrl);
-
-
-function FilterModalInstanceCtrl( $rootScope, $scope, $modalInstance, item )
-{
-	if ( item.authorid ) {
+	if ( $scope.video.authorid ) {
 		$scope.filter = {
-			title: item.title,
-			channel: item.authorid,
-			author: item.author,
-			authorid: item.authorid
+			title: $scope.video.title,
+			channel: $scope.video.authorid,
+			author: $scope.video.author,
+			authorid: $scope.video.authorid
 		};
 	} else {
 		$scope.filter = {
-			title: item.title,
-			channel: item.author,
-			author: item.author,
-			authorid: item.author
+			title: $scope.video.title,
+			channel: $scope.video.author,
+			author: $scope.video.author,
+			authorid: $scope.video.author
 		};
 	}
 
 
 	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
+		$scope.$hide();
 	};
 
 	$scope.ok = function () {
@@ -738,42 +672,12 @@ function FilterModalInstanceCtrl( $rootScope, $scope, $modalInstance, item )
 
 		$rootScope.filters.count++;
 
-		$modalInstance.dismiss('ok');
+		$scope.$hide();
 	};
 }
 
-FilterModalCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'item'];
-angular.module('sanityApp').controller('FilterModalInstanceCtrl', FilterModalInstanceCtrl);
-
-
-function UpdatesModalCtrl( $rootScope, $scope, $modal )
-{
-	$scope.status = $rootScope.status;
-
-	$scope.open = function () {
-		$modal.open({
-			templateUrl: 'templates/updates.html',
-			backdrop: false,
-			dialogFade:true,
-			controller: 'UpdatesModalInstanceCtrl',
-			scope: $scope
-		});
-	};
-}
-
-UpdatesModalCtrl.$inject = ['$rootScope', '$scope', '$modal', 'ytApp'];
-angular.module('sanityApp').controller('UpdatesModalCtrl', UpdatesModalCtrl);
-
-
-function UpdatesModalInstanceCtrl( $scope, $modalInstance )
-{
-	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
-	};
-}
-
-UpdatesModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'ytApp'];
-angular.module('sanityApp').controller('UpdatesModalInstanceCtrl', UpdatesModalInstanceCtrl);
+FilterModalCtrl.$inject = ['$rootScope', '$scope'];
+angular.module('sanityApp').controller('FilterModalCtrl', FilterModalCtrl);
 
 
 function SettingsTabsCtrl( $scope )
