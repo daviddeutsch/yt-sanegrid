@@ -166,7 +166,7 @@ StartCtrl.$inject = ['$scope', '$rootScope', '$state', 'googleApi'];
 angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
+function AppRepeatCtrl( $rootScope, $scope, $q, $document, $route, ytApp, ytData )
 {
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
@@ -198,6 +198,7 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 
 		mainChannel()
 			.then(function(id) {
+				if ( id ) {
 				$rootScope.userid = id;
 
 				syncChannels()
@@ -208,6 +209,9 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 								ytApp.ready();
 							});
 					});
+				} else {
+					$route.go('ready');
+				}
 			});
 	};
 
@@ -592,7 +596,7 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 	updateSidebar();
 }
 
-AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', 'ytApp', 'ytData'];
+AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$route', 'ytApp', 'ytData'];
 angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
@@ -1162,7 +1166,7 @@ function timeAgoService($timeout) {
 }
 
 timeAgoService.$inject = ['$timeout'];
-angular.module('sanityApp').service('timeAgoService', timeAgoService);
+angular.module('sanityApp').service('timeAgo', timeAgoService);
 
 
 /**
