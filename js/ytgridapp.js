@@ -121,7 +121,7 @@ angular.module('sanityApp').run(AppRun);
  *
  * @desc Controls Behavior on the home screen
  */
-function StartCtrl( $scope, $rootScope )
+function StartCtrl( $scope, $rootScope, googleApi )
 {
 	$scope.gotimelist = [
 		'YEAH BOIIIII!!!',
@@ -176,7 +176,7 @@ function StartCtrl( $scope, $rootScope )
 	}
 }
 
-StartCtrl.$inject = ['$scope', '$rootScope'];
+StartCtrl.$inject = ['$scope', '$rootScope', 'googleApi'];
 angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
@@ -602,7 +602,7 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 	});
 }
 
-AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', 'ytApp', 'googleApi', 'ytData'];
+AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', 'ytApp', 'ytData'];
 angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
@@ -808,12 +808,79 @@ SettingsAccordionCtrl.$inject = ['$scope'];
 angular.module('sanityApp').controller('SettingsAccordionCtrl', SettingsAccordionCtrl);
 
 
+function GoogleApiProvider () {
+	var self = this;
+
+	this.clientId = '950592637430.apps.googleusercontent.com';
+
+	this.apiKey = 'AIzaSyCs378KoxX1cX5_TTa5W65tTG396AkId0A';
+
+	this.scopes = 'https://www.googleapis.com/auth/youtube';
+
+	this.gapi = gapi;
+
+	this.q = {};
+
+	this.connect = function()
+	{
+		var deferred = self.q.defer();
+
+		this.gapi.auth.authorize(
+			{
+				client_id: this.clientId,
+				scope: this.scopes,
+				immediate: false
+			},
+			function( result ) {
+				if ( result && !result.error ) {
+					self.gapi.client.load('youtube', 'v3', function(response) {
+						deferred.resolve(response);
+					});
+				} else {
+					deferred.reject();
+				}
+			}
+		);
+
+		return deferred.promise;
+	};
+
+	this.checkAuth = function() {
+		return this.connect();
+	};
+
+	this.authorize = function() {
+		return this.connect();
+	};
+
+	this.load = function() {
+		this.gapi.load();
+
+		this.gapi.client.setApiKey(this.apiKey);
+	};
+
+	this.$get = [
+		'$q',
+		function ( $q )
+		{
+			var provider = new GoogleApiProvider();
+
+			provider.q = $q;
+
+			return provider;
+		}
+	];
+}
+
+angular.module('sanityApp').provider('googleApi', GoogleApiProvider);
+
+
 /**
  * @name ytData
  *
  * @desc Querying Data from the Google YT API
  */
-function ytDataService( $q )
+function ytDataService( $q, googleApi )
 {
 	var self = this;
 
@@ -887,7 +954,7 @@ function ytDataService( $q )
 	};
 }
 
-ytDataService.$inject = ['$q'];
+ytDataService.$inject = ['$q', 'googleApi'];
 angular.module('sanityApp').service('ytData', ytDataService);
 
 
