@@ -187,7 +187,7 @@ StartCtrl.$inject = ['$scope', '$rootScope'];
 angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-function AppRepeatCtrl( $rootScope, $scope, $q, $store, $document, ytApp, ytData )
+function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 {
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
@@ -379,14 +379,14 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $store, $document, ytApp, ytData
 			// TODO: Revisit this later, might be pointless with only uploads
 			// Update existing data
 			/*$.each(
-			 [
-			 'id', 'link', 'title', 'img', 'authorid',
-			 'author', 'authorlink', 'published', 'duration'
-			 ],
-			 function ( i, v ) {
-			 $scope.videos[eid][v] = details[v];
-			 }
-			 );*/
+			[
+			'id', 'link', 'title', 'img', 'authorid',
+			'author', 'authorlink', 'published', 'duration'
+			],
+			function ( i, v ) {
+			$scope.videos[eid][v] = details[v];
+			}
+			);*/
 
 			return null;
 		} else {
@@ -609,14 +609,14 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $store, $document, ytApp, ytData
 	});
 }
 
-AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData'];
+AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', 'ytApp', 'googleApi', 'ytData'];
 angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
-function SettingsModalCtrl( $scope, $store, $modal )
+function SettingsModalCtrl( $scope, $modal )
 {
 	$scope.open = function () {
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'templates/settings.html',
 			backdrop: false,
 			dialogFade:true,
@@ -626,11 +626,11 @@ function SettingsModalCtrl( $scope, $store, $modal )
 	};
 }
 
-SettingsModalCtrl.$inject = ['$scope', '$store', '$modal'];
+SettingsModalCtrl.$inject = ['$scope', '$modal'];
 angular.module('sanityApp').controller('SettingsModalCtrl', SettingsModalCtrl);
 
 
-function SettingsModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance )
+function SettingsModalInstanceCtrl( $rootScope, $scope, $modalInstance )
 {
 	//$store.bind( $rootScope, 'filters', {} );
 
@@ -657,14 +657,14 @@ function SettingsModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance )
 	};
 }
 
-SettingsModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance'];
+SettingsModalCtrl.$inject = ['$rootScope', '$scope', '$modalInstance'];
 angular.module('sanityApp').controller('SettingsModalInstanceCtrl', SettingsModalInstanceCtrl);
 
 
 function SupportModalCtrl( $scope, $modal )
 {
 	$scope.open = function () {
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'templates/support.html',
 			backdrop: false,
 			dialogFade:true,
@@ -688,10 +688,10 @@ SupportModalInstanceCtrl.$inject = ['$scope', '$modalInstance'];
 angular.module('sanityApp').controller('SupportModalInstanceCtrl', SupportModalInstanceCtrl);
 
 
-function FilterModalCtrl( $scope, $store, $modal )
+function FilterModalCtrl( $scope, $modal )
 {
 	$scope.open = function (video) {
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'templates/filter.html',
 			backdrop: false,
 			dialogFade:true,
@@ -706,11 +706,11 @@ function FilterModalCtrl( $scope, $store, $modal )
 	};
 }
 
-FilterModalCtrl.$inject = ['$scope', '$store', '$modal'];
+FilterModalCtrl.$inject = ['$scope', '$modal'];
 angular.module('sanityApp').controller('FilterModalCtrl', FilterModalCtrl);
 
 
-function FilterModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, item )
+function FilterModalInstanceCtrl( $rootScope, $scope, $modalInstance, item )
 {
 	if ( item.authorid ) {
 		$scope.filter = {
@@ -733,7 +733,7 @@ function FilterModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, it
 		$modalInstance.dismiss('cancel');
 	};
 
-	$scope.ok = function (item) {
+	$scope.ok = function () {
 		//$store.bind( $rootScope, 'filters', {} );
 
 		if ( $scope.filter.channel.length ) {
@@ -755,16 +755,16 @@ function FilterModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, it
 	};
 }
 
-FilterModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance', 'item'];
+FilterModalCtrl.$inject = ['$rootScope', '$scope', '$modalInstance', 'item'];
 angular.module('sanityApp').controller('FilterModalInstanceCtrl', FilterModalInstanceCtrl);
 
 
-function UpdatesModalCtrl( $rootScope, $scope, $store, $modal, ytApp )
+function UpdatesModalCtrl( $rootScope, $scope, $modal )
 {
 	$scope.status = $rootScope.status;
 
 	$scope.open = function () {
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'templates/updates.html',
 			backdrop: false,
 			dialogFade:true,
@@ -774,22 +774,22 @@ function UpdatesModalCtrl( $rootScope, $scope, $store, $modal, ytApp )
 	};
 }
 
-UpdatesModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modal', 'ytApp'];
+UpdatesModalCtrl.$inject = ['$rootScope', '$scope', '$modal', 'ytApp'];
 angular.module('sanityApp').controller('UpdatesModalCtrl', UpdatesModalCtrl);
 
 
-function UpdatesModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, ytApp )
+function UpdatesModalInstanceCtrl( $scope, $modalInstance )
 {
 	$scope.cancel = function () {
 		$modalInstance.dismiss('cancel');
 	};
 }
 
-UpdatesModalInstanceCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance', 'ytApp'];
+UpdatesModalInstanceCtrl.$inject = ['$scope', '$modalInstance', 'ytApp'];
 angular.module('sanityApp').controller('UpdatesModalInstanceCtrl', UpdatesModalInstanceCtrl);
 
 
-function SettingsTabsCtrl( $rootScope, $scope )
+function SettingsTabsCtrl( $scope )
 {
 	$scope.tabs = [];
 
@@ -802,7 +802,7 @@ function SettingsTabsCtrl( $rootScope, $scope )
 	};
 }
 
-SettingsTabsCtrl.$inject = ['$rootScope', '$scope'];
+SettingsTabsCtrl.$inject = ['$scope'];
 angular.module('sanityApp').controller('SettingsTabsCtrl', SettingsTabsCtrl);
 
 
@@ -920,8 +920,6 @@ function ytAppService( $q, $rootScope )
 
 	this.appinfo = function ( fn ) {
 		var url = "/yt-sanegrid/info.json";
-
-		var defer = $q.defer();
 
 		$.getJSON( url )
 			.fail( function ( j, t, e ) {
@@ -1237,7 +1235,7 @@ function timeAgoDirective( timeago )
 }
 
 timeAgoDirective.$inject = ['timeago'];
-angular.module('sanityApp').directive('timeAgo', timeAgoDirective)
+angular.module('sanityApp').directive('timeAgo', timeAgoDirective);
 
 /**
  * @name selectOnClickDirective
