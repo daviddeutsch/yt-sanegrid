@@ -28,7 +28,7 @@ function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider )
 			url: '/ready',
 			views: {
 				"main": {
-					templateUrl: '/templates/start.html'
+					templateUrl: '/yt-sanegrid/templates/start.html'
 				}
 			}
 		})
@@ -37,10 +37,10 @@ function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider )
 			url: '/list',
 			views: {
 				"main": {
-					templateUrl: '/templates/videos.html'
+					templateUrl: '/yt-sanegrid/templates/videos.html'
 				},
 				"footer": {
-					templateUrl: '/templates/footer.html'
+					templateUrl: '/yt-sanegrid/templates/footer.html'
 				}
 			}
 		})
@@ -133,13 +133,6 @@ function StartCtrl( $scope, $rootScope )
 	var rand = Math.floor((Math.random() * $scope.gotimelist.length));
 
 	$scope.gotime = $scope.gotimelist[rand];
-
-	var resetErrors = function () {
-		if ( $scope.forbidden == 1 || $scope.notfound == 1 ) {
-			$scope.forbidden = 0;
-			$scope.notfound = 0;
-		}
-	};
 
 	$scope.selectUserid = function ( q ) {
 		if ( q === false ) {
@@ -917,6 +910,13 @@ function ytAppService( $q, $rootScope )
 	};
 
 	var timer;
+
+	this.resetErrors = function () {
+		if ( $rootScope.forbidden == 1 || $rootScope.notfound == 1 ) {
+			$rootScope.forbidden = 0;
+			$rootScope.notfound = 0;
+		}
+	};
 
 	this.appinfo = function ( fn ) {
 		var url = "/yt-sanegrid/info.json";
