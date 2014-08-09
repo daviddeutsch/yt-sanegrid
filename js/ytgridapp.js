@@ -121,7 +121,7 @@ angular.module('sanityApp').run(AppRun);
  *
  * @desc Controls Behavior on the home screen
  */
-function StartCtrl( $scope, $rootScope, googleApi )
+function StartCtrl( $scope, $rootScope, $state, googleApi )
 {
 	$scope.gotimelist = [
 		'YEAH BOIIIII!!!',
@@ -136,11 +136,9 @@ function StartCtrl( $scope, $rootScope, googleApi )
 
 	$scope.selectUserid = function ( q ) {
 		if ( q === false ) {
-			$scope.start = true;
+			$state.go('ready');
 		} else {
-			initAccount( q );
-
-			//loadTop();
+			$state.go('list');
 		}
 	};
 
@@ -148,13 +146,7 @@ function StartCtrl( $scope, $rootScope, googleApi )
 	{
 		googleApi.authorize()
 			.then(function(){
-				initAccount();
-
-				//checkList();
-
-				//loadTop();
-
-				updateSidebar();
+				$state.go('list');
 			});
 	};
 
@@ -165,18 +157,12 @@ function StartCtrl( $scope, $rootScope, googleApi )
 
 		googleApi.checkAuth()
 			.then(function(){
-				initAccount();
-
-				//checkList();
-
-				//loadTop();
-
-				updateSidebar();
+				$state.go('list');
 			});
 	}
 }
 
-StartCtrl.$inject = ['$scope', '$rootScope', 'googleApi'];
+StartCtrl.$inject = ['$scope', '$rootScope', '$state', 'googleApi'];
 angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
@@ -600,6 +586,10 @@ function AppRepeatCtrl( $rootScope, $scope, $q, $document, ytApp, ytData )
 	angular.element($document).bind("keyup", function(event) {
 		if (event.which === 82) $scope.refresh();
 	});
+
+	initAccount();
+
+	updateSidebar();
 }
 
 AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', 'ytApp', 'ytData'];
