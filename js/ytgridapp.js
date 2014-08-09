@@ -1,15 +1,18 @@
-var sanityApp = angular.module(
-	"sanityApp",
-	[
-		'ngAnimate', 'ui.bootstrap', 'ngSocial',
-		'localStorage', 'LocalForageModule', 'ui.router'
-	]
-);
+(function () {
 
-sanityApp.config(
-[
-'$urlRouterProvider', '$stateProvider', '$localForageProvider',
-function( $urlRouterProvider, $stateProvider, $localForageProvider ) {
+angular.module('sanityApp', [
+	'ngAnimate', 'ui.bootstrap', 'ngSocial',
+	'localStorage', 'LocalForageModule', 'ui.router'
+]);
+
+
+/**
+ * @name AppCfg
+ *
+ * @desc Set up the Application
+ */
+function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider )
+{
 	$localForageProvider.config({
 		name        : 'SanityGrid',
 		version     : 1.0,
@@ -43,13 +46,18 @@ function( $urlRouterProvider, $stateProvider, $localForageProvider ) {
 		})
 	;
 }
-]
-);
 
-sanityApp.run(
-[
-'$rootScope', 'googleApi',
-function( $rootScope, googleApi ) {
+AppCfg.$inject = ['$urlRouterProvider', '$stateProvider', '$localForageProvider'];
+angular.module('sanityApp').config(AppCfg);
+
+
+/**
+ * @name AppRun
+ *
+ * @desc Data to prepare when we run the application
+ */
+function AppRun( $rootScope )
+{
 	$rootScope.apiReady = true;
 
 	if ( $.isEmptyObject( $rootScope.settings ) ) {
@@ -103,13 +111,18 @@ function( $rootScope, googleApi ) {
 		$rootScope.settings.videolimit = 100;
 	}
 }
-]
-);
 
-sanityApp.controller('StartCtrl',
-[
-'$scope', '$rootScope',
-function ($scope, $rootScope) {
+AppRun.$inject = ['$rootScope'];
+angular.module('sanityApp').run(AppRun);
+
+
+/**
+ * @name StartCtrl
+ *
+ * @desc Controls Behavior on the home screen
+ */
+function StartCtrl( $scope, $rootScope )
+{
 	$scope.gotimelist = [
 		'YEAH BOIIIII!!!',
 		'Well, if you say so, I guess...',
@@ -169,13 +182,12 @@ function ($scope, $rootScope) {
 			});
 	}
 }
-]
-);
 
-sanityApp.controller('AppRepeatCtrl',
-[
-'$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData',
-function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
+StartCtrl.$inject = ['$scope', '$rootScope'];
+angular.module('sanityApp').controller('StartCtrl', StartCtrl);
+
+
+function AppRepeatCtrl( $rootScope, $scope, $q, $store, $document, ytApp, ytData )
 {
 	//$store.bind( $rootScope, 'userid', '' );
 	//$store.bind( $rootScope, 'videocache', {} );
@@ -367,14 +379,14 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
 			// TODO: Revisit this later, might be pointless with only uploads
 			// Update existing data
 			/*$.each(
-				[
-					'id', 'link', 'title', 'img', 'authorid',
-					'author', 'authorlink', 'published', 'duration'
-				],
-				function ( i, v ) {
-					$scope.videos[eid][v] = details[v];
-				}
-			);*/
+			 [
+			 'id', 'link', 'title', 'img', 'authorid',
+			 'author', 'authorlink', 'published', 'duration'
+			 ],
+			 function ( i, v ) {
+			 $scope.videos[eid][v] = details[v];
+			 }
+			 );*/
 
 			return null;
 		} else {
@@ -596,53 +608,13 @@ function ( $rootScope, $scope, $q, $store, $document, ytApp, googleApi, ytData )
 		if (event.which === 82) $scope.refresh();
 	});
 }
-]
-);
 
-sanityApp.directive('videoItem',
-	function($timeout) {
-	return {
-		restrict: 'C',
-		scope: {
-			video: '='
-		},
-		templateUrl: 'templates/item.html',
-		controller: function( $scope, $rootScope ) {
-			$scope.mute = function () {
-				$scope.video.muted = !$scope.video.muted;
-				$scope.video.muteddate = new Date().toISOString();
-			};
+AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$store', '$document', 'ytApp', 'googleApi', 'ytData'];
+angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
-			$scope.watch = function( $event ) {
-				if ( ($event.button == 2) ) {
-					return;
-				}
 
-				$timeout(function(){$scope.watched(false);}, 400);
-			};
-
-			if ( $rootScope.settings.adblockoverride ) {
-				$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
-			} else {
-				$scope.link = $scope.video.link;
-			}
-
-			$scope.watched = function ( force ) {
-				if ( $scope.video.watched && !force ) {
-					return;
-				}
-
-				$scope.video.watched = !$scope.video.watched;
-				$scope.video.watcheddate = new Date().toISOString();
-			};
-		}
-	}
-});
-
-sanityApp.controller('SettingsModalCtrl',
-[
-'$scope', '$store', '$modal',
-function ($scope, $store, $modal) {
+function SettingsModalCtrl( $scope, $store, $modal )
+{
 	$scope.open = function () {
 		var modalInstance = $modal.open({
 			templateUrl: 'templates/settings.html',
@@ -653,13 +625,13 @@ function ($scope, $store, $modal) {
 		});
 	};
 }
-]
-);
 
-sanityApp.controller('SettingsModalInstanceCtrl',
-[
-'$rootScope', '$scope', '$store', '$modalInstance',
-function ($rootScope, $scope, $store, $modalInstance) {
+SettingsModalCtrl.$inject = ['$scope', '$store', '$modal'];
+angular.module('sanityApp').controller('SettingsModalCtrl', SettingsModalCtrl);
+
+
+function SettingsModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance )
+{
 	//$store.bind( $rootScope, 'filters', {} );
 
 	$scope.cancel = function () {
@@ -678,19 +650,19 @@ function ($rootScope, $scope, $store, $modalInstance) {
 				delete $rootScope.filters.channels[channel];
 			}
 		} else {
-			$rootScope.filters.global.splice(id,1);
+			$rootScope.filters.global.splice(id, 1);
 		}
 
 		$rootScope.filters.count--;
 	};
 }
-]
-);
 
-sanityApp.controller('SupportModalCtrl',
-[
-'$scope', '$modal',
-function ($scope, $modal) {
+SettingsModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance'];
+angular.module('sanityApp').controller('SettingsModalInstanceCtrl', SettingsModalInstanceCtrl);
+
+
+function SupportModalCtrl( $scope, $modal )
+{
 	$scope.open = function () {
 		var modalInstance = $modal.open({
 			templateUrl: 'templates/support.html',
@@ -700,24 +672,23 @@ function ($scope, $modal) {
 		});
 	};
 }
-]
-);
 
-sanityApp.controller('SupportModalInstanceCtrl',
-[
-'$scope', '$modalInstance',
-function ($scope, $modalInstance) {
+SupportModalCtrl.$inject = ['$scope', '$modal'];
+angular.module('sanityApp').controller('SupportModalCtrl', SupportModalCtrl);
+
+
+function SupportModalInstanceCtrl( $scope, $modalInstance )
+{
 	$scope.cancel = function () {
 		$modalInstance.dismiss('cancel');
 	};
 }
-]
-);
 
-sanityApp.controller('FilterModalCtrl',
-[
-'$scope', '$store', '$modal',
-function ($scope, $store, $modal)
+SupportModalInstanceCtrl.$inject = ['$scope', '$modalInstance'];
+angular.module('sanityApp').controller('SupportModalInstanceCtrl', SupportModalInstanceCtrl);
+
+
+function FilterModalCtrl( $scope, $store, $modal )
 {
 	$scope.open = function (video) {
 		var modalInstance = $modal.open({
@@ -734,13 +705,12 @@ function ($scope, $store, $modal)
 		});
 	};
 }
-]
-);
 
-sanityApp.controller('FilterModalInstanceCtrl',
-[
-'$rootScope', '$scope', '$store', '$modalInstance', 'item',
-function ($rootScope, $scope, $store, $modalInstance, item)
+FilterModalCtrl.$inject = ['$scope', '$store', '$modal'];
+angular.module('sanityApp').controller('FilterModalCtrl', FilterModalCtrl);
+
+
+function FilterModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, item )
 {
 	if ( item.authorid ) {
 		$scope.filter = {
@@ -784,13 +754,13 @@ function ($rootScope, $scope, $store, $modalInstance, item)
 		$modalInstance.dismiss('ok');
 	};
 }
-]
-);
 
-sanityApp.controller('UpdatesModalCtrl',
-[
-'$rootScope', '$scope', '$store', '$modal', 'ytApp',
-function ($rootScope, $scope, $store, $modal, ytApp) {
+FilterModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance', 'item'];
+angular.module('sanityApp').controller('FilterModalInstanceCtrl', FilterModalInstanceCtrl);
+
+
+function UpdatesModalCtrl( $rootScope, $scope, $store, $modal, ytApp )
+{
 	$scope.status = $rootScope.status;
 
 	$scope.open = function () {
@@ -803,24 +773,24 @@ function ($rootScope, $scope, $store, $modal, ytApp) {
 		});
 	};
 }
-]
-);
 
-sanityApp.controller('UpdatesModalInstanceCtrl',
-[
-'$rootScope', '$scope', '$store', '$modalInstance', 'ytApp',
-function ($rootScope, $scope, $store, $modalInstance, ytApp) {
+UpdatesModalCtrl.$inject = ['$rootScope', '$scope', '$store', '$modal', 'ytApp'];
+angular.module('sanityApp').controller('UpdatesModalCtrl', UpdatesModalCtrl);
+
+
+function UpdatesModalInstanceCtrl( $rootScope, $scope, $store, $modalInstance, ytApp )
+{
 	$scope.cancel = function () {
 		$modalInstance.dismiss('cancel');
 	};
 }
-]
-);
 
-sanityApp.controller('SettingsTabsCtrl',
-[
-'$rootScope', '$scope',
-function ($rootScope, $scope) {
+UpdatesModalInstanceCtrl.$inject = ['$rootScope', '$scope', '$store', '$modalInstance', 'ytApp'];
+angular.module('sanityApp').controller('UpdatesModalInstanceCtrl', UpdatesModalInstanceCtrl);
+
+
+function SettingsTabsCtrl( $rootScope, $scope )
+{
 	$scope.tabs = [];
 
 	$scope.navType = 'pills';
@@ -831,22 +801,27 @@ function ($rootScope, $scope) {
 		$scope.adblockadvice = type;
 	};
 }
-]
-);
 
-sanityApp.controller('SettingsAccordionCtrl',
-[
-'$scope',
-function ($scope) {
+SettingsTabsCtrl.$inject = ['$rootScope', '$scope'];
+angular.module('sanityApp').controller('SettingsTabsCtrl', SettingsTabsCtrl);
+
+
+function SettingsAccordionCtrl( $scope )
+{
 	$scope.oneAtATime = true;
 }
-]
-);
 
-sanityApp.service('ytData',
-[
-'$q', 'googleApi',
-function ( $q, googleApi ) {
+SettingsAccordionCtrl.$inject = ['$scope'];
+angular.module('sanityApp').controller('SettingsAccordionCtrl', SettingsAccordionCtrl);
+
+
+/**
+ * @name ytData
+ *
+ * @desc Querying Data from the Google YT API
+ */
+function ytDataService( $q )
+{
 	var self = this;
 
 	this.get = function ( type, options ) {
@@ -918,80 +893,18 @@ function ( $q, googleApi ) {
 		);
 	};
 }
-]
-);
 
-sanityApp.provider('googleApi', function GoogleApiProvider () {
-	var self = this;
-
-	this.clientId = '950592637430.apps.googleusercontent.com';
-
-	this.apiKey = 'AIzaSyCs378KoxX1cX5_TTa5W65tTG396AkId0A';
-
-	this.scopes = 'https://www.googleapis.com/auth/youtube';
-
-	this.gapi = gapi;
-
-	this.q = {};
-
-	this.connect = function()
-	{
-		var deferred = self.q.defer();
-
-		this.gapi.auth.authorize(
-			{
-			client_id: this.clientId,
-			scope: this.scopes,
-			immediate: false
-			},
-			function( result ) {
-				if ( result && !result.error ) {
-					self.gapi.client.load('youtube', 'v3', function(response) {
-						deferred.resolve(response);
-					});
-				} else {
-					deferred.reject();
-				}
-			}
-		);
-
-		return deferred.promise;
-	};
-
-	this.checkAuth = function() {
-		return this.connect();
-	};
-
-	this.authorize = function() {
-		return this.connect();
-	};
-
-	this.load = function() {
-		this.gapi.load();
-
-		this.gapi.client.setApiKey(this.apiKey);
-	};
-
-	this.$get = [
-		'$q',
-		function ( $q )
-		{
-			var provider = new GoogleApiProvider();
-
-			provider.q = $q;
-
-			return provider;
-		}
-	];
-
-});
+ytDataService.$inject = ['$q'];
+angular.module('sanityApp').service('ytData', ytDataService);
 
 
-
-sanityApp.service('ytApp',
-[
-'$q', '$rootScope',
-function ( $q, $rootScope ) {
+/**
+ * @name ytApp
+ *
+ * @desc Central App functionality
+ */
+function ytAppService( $q, $rootScope )
+{
 	var versionHigher = function (v1, v2) {
 		var v1parts = v1.split('.');
 		var v2parts = v2.split('.');
@@ -1100,47 +1013,19 @@ function ( $q, $rootScope ) {
 		}
 	};
 }
-]
-);
 
-sanityApp.filter('duration',
-function () {
-	return function ( d ) {
+ytAppService.$inject = ['$q', '$rootScope'];
+angular.module('sanityApp').service('ytApp', ytAppService);
 
-		var duration = d.split('M'); // PT35M2S
 
-		duration[0] = Number(duration[0].slice(2));
-
-		if ( typeof duration[1] == 'undefined' ) {
-			duration[1] = 0;
-		} else {
-			duration[1] = Number(duration[1].slice(0,-1));
-		}
-
-		var h = Math.floor( duration[0] / 60 );
-		var m = Math.floor( duration[0] % 60 );
-		var s = duration[1];
-
-		return (
-			( h > 0 ? h + ":" : "" )
-				+ ( m > 0 ? (h > 0 && m < 10 ? "0" : "" ) + m + ":" : "00:")
-				+ (s < 10 ? "0" : "") + s
-			);
-	};
-}
-);
-
-sanityApp.filter('timestamp',
-function () {
-	return function ( d ) {
-		return new Date( d ).getTime();
-	};
-}
-);
-
-// From: http://jsfiddle.net/lrlopez/dFeuf/
-sanityApp.service('timeAgoService',
-function($timeout) {
+/**
+ * @name timeAgoService
+ *
+ * @desc put a time distance into words
+ *
+ * From: http://jsfiddle.net/lrlopez/dFeuf/
+ */
+function timeAgoService($timeout) {
 	var ref;
 	return {
 		nowTime: 0,
@@ -1220,12 +1105,116 @@ function($timeout) {
 		}
 	};
 }
-);
 
-sanityApp.directive('timeAgo',
-[
-'timeAgoService',
-function(timeago) {
+timeAgoService.$inject = ['$timeout'];
+angular.module('sanityApp').service('timeAgoService', timeAgoService);
+
+
+/**
+ * @name durationFilter
+ *
+ * @desc Turn a YT duration stamp into a parsed number
+ */
+function durationFilter()
+{
+	return function ( d ) {
+
+		var duration = d.split('M'); // PT35M2S
+
+		duration[0] = Number(duration[0].slice(2));
+
+		if ( typeof duration[1] == 'undefined' ) {
+			duration[1] = 0;
+		} else {
+			duration[1] = Number(duration[1].slice(0,-1));
+		}
+
+		var h = Math.floor( duration[0] / 60 );
+		var m = Math.floor( duration[0] % 60 );
+		var s = duration[1];
+
+		return (
+			( h > 0 ? h + ":" : "" )
+				+ ( m > 0 ? (h > 0 && m < 10 ? "0" : "" ) + m + ":" : "00:")
+				+ (s < 10 ? "0" : "") + s
+			);
+	};
+}
+
+angular.module('sanityApp').filter('duration', durationFilter);
+
+
+/**
+ * @name timestampFilter
+ *
+ * @desc convert a Date() object into a timestamp string
+ */
+function timestampFilter()
+{
+	return function ( d ) {
+		return new Date( d ).getTime();
+	};
+}
+
+angular.module('sanityApp').filter('timestamp', timestampFilter);
+
+
+/**
+ * @name videoItemDirective
+ *
+ * @desc Control behavior in video item
+ */
+function videoItemDirective( $timeout )
+{
+	return {
+		restrict: 'C',
+		scope: {
+			video: '='
+		},
+		templateUrl: 'templates/item.html',
+		controller: function( $scope, $rootScope ) {
+			$scope.mute = function () {
+				$scope.video.muted = !$scope.video.muted;
+				$scope.video.muteddate = new Date().toISOString();
+			};
+
+			$scope.watch = function( $event ) {
+				if ( ($event.button == 2) ) {
+					return;
+				}
+
+				$timeout(function(){$scope.watched(false);}, 400);
+			};
+
+			if ( $rootScope.settings.adblockoverride ) {
+				$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
+			} else {
+				$scope.link = $scope.video.link;
+			}
+
+			$scope.watched = function ( force ) {
+				if ( $scope.video.watched && !force ) {
+					return;
+				}
+
+				$scope.video.watched = !$scope.video.watched;
+				$scope.video.watcheddate = new Date().toISOString();
+			};
+		}
+	}
+}
+
+videoItemDirective.$inject = ['$timeout'];
+angular.module('sanityApp').directive('videoItem', videoItemDirective);
+
+
+/**
+ * @name timeAgoDirective
+ *
+ * @desc Use the timeago service to show when something has been posted
+ */
+function timeAgoDirective( timeago )
+{
 	return {
 		replace: true,
 		restrict: 'EA',
@@ -1246,19 +1235,32 @@ function(timeago) {
 		}
 	};
 }
-]
-);
 
-sanityApp.directive('selectOnClick',
-function () {
+timeAgoDirective.$inject = ['timeago'];
+angular.module('sanityApp').directive('timeAgo', timeAgoDirective)
+
+/**
+ * @name selectOnClickDirective
+ *
+ * @desc Select an item on being clicked
+ */
+function selectOnClickDirective() {
 	return function (scope, element, attrs) {
 		element.bind('click', function () {
 			this.select();
 		});
 	};
 }
-);
 
+angular.module('sanityApp').directive('selectOnClick', selectOnClickDirective);
+
+})();
+
+/**
+ * @name googleOnLoadCallback
+ *
+ * @desc Bootstrap our Angular App once the google API has loaded
+ */
 function googleOnLoadCallback() {
 	angular.bootstrap(document, ["sanityApp"]);
 }
