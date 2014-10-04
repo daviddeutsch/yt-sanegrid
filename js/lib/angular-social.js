@@ -146,13 +146,13 @@ angular.module("ngSocial").directive('ngSocialFacebook', function() {
 angular.module("ngSocial").directive('ngSocialTwitter', function() {
 	var options = {
 		counter: {
-			url: 'http://urls.api.twitter.com/1/urls/count.json?url={url}&callback=JSON_CALLBACK',
+			url: 'https://urls.api.twitter.com/1/urls/count.json?url={url}&callback=JSON_CALLBACK',
 			getNumber: function(data) {
 				return data.count;
 			}
 		},
 		popup: {
-			url: 'http://twitter.com/intent/tweet?url={url}&text={title}',
+			url: 'https://twitter.com/intent/tweet?url={url}&text={title}',
 			width: 600,
 			height: 450
 		},
@@ -486,7 +486,7 @@ angular.module("ngSocial").directive('ngSocialGithub', function() {
 			};
 			scope.options = options;
 			scope.ctrl = ctrl;
-			ctrl.init(scope, element, options);
+			//ctrl.init(scope, element, options);
 		}
 	}
 });
