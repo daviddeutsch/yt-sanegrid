@@ -1,6 +1,6 @@
 (function () {
 
-	angular.module('youtube', ['googleApi']);
+	angular.module('youtube', ['googleAPI']);
 
 
 	/**
