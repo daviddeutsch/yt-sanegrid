@@ -2,7 +2,7 @@
 
 	angular.module('sanityApp', [
 		'ngAnimate', 'ui.router', 'mgcrea.ngStrap', 'ngSocial',
-		'localStorage', 'LocalForageModule'
+		'localStorage', 'LocalForageModule', 'googleAPI', 'youtube'
 	]);
 
 
@@ -28,7 +28,7 @@
 				url: '/ready',
 				views: {
 					"main": {
-						templateUrl: '/yt-sanegrid/templates/start.html'
+						templateUrl: 'templates/start.html'
 					}
 				}
 			})
@@ -37,10 +37,10 @@
 				url: '/list',
 				views: {
 					"main": {
-						templateUrl: '/yt-sanegrid/templates/videos.html'
+						templateUrl: 'templates/videos.html'
 					},
 					"footer": {
-						templateUrl: '/yt-sanegrid/templates/footer.html'
+						templateUrl: 'templates/footer.html'
 					}
 				}
 			})
@@ -166,7 +166,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, ytApp, ytData )
+	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
 	{
 		//$store.bind( $rootScope, 'userid', '' );
 		//$store.bind( $rootScope, 'videocache', {} );
@@ -194,7 +194,7 @@
 		var initAccount = function () {
 			$rootScope.settings.sidebar = false;
 
-			ytApp.loading();
+			sanityApp.loading();
 
 			mainChannel()
 				.then(function(id) {
@@ -205,7 +205,7 @@
 							loadVideos()
 								.then(function(count) {
 									// TODO: display count
-									ytApp.ready();
+									sanityApp.ready();
 								});
 						});
 				}, function() {
@@ -495,7 +495,7 @@
 		};
 
 		var loadTop = function () {
-			ytApp.loading();
+			sanityApp.loading();
 
 			$rootScope.filters.caught = 0;
 
@@ -519,9 +519,9 @@
 		};
 
 		$scope.refresh = function() {
-			ytApp.loading();
+			sanityApp.loading();
 
-			ytApp.update();
+			sanityApp.update();
 
 			loadTop();
 		};
@@ -596,7 +596,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'ytApp', 'ytData'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
@@ -705,169 +705,12 @@
 	SettingsAccordionCtrl.$inject = ['$scope'];
 	angular.module('sanityApp').controller('SettingsAccordionCtrl', SettingsAccordionCtrl);
 
-
-	function GoogleApiProvider () {
-		var self = this;
-
-		this.clientId = '950592637430.apps.googleusercontent.com';
-
-		this.apiKey = 'AIzaSyCs378KoxX1cX5_TTa5W65tTG396AkId0A';
-
-		this.scopes = 'https://www.googleapis.com/auth/youtube';
-
-		this.gapi = gapi;
-
-		this.q = {};
-
-		this.connect = function()
-		{
-			var deferred = self.q.defer();
-
-			this.gapi.auth.authorize(
-				{
-					client_id: this.clientId,
-					scope: this.scopes,
-					immediate: false
-				},
-				function( result ) {
-					if ( result && !result.error ) {
-						self.gapi.client.load('youtube', 'v3', function(response) {
-							deferred.resolve(response);
-						});
-					} else {
-						deferred.reject();
-					}
-				}
-			);
-
-			return deferred.promise;
-		};
-
-		this.checkAuth = function() {
-			return this.connect();
-		};
-
-		this.authorize = function() {
-			return this.connect();
-		};
-
-		this.load = function() {
-			this.gapi.load();
-
-			this.gapi.client.setApiKey(this.apiKey);
-		};
-
-		this.$get = [
-			'$q',
-			function ( $q )
-			{
-				var provider = new GoogleApiProvider();
-
-				provider.q = $q;
-
-				return provider;
-			}
-		];
-	}
-
-	angular.module('sanityApp').provider('googleApi', GoogleApiProvider);
-
-
 	/**
-	 * @name ytData
-	 *
-	 * @desc Querying Data from the Google YT API
-	 */
-	function ytDataService( $q, googleApi )
-	{
-		var self = this;
-
-		this.get = function ( type, options ) {
-			var deferred = $q.defer();
-
-			googleApi.gapi.client.setApiKey(googleApi.apiKey);
-
-			if ( typeof googleApi.gapi.client.youtube !== 'undefined' ) {
-				var request = googleApi.gapi.client.youtube[type].list(options);
-
-				googleApi.gapi.client.youtube[type]
-					.list(options)
-					.execute(function(response) {
-						deferred.resolve(response);
-					});
-			} else {
-				deferred.reject();
-			}
-
-			return deferred.promise;
-		};
-
-		this.subscriptions = function ( page ) {
-			var options = {
-				part: 'snippet',
-				mine: true,
-				maxResults: 50
-			};
-
-			if ( typeof page != 'undefined' ) {
-				if ( page !== null ) {
-					options.page = page;
-				}
-			}
-
-			return self.get('subscriptions', options);
-		};
-
-		this.channels = function ( page ) {
-			var options = {
-				part: 'snippet',
-				mine: true,
-				maxResults: 50
-			};
-
-			if ( typeof page != 'undefined' ) {
-				if ( page !== null ) {
-					options.page = page;
-				}
-			}
-
-			return self.get('channels', options);
-		};
-
-		this.channelvideos = function ( channel ) {
-			return self.get(
-				'activities',
-				{
-					part: 'contentDetails',
-					channelId: channel,
-					maxResults: 20
-				}
-			);
-		};
-
-		this.videos = function ( ids )
-		{
-			return self.get(
-				'videos',
-				{
-					part: 'snippet,contentDetails,status,statistics',
-					mine: true,
-					id: ids.join()
-				}
-			);
-		};
-	}
-
-	ytDataService.$inject = ['$q', 'googleApi'];
-	angular.module('sanityApp').service('ytData', ytDataService);
-
-
-	/**
-	 * @name ytApp
+	 * @name sanityApp
 	 *
 	 * @desc Central App functionality
 	 */
-	function ytAppService( $q, $rootScope )
+	function sanityAppService( $q, $rootScope )
 	{
 		var versionHigher = function (v1, v2) {
 			var v1parts = v1.split('.');
@@ -890,7 +733,7 @@
 		};
 
 		this.appinfo = function ( fn ) {
-			var url = "/yt-sanegrid/info.json";
+			var url = "info.json";
 
 			$.getJSON( url )
 				.fail( function ( j, t, e ) {
@@ -983,8 +826,8 @@
 		};
 	}
 
-	ytAppService.$inject = ['$q', '$rootScope'];
-	angular.module('sanityApp').service('ytApp', ytAppService);
+	sanityAppService.$inject = ['$q', '$rootScope'];
+	angular.module('sanityApp').service('sanityApp', sanityAppService);
 
 
 	/**
