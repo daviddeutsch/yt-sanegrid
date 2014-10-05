@@ -504,9 +504,9 @@
 
 		var updateSidebar = function () {
 			if ( $rootScope.settings.sidebar === true ) {
-				$('.sidebar' ).css({"height":$document.height()});
+				$('.sidebar').css({"height":$document.height()});
 			} else {
-				$('.sidebar' ).css({"height":"40px"});
+				$('.sidebar').css({"height":"40px"});
 			}
 		};
 
