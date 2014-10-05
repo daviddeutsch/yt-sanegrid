@@ -1,157 +1,159 @@
-<div class="modal-dialog" ng-controller="SettingsModalCtrl">
-	<div class="modal-content">
-		<div class="modal-header">
-			<h3>Settings</h3>
-		</div>
-		<div class="modal-body">
-			<div ng-controller="SettingsTabsCtrl">
-				<tabset>
-					<tab heading="Main">
-						<h4>
-							Account
-							<div class="btn-group">
-							<button class="btn btn-info" disabled="disabled">
-								<i class="icon-user"></i>
-								<span title="{{ userid }}">
-									<strong>{{ userid }}</strong>
-								</span>
-							</button>
-							<button class="btn quiet" ng-click="selectUserid('')">
-								<i class="icon-signout" title="Change User"></i>
-							</button>
-						</div></h4>
-
-						<br />
-
-						<h4>
-							Visibility
-							<div class="btn-group">
-								<button
-									type="button"
-									class="btn"
-									ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
-									ng-model="settings.hidemuted"
-									btn-checkbox
-									btn-checkbox-true="0"
-									btn-checkbox-false="1"
-									>
-									<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
-									<span>Muted</span>
-								</button>
-								<button
-									type="button"
-									class="btn"
-									ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
-									ng-model="settings.hidewatched"
-									btn-checkbox
-									btn-checkbox-true="0"
-									btn-checkbox-false="1"
-									>
-									<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
-									<span>Watched</span>
-								</button>
-							</div>
-						</h4>
-
-						<br />
-
-						<h4>
-							Support your Channels
-							<div class="btn-group">
-								<button
-									type="button"
-									class="btn"
-									ng-class="{'btn-primary':!settings.adblockoverride, 'btn-success':settings.adblockoverride}"
-									ng-model="settings.adblockoverride"
-									btn-checkbox
-									btn-checkbox-true="1"
-									btn-checkbox-false="0"
-									>
-									<i ng-class="{'icon-ok':settings.adblockoverride, 'icon-remove':!settings.adblockoverride}"></i>
-									<span>AdBlock Plus Override</span>
-								</button>
-							</div>
-						</h4>
-						<p>Support the channels you follow by disabling adblock only for them. <a ng-click="redoadblocksecret()">change code</a></p>
-						<div ng-hide="!settings.adblockoverride">
-							<input type="text" class="form-control" value="@@||youtube.com*&adblock={{settings.adblocksecret}}|$document" select-on-click />
-							<ul class="centerlist">
-								<li ng-click="adblockswitch('firefox')" ng-class="{'chosen':adblockadvice=='firefox'}">Firefox</li>
-								<li ng-click="adblockswitch('chrome')" ng-class="{'chosen':adblockadvice=='chrome'}">Chrome</li>
-								<li ng-click="adblockswitch('ytc')" ng-class="{'chosen':adblockadvice=='ytc'}">YouTube Center Extension</li>
-							</ul>
-
-							<div ng-if="adblockadvice=='firefox'">
-								<img src="img/abp_firefox_set.jpg" class="fullwidth"/>
-								<hr />
-								<p>Go to AdBlock Plus &rarr; Filter Preferences &rarr; Custom Filter &rarr; Add Filter</p>
-							</div>
-							<div ng-if="adblockadvice=='chrome'">
-								<img src="img/abp_chrome_set.jpg" class="fullwidth"/>
-								<hr />
-								<p>Go to your Extensions &rarr; AdBlock Plus &rarr; Options &rarr; Add your own filter &rarr; Add Filter</p>
-							</div>
-							<div ng-if="adblockadvice=='ytc'">
-								<img src="img/ytcenter_ads.jpg"/>
-								<hr />
-								<p>If you are using the YouTube Center extension, you should also disable its ads removal feature.</p>
-							</div>
-						</div>
-
-						<div class="visible-xs">
-							<h4>Support</h4>
-							<hr />
-							<div ng-controller="SupportModalCtrl">
+<div class="modal" role="dialog">
+	<div class="modal-dialog" ng-controller="SettingsModalCtrl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3>Settings</h3>
+			</div>
+			<div class="modal-body">
+				<div ng-controller="SettingsTabsCtrl">
+					<tabset>
+						<tab heading="Main">
+							<h4>
+								Account
 								<div class="btn-group">
-									<button class="btn btn-success" ng-click="open()">
-									<span>
-										<strong><i class="icon-heart" style="color:#cd4427"></i> support the developer</strong>
+								<button class="btn btn-info" disabled="disabled">
+									<i class="icon-user"></i>
+									<span title="{{ userid }}">
+										<strong>{{ userid }}</strong>
 									</span>
+								</button>
+								<button class="btn quiet" ng-click="selectUserid('')">
+									<i class="icon-signout" title="Change User"></i>
+								</button>
+							</div></h4>
+
+							<br />
+
+							<h4>
+								Visibility
+								<div class="btn-group">
+									<button
+										type="button"
+										class="btn"
+										ng-class="{'btn-primary':settings.hidemuted, 'btn-success':!settings.hidemuted}"
+										ng-model="settings.hidemuted"
+										btn-checkbox
+										btn-checkbox-true="0"
+										btn-checkbox-false="1"
+										>
+										<i ng-class="{'icon-eye-close':settings.hidemuted, 'icon-eye-open':!settings.hidemuted}"></i>
+										<span>Muted</span>
+									</button>
+									<button
+										type="button"
+										class="btn"
+										ng-class="{'btn-primary':settings.hidewatched, 'btn-success':!settings.hidewatched}"
+										ng-model="settings.hidewatched"
+										btn-checkbox
+										btn-checkbox-true="0"
+										btn-checkbox-false="1"
+										>
+										<i ng-class="{'icon-eye-close':settings.hidewatched, 'icon-eye-open':!settings.hidewatched}"></i>
+										<span>Watched</span>
 									</button>
 								</div>
-							</div>
-						</div>
-					</tab>
-					<tab heading="Filters">
-						<div class="filter-options clearfix">
-							<h4>Basic options</h4>
-							<label for="videolimit">Limit number of videos displayed</label>
-							<input type="text" class="form-control" name="videolimit" id="videolimit" ng-model="settings.videolimit" />
-						</div>
-						<div class="global-filters clearfix">
-							<h4>Global Filters</h4>
-							<ul class="filter-list">
-								<li
-									class="label label-primary"
-									ng-repeat="filter in filters.global track by $index"
-									>
-									<a ng-click="removeFilter('', $index)">&times;</a>
-									{{ filter.string }}&nbsp;&nbsp;
-								</li>
-							</ul>
-						</div>
-						<div ng-repeat="channel in filters.channels" class="repeat-item clearfix">
-							<hr />
-							<h4>{{ channel.title }}</h4>
-							<ul class="filter-list">
-								<li class="label label-primary"
-									ng-repeat="filter in channel.filters track by $index">
-									<a ng-click="removeFilter(channel.title, $index)">&times;</a>
-									{{ filter.string }}
-								</li>
-							</ul>
-						</div>
-					</tab>
-					<tab heading="Channels">
-						<div ng-include="'templates/channels.html'"></div>
-					</tab>
-				</tabset>
-			</div>
+							</h4>
 
-		</div>
-		<div class="clearfix modal-footer">
-			<button class="btn btn-danger cancel" ng-click="cancel()">Close
-			</button>
+							<br />
+
+							<h4>
+								Support your Channels
+								<div class="btn-group">
+									<button
+										type="button"
+										class="btn"
+										ng-class="{'btn-primary':!settings.adblockoverride, 'btn-success':settings.adblockoverride}"
+										ng-model="settings.adblockoverride"
+										btn-checkbox
+										btn-checkbox-true="1"
+										btn-checkbox-false="0"
+										>
+										<i ng-class="{'icon-ok':settings.adblockoverride, 'icon-remove':!settings.adblockoverride}"></i>
+										<span>AdBlock Plus Override</span>
+									</button>
+								</div>
+							</h4>
+							<p>Support the channels you follow by disabling adblock only for them. <a ng-click="redoadblocksecret()">change code</a></p>
+							<div ng-hide="!settings.adblockoverride">
+								<input type="text" class="form-control" value="@@||youtube.com*&adblock={{settings.adblocksecret}}|$document" select-on-click />
+								<ul class="centerlist">
+									<li ng-click="adblockswitch('firefox')" ng-class="{'chosen':adblockadvice=='firefox'}">Firefox</li>
+									<li ng-click="adblockswitch('chrome')" ng-class="{'chosen':adblockadvice=='chrome'}">Chrome</li>
+									<li ng-click="adblockswitch('ytc')" ng-class="{'chosen':adblockadvice=='ytc'}">YouTube Center Extension</li>
+								</ul>
+
+								<div ng-if="adblockadvice=='firefox'">
+									<img src="img/abp_firefox_set.jpg" class="fullwidth"/>
+									<hr />
+									<p>Go to AdBlock Plus &rarr; Filter Preferences &rarr; Custom Filter &rarr; Add Filter</p>
+								</div>
+								<div ng-if="adblockadvice=='chrome'">
+									<img src="img/abp_chrome_set.jpg" class="fullwidth"/>
+									<hr />
+									<p>Go to your Extensions &rarr; AdBlock Plus &rarr; Options &rarr; Add your own filter &rarr; Add Filter</p>
+								</div>
+								<div ng-if="adblockadvice=='ytc'">
+									<img src="img/ytcenter_ads.jpg"/>
+									<hr />
+									<p>If you are using the YouTube Center extension, you should also disable its ads removal feature.</p>
+								</div>
+							</div>
+
+							<div class="visible-xs">
+								<h4>Support</h4>
+								<hr />
+								<div ng-controller="SupportModalCtrl">
+									<div class="btn-group">
+										<button class="btn btn-success" ng-click="open()">
+										<span>
+											<strong><i class="icon-heart" style="color:#cd4427"></i> support the developer</strong>
+										</span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</tab>
+						<tab heading="Filters">
+							<div class="filter-options clearfix">
+								<h4>Basic options</h4>
+								<label for="videolimit">Limit number of videos displayed</label>
+								<input type="text" class="form-control" name="videolimit" id="videolimit" ng-model="settings.videolimit" />
+							</div>
+							<div class="global-filters clearfix">
+								<h4>Global Filters</h4>
+								<ul class="filter-list">
+									<li
+										class="label label-primary"
+										ng-repeat="filter in filters.global track by $index"
+										>
+										<a ng-click="removeFilter('', $index)">&times;</a>
+										{{ filter.string }}&nbsp;&nbsp;
+									</li>
+								</ul>
+							</div>
+							<div ng-repeat="channel in filters.channels" class="repeat-item clearfix">
+								<hr />
+								<h4>{{ channel.title }}</h4>
+								<ul class="filter-list">
+									<li class="label label-primary"
+										ng-repeat="filter in channel.filters track by $index">
+										<a ng-click="removeFilter(channel.title, $index)">&times;</a>
+										{{ filter.string }}
+									</li>
+								</ul>
+							</div>
+						</tab>
+						<tab heading="Channels">
+							<div ng-include="'templates/channels.html'"></div>
+						</tab>
+					</tabset>
+				</div>
+
+			</div>
+			<div class="clearfix modal-footer">
+				<button class="btn btn-danger cancel" ng-click="cancel()">Close
+				</button>
+			</div>
 		</div>
 	</div>
 </div>
