@@ -11,7 +11,7 @@
 	 *
 	 * @desc Set up the Application
 	 */
-	function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider )
+	function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider, $modalProvider )
 	{
 		$localForageProvider.config({
 			name        : 'SanityGrid',
@@ -45,9 +45,13 @@
 				}
 			})
 		;
+
+		angular.extend($modalProvider.defaults, {
+			backdrop: false
+		});
 	}
 
-	AppCfg.$inject = ['$urlRouterProvider', '$stateProvider', '$localForageProvider'];
+	AppCfg.$inject = ['$urlRouterProvider', '$stateProvider', '$localForageProvider', '$modalProvider'];
 	angular.module('sanityApp').config(AppCfg);
 
 
