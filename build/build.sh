@@ -2,6 +2,8 @@
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
+cat $DIR/../js/app/googleapi.js $DIR/../js/app/youtube.js $DIR/../js/app/data.js $DIR/../js/app/main.js > $DIR/../js/sanity.js
+
 cat $DIR/../js/app/googleapi.js $DIR/../js/app/youtube.js $DIR/../js/app/data.js $DIR/../js/app/main.js | uglifyjs -o $DIR/../js/sanity.min.js
 
 
