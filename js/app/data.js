@@ -113,7 +113,7 @@
 
 				this.countLastAdded = 0;
 
-				channels.forEach(function(channel) {
+				channels.data.forEach(function(channel) {
 					var promise = $q.defer();
 
 					promises.push(promise);
