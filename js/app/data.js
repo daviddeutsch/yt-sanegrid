@@ -134,7 +134,7 @@
 			countLastAdded: 0,
 
 			get: function() {
-				this.data = new Pouchyng('videos', 'ytSanityDB_' + accounts.current, yngutils.ASC);
+				this.data = new Pouchyng('videos', 'ytSanityDB/' + accounts.current, yngutils.ASC);
 			},
 
 			bind: function( scope ) {
@@ -317,7 +317,7 @@
 			data: null,
 
 			get: function() {
-				this.data = new Pouchyng('channels', 'ytSanityDB_' + accounts.current, yngutils.ASC);
+				this.data = new Pouchyng('channels', 'ytSanityDB/' + accounts.current, yngutils.ASC);
 			},
 
 			pageChannels: function( page )
