@@ -1,6 +1,6 @@
 (function () {
 
-	angular.module('sanityData', ['youtube']);
+	angular.module('sanityData', ['youtube', 'factoryng']);
 
 
 	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
@@ -436,6 +436,14 @@
 	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
 	angular.module('sanityData').controller('AppRepeatCtrl', AppRepeatCtrl);
 
+
+	function VideoService( yngutils, Pouchyng )
+	{
+		return new Pouchyng('contacts', 'http://127.0.0.1:5984', yngutils.ASC);
+	}
+
+	VideoService.$inject = ['yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('Video', VideoService);
 
 
 })();

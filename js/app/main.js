@@ -2,7 +2,7 @@
 
 	angular.module('sanityApp', [
 		'ngAnimate', 'ui.router', 'mgcrea.ngStrap', 'ngSocial',
-		'localStorage', 'LocalForageModule', 'googleAPI', 'youtube'
+		'localStorage', 'googleAPI', 'sanityData'
 	]);
 
 
@@ -11,15 +11,8 @@
 	 *
 	 * @desc Set up the Application
 	 */
-	function AppCfg( $urlRouterProvider, $stateProvider, $localForageProvider )
+	function AppCfg( $urlRouterProvider, $stateProvider )
 	{
-		$localForageProvider.config({
-			name        : 'SanityGrid',
-			version     : 1.0,
-			storeName   : 'default',
-			description : 'The grid for people who like to stay sane'
-		});
-
 		$urlRouterProvider
 			.otherwise('/ready');
 
@@ -47,7 +40,7 @@
 		;
 	}
 
-	AppCfg.$inject = ['$urlRouterProvider', '$stateProvider', '$localForageProvider'];
+	AppCfg.$inject = ['$urlRouterProvider', '$stateProvider'];
 	angular.module('sanityApp').config(AppCfg);
 
 
@@ -127,12 +120,24 @@
 			'YEAH BOIIIII!!!',
 			'Well, if you say so, I guess...',
 			'My body is ready for sanity!',
-			'Let\'s go!'
+			'Let\'s go!',
+			'Jeez, enough with the buttons already'
 		];
 
 		var rand = Math.floor((Math.random() * $scope.gotimelist.length));
 
 		$scope.gotime = $scope.gotimelist[rand];
+
+		$scope.startlinelist = [
+			'It\'s substantially more pleasant than a good, hard slap in the face' ,
+			'It almost certainly cannot give you, like, any tangible disease',
+			'Just like your extensive YouTube habit, it\'s totally not at all an unlimited source of self-loathing for its author',
+			'Nobody technically forces you to use it, which is cool, I guess'
+		];
+
+		rand = Math.floor((Math.random() * $scope.startlinelist.length));
+
+		$scope.startline = $scope.startlinelist[rand];
 
 		$scope.selectUserid = function ( q ) {
 			if ( q === false ) {
