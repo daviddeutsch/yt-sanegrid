@@ -197,7 +197,7 @@
 
 						self.pageChannels()
 							.then(function() {
-								this.loadVideos()
+								self.loadVideos()
 									.then(function(count) {
 										deferred.resolve(count);
 									});
@@ -264,9 +264,11 @@
 			channelVideos: function( channel ) {
 				var deferred = $q.defer();
 
+				var self = this;
+
 				ytData.channelvideos(channel)
 					.then(function(data) {
-						this.pushVideos(data.items)
+						self.pushVideos(data.items)
 							.then(function(count) {
 								deferred.resolve(count);
 							}, function() {
@@ -280,10 +282,12 @@
 			pushVideos: function ( data ) {
 				var deferred = $q.defer();
 
+				var self = this;
+
 				if ( typeof data != 'undefined' ) {
-					this.extractVideoIds(data)
+					self.extractVideoIds(data)
 						.then(function(ids){
-							this.pushVideoIds(ids)
+							self.pushVideoIds(ids)
 								.then(function(count){
 									deferred.resolve(count);
 								});
@@ -403,13 +407,15 @@
 			{
 				var deferred = $q.defer();
 
+				var self = this;
+
 				if ( typeof page == 'undefined' ) {
 					page = null;
 				}
 
 				ytData.subscriptions(page)
 					.then(function(data){
-						this.loadChannels(data, page)
+						self.loadChannels(data, page)
 							.then(function() {
 								deferred.resolve();
 							});
@@ -426,7 +432,7 @@
 				if ( typeof page == 'undefined' ) page = '';
 
 				if ( typeof data.items != 'undefined' ) {
-					this.appendChannels(data.items)
+					self.appendChannels(data.items)
 						.then(function() {
 							if (
 								// If we have not added all channels to the db
