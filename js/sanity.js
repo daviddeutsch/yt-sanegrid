@@ -734,7 +734,7 @@
 			// TODO: mainChannel();
 
 			data.init().then(function(){
-				videos.bind($scope).then(function(){
+				videos.data.bind($scope).then(function(){
 					// TODO: Display count of new videos
 					sanityApp.ready();
 				});
