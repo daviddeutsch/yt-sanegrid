@@ -186,20 +186,39 @@
 	function YTConnectionService( $rootScope, $q, ytData, accounts, videos, channels, archive, trash )
 	{
 		return {
-			initAccount: function () {
+			migrateOldLS: function() {
+				// Find the old userid
+				// Convert old properties to new
+				// - Thumbnail
+				// - Duration
+				// Sort into right container
+			}
+		}
+	}
+
+	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'accounts', 'videos', 'channels', 'archive', 'trash'];
+	angular.module('sanityData').service('connection', YTConnectionService);
+
+
+	function MultiAccountDataService( $rootScope, $q, accounts, videos, channels )
+	{
+		return {
+			init: function() {
 				var deferred = $q.defer();
 
-				var self = this;
+				accounts.init()
+					.then(function() {
+						$rootScope.userid = accounts.current;
 
-				this.mainChannel()
-					.then(function(id) {
-						$rootScope.userid = id;
+						channels.get();
 
-						self.pageChannels()
+						channels.pageChannels()
 							.then(function() {
-								self.loadVideos()
-									.then(function(count) {
-										deferred.resolve(count);
+								videos.get();
+
+								videos.loadVideos()
+									.then(function() {
+										deferred.resolve(videos.countLastAdded);
 									});
 							});
 					}, function() {
@@ -207,10 +226,22 @@
 					});
 
 				return deferred.promise;
-			},
+			}
+		}
+	}
 
-			mainChannel: function(page) {
-				var deferred = $q.defer();
+	MultiAccountDataService.$inject = ['$rootScope', '$q', 'accounts', 'videos', 'channels'];
+	angular.module('sanityData').service('data', MultiAccountDataService);
+
+
+	function AccountService( $q, ytData, yngutils, Pouchyng )
+	{
+		return {
+			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC),
+			current: '',
+			init: function(page) {
+				var deferred = $q.defer(),
+					self = this;
 
 				if ( typeof page == 'undefined' ) {
 					page = null;
@@ -218,21 +249,39 @@
 
 				ytData.channels()
 					.then(function(data) {
-						accounts.create({
+						self.data.create({
 							$id: data.items[0].id,
 							title: data.items[0].snippet.title
 						});
 
-						deferred.resolve(data.items[0].id);
+						self.current = data.items[0].id;
+
+						deferred.resolve();
 					}, function() {
 						deferred.reject();
 					});
 
 				return deferred.promise;
+			}
+		}
+	}
+
+	AccountService.$inject = ['$q', 'ytData', 'yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('accounts', AccountService);
+
+
+	function VideoService( $q, $rootScope, ytData, yngutils, Pouchyng, accounts, channels )
+	{
+		return {
+			data: null,
+			countLastAdded: 0,
+
+			get: function() {
+				this.data = new Pouchyng('videos', 'ytSanityDB/' + accounts.current, yngutils.ASC);
 			},
 
-			bindVideos: function( scope ) {
-				return videos.bind(scope);
+			bind: function( scope ) {
+				return this.data.bind(scope);
 			},
 
 			loadVideos: function() {
@@ -242,24 +291,22 @@
 
 				var self = this;
 
-				var count = 0;
+				this.countLastAdded = 0;
 
 				channels.forEach(function(channel) {
 					var promise = $q.defer();
 
 					promises.push(promise);
 
-					self.channelVideos(channel.channelId).then(function(c){
+					self.channelVideos(channel.channelId).then(function(){
 						promise.resolve();
-
-						count += c;
 					}, function(){
 						promise.resolve();
 					});
 				});
 
 				$q.all(promises).then(function(){
-					deferred.resolve(count);
+					deferred.resolve();
 				});
 
 				return deferred.promise;
@@ -273,8 +320,8 @@
 				ytData.channelvideos(channel)
 					.then(function(data) {
 						self.pushVideos(data.items)
-							.then(function(count) {
-								deferred.resolve(count);
+							.then(function() {
+								deferred.resolve();
 							}, function() {
 								deferred.reject();
 							});
@@ -334,8 +381,7 @@
 
 				ytData.videos( list )
 					.then(function(items) {
-						var promises = [],
-							count = 0;
+						var promises = [];
 
 						angular.forEach(items, function(video) {
 							var promise = $q.defer();
@@ -346,14 +392,15 @@
 								promise.resolve();
 							} else {
 								self.pushVideo(video).then(function(){
-									count++;
+									self.countLastAdded++;
+
 									promise.resolve();
 								});
 							}
 						});
 
 						$q.all(promises).then(function(){
-							deferred.resolve(count);
+							deferred.resolve();
 						});
 					}, function() {
 						deferred.resolve(0);
@@ -378,36 +425,45 @@
 					author:      video.snippet.channelTitle,
 					authorlink:  'https://www.youtube.com/channel/' + video.snippet.channelId,
 					published:   video.snippet.publishedAt,
-					duration:    video.contentDetails.duration
+					duration:    video.contentDetails.duration,
+					archive:     false,
+					trash:       false
 				};
-
-				var trash = false;
 
 				// TODO: This really needs to be a deferred service
 				if ( $rootScope.filters.channels.hasOwnProperty(details.channelId) ) {
 					$.each( $rootScope.filters.channels[video.channelId].filters, function ( i, v ) {
 						if ( video.title.indexOf( v.string) != -1 ) {
-							trash = true;
+							details.trash = true;
+
+							$rootScope.filters.caught++;
 						}
 					});
 				}
 
-				if ( trash ) {
-					$rootScope.filters.caught++;
-
-					trash.create(details ).then(function(){
-						deferred.resolve();
-					});
-				} else {
-					videos.create(details).then(function(){
-						deferred.resolve();
-					});
-				}
+				this.data.create(details).then(function(){
+					deferred.resolve();
+				});
 
 				return deferred.promise;
+			}
+		}
+	}
+
+	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'yngutils', 'Pouchyng', 'accounts', 'channels'];
+	angular.module('sanityData').service('videos', VideoService);
+
+
+	function ChannelService( $q, ytData, yngutils, Pouchyng, accounts )
+	{
+		return {
+			data: null,
+
+			get: function() {
+				this.data = new Pouchyng('channels', 'ytSanityDB/' + accounts.current, yngutils.ASC);
 			},
 
-			pageChannels: function(page)
+			pageChannels: function( page )
 			{
 				var deferred = $q.defer();
 
@@ -429,9 +485,8 @@
 			},
 
 			loadChannels: function ( data, page ) {
-				var deferred = $q.defer();
-
-				var self = this;
+				var deferred = $q.defer(),
+					self = this;
 
 				if ( typeof page == 'undefined' ) page = '';
 
@@ -440,7 +495,7 @@
 						.then(function() {
 							if (
 								// If we have not added all channels to the db
-								(channels.length() < data.pageInfo.totalResults)
+								(self.data.length() < data.pageInfo.totalResults)
 								// and we're not at the last page of results yet
 								&& (data.nextPageToken != page)
 								) {
@@ -460,17 +515,18 @@
 			},
 
 			appendChannels: function ( items ) {
-				var promises = [];
+				var promises = [],
+					self = this;
 
 				angular.forEach(items, function(item) {
 					var promise = $q.defer();
 
 					promises.push(promise);
 
-					if ( channels.exists(item.id) ) {
+					if ( self.data.exists(item.id) ) {
 						promise.resolve();
 					} else {
-						channels.create(
+						self.data.create(
 							{
 								$id: item.id,
 								title: item.snippet.title,
@@ -484,64 +540,11 @@
 				});
 
 				return $q.all(promises);
-			},
-
-			migrateOldLS: function() {
-				// Find the old userid
-				// Convert old properties to new
-				// - Thumbnail
-				// - Duration
-				// Sort into right container
 			}
 		}
 	}
 
-	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'accounts', 'videos', 'channels', 'archive', 'trash'];
-	angular.module('sanityData').service('connection', YTConnectionService);
-
-
-	function AccountService( yngutils, Pouchyng )
-	{
-		return new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC);
-	}
-
-	AccountService.$inject = ['yngutils', 'Pouchyng'];
-	angular.module('sanityData').service('accounts', AccountService);
-
-
-	function VideoService( yngutils, Pouchyng )
-	{
-		return new Pouchyng('videos', 'ytSanityDB', yngutils.ASC);
-	}
-
-	VideoService.$inject = ['yngutils', 'Pouchyng'];
-	angular.module('sanityData').service('videos', VideoService);
-
-
-	function TrashService( yngutils, Pouchyng )
-	{
-		return new Pouchyng('trash', 'ytSanityDB', yngutils.ASC);
-	}
-
-	TrashService.$inject = ['yngutils', 'Pouchyng'];
-	angular.module('sanityData').service('trash', TrashService);
-
-
-	function ArchiveService( yngutils, Pouchyng )
-	{
-		return new Pouchyng('archive', 'ytSanityDB', yngutils.ASC);
-	}
-
-	ArchiveService.$inject = ['yngutils', 'Pouchyng'];
-	angular.module('sanityData').service('archive', ArchiveService);
-
-
-	function ChannelService( yngutils, Pouchyng )
-	{
-		return new Pouchyng('channels', 'ytSanityDB', yngutils.ASC);
-	}
-
-	ChannelService.$inject = ['yngutils', 'Pouchyng'];
+	ChannelService.$inject = ['$q', 'ytData', 'yngutils', 'Pouchyng', 'accounts'];
 	angular.module('sanityData').service('channels', ChannelService);
 
 
@@ -719,7 +722,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, connection )
+	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, data, videos )
 	{
 		$rootScope.userid = '';
 
@@ -730,9 +733,9 @@
 
 			// TODO: mainChannel();
 
-			connection.initAccount().then(function(count){
-				connection.bindVideos($scope).then(function(){
-					// TODO: Display count
+			data.init().then(function(){
+				videos.bind($scope).then(function(){
+					// TODO: Display count of new videos
 					sanityApp.ready();
 				});
 			}, function(){
@@ -837,7 +840,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'connection'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 

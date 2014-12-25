@@ -171,7 +171,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, connection )
+	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, data, videos )
 	{
 		$rootScope.userid = '';
 
@@ -182,9 +182,9 @@
 
 			// TODO: mainChannel();
 
-			connection.initAccount().then(function(count){
-				connection.bindVideos($scope).then(function(){
-					// TODO: Display count
+			data.init().then(function(){
+				videos.bind($scope).then(function(){
+					// TODO: Display count of new videos
 					sanityApp.ready();
 				});
 			}, function(){
@@ -289,7 +289,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'connection'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
