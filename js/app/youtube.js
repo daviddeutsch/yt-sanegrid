@@ -77,14 +77,26 @@
 
 		this.videos = function ( ids )
 		{
-			return self.get(
+			var deferred = $q.defer();
+
+			self.get(
 				'videos',
 				{
 					part: 'snippet,contentDetails,status,statistics',
 					mine: true,
 					id: ids.join()
 				}
-			);
+			).then(function(list){
+					if ( typeof list.items == 'undefined') {
+						deferred.reject();
+					} else {
+						deferred.resolve(list.items);
+					}
+				}, function(){
+					deferred.reject();
+				});
+
+			return deferred.promise;
 		};
 	}
 

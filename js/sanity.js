@@ -149,14 +149,26 @@
 
 		this.videos = function ( ids )
 		{
-			return self.get(
+			var deferred = $q.defer();
+
+			self.get(
 				'videos',
 				{
 					part: 'snippet,contentDetails,status,statistics',
 					mine: true,
 					id: ids.join()
 				}
-			);
+			).then(function(list){
+					if ( typeof list.items == 'undefined') {
+						deferred.reject();
+					} else {
+						deferred.resolve(list.items);
+					}
+				}, function(){
+					deferred.reject();
+				});
+
+			return deferred.promise;
 		};
 	}
 
@@ -171,215 +183,193 @@
 	angular.module('sanityData', ['youtube', 'factoryng']);
 
 
-	function OldAppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
+	function YTConnectionService( $rootScope, $q, ytData, accounts, videos, channels, archive, trash )
 	{
-		//$store.bind( $rootScope, 'userid', '' );
-		//$store.bind( $rootScope, 'videocache', {} );
-		//$store.bind( $rootScope, 'videos', [] );
-		//$store.bind( $rootScope, 'settings', {} );
-		//$store.bind( $rootScope, 'channelstate', {} );
-		//$store.bind( $rootScope, 'filters', {} );
+		return {
+			initAccount: function () {
+				var deferred = $q.defer();
 
-		$scope.channels = [];
-		$scope.channelids = [];
+				this.mainChannel()
+					.then(function(id) {
+						$rootScope.userid = id;
 
-		$scope.videos = [];
-		$scope.videoids = [];
-
-		$scope.archive = [];
-		$scope.archiveids = [];
-
-		$scope.trash = [];
-		$scope.trashids = [];
-
-		$rootScope.userid = '';
-
-		var accounts = [];
-
-		var initAccount = function () {
-			$rootScope.settings.sidebar = false;
-
-			sanityApp.loading();
-
-			mainChannel()
-				.then(function(id) {
-					$rootScope.userid = id;
-
-					syncChannels()
-						.then(function() {
-							loadVideos()
-								.then(function(count) {
-									// TODO: display count
-									sanityApp.ready();
-								});
-						});
-				}, function() {
-					$state.go('ready');
-				});
-		};
-
-		var mainChannel = function(page) {
-			var deferred = $q.defer();
-
-			if ( typeof page == 'undefined' ) {
-				page = null;
-			}
-
-			ytData.channels()
-				.then(function(data) {
-					accounts.push({
-						id: data.items[0].id,
-						title: data.items[0].snippet.title
+						this.pageChannels()
+							.then(function() {
+								this.loadVideos()
+									.then(function(count) {
+										deferred.resolve(count);
+									});
+							});
+					}, function() {
+						deferred.reject();
 					});
 
-					deferred.resolve(data.items[0].id);
-				}, function() {
-					deferred.reject();
-				});
+				return deferred.promise;
+			},
 
-			return deferred.promise;
-		};
+			mainChannel: function(page) {
+				var deferred = $q.defer();
 
-		var loadVideos = function() {
-			var deferred = $q.defer();
+				if ( typeof page == 'undefined' ) {
+					page = null;
+				}
 
-			var count = 0;
-
-			var len = $scope.channels.length - 1;
-
-			for ( var i = 0; i < $scope.channels.length; i++ ) {
-				channelVideos($scope.channels[i].channelId)
-					.then(function(entries) {
-						count += entries;
-
-						if ( i === len ) {
-							deferred.resolve(count);
-						}
-					}(i));
-			}
-
-			return deferred.promise;
-		};
-
-		var channelVideos = function( channel ) {
-			var deferred = $q.defer();
-
-			ytData.channelvideos( channel )
-				.then(function(data) {
-					pushVideos(data.items)
-						.then(function(count) {
-							deferred.resolve(count);
+				ytData.channels()
+					.then(function(data) {
+						accounts.create({
+							$id: data.items[0].id,
+							title: data.items[0].snippet.title
 						});
+
+						deferred.resolve(data.items[0].id);
+					}, function() {
+						deferred.reject();
+					});
+
+				return deferred.promise;
+			},
+
+			loadVideos: function() {
+				var promises = [];
+
+				var self = this;
+
+				channels.forEach(function(channel) {
+					var promise = $q.defer();
+
+					promises.push(promise);
+
+					self.channelVideos(channel.channelId).then(function(c){
+						promise.resolve();
+
+						count += c;
+					}, function(){
+						promise.resolve();
+					});
 				});
 
-			return deferred.promise;
-		};
+				$q.all(promises).then(function(){
+					deferred.resolve(count);
+				});
 
-		var pushVideos = function ( data ) {
-			var deferred = $q.defer();
+				return deferred.promise;
+			},
 
-			if ( typeof data != 'undefined' ) {
-				extractVideoIds(data)
-					.then(function(ids){
-						pushVideoIds(ids)
-							.then(function(count){
+			channelVideos: function( channel ) {
+				var deferred = $q.defer();
+
+				ytData.channelvideos(channel)
+					.then(function(data) {
+						this.pushVideos(data.items)
+							.then(function(count) {
 								deferred.resolve(count);
+							}, function() {
+								deferred.reject();
 							});
 					});
-			} else {
-				deferred.reject();
-			}
 
-			return deferred.promise;
-		};
+				return deferred.promise;
+			},
 
-		var extractVideoIds = function ( array ) {
-			var deferred = $q.defer();
+			pushVideos: function ( data ) {
+				var deferred = $q.defer();
 
-			var list = [];
+				if ( typeof data != 'undefined' ) {
+					this.extractVideoIds(data)
+						.then(function(ids){
+							this.pushVideoIds(ids)
+								.then(function(count){
+									deferred.resolve(count);
+								});
+						});
+				} else {
+					deferred.reject();
+				}
 
-			var len = array.length - 1;
+				return deferred.promise;
+			},
 
-			for ( var i = 0; i < array.length; i++ ) {
-				if ( typeof array[i].contentDetails == 'undefined' ) continue;
+			extractVideoIds: function ( array ) {
+				var deferred = $q.defer();
 
-				if ( typeof array[i].contentDetails.upload != 'undefined' ) {
-					list.push(array[i].contentDetails.upload.videoId);
+				var list = [];
 
-					if ( i === len ) {
+				var len = array.length - 1;
+
+				for ( var i = 0; i < array.length; i++ ) {
+					if ( typeof array[i].contentDetails == 'undefined' ) continue;
+
+					if ( typeof array[i].contentDetails.upload != 'undefined' ) {
+						list.push(array[i].contentDetails.upload.videoId);
+
+						if ( i === len ) {
+							deferred.resolve(list);
+						}
+					} else if ( i === len ) {
 						deferred.resolve(list);
 					}
-				} else if ( i === len ) {
-					deferred.resolve(list);
 				}
-			}
 
-			return deferred.promise;
-		};
+				return deferred.promise;
+			},
 
-		var pushVideoIds = function ( list ) {
-			var deferred = $q.defer();
+			pushVideoIds: function ( list ) {
+				var deferred = $q.defer();
 
-			ytData.videos( list )
-				.then(function(data) {
-					if ( typeof data.items != 'undefined' ) {
-						var len = data.items.length - 1;
+				var self = this;
 
-						var count = 0;
+				ytData.videos( list )
+					.then(function(items) {
+						var promises = [],
+							count = 0;
 
-						for ( var i = 0; i < data.items.length; i++ ) {
-							if ( pushVideo(data.items[i]) ) {
-								count++;
-							}
+						angular.forEach(items, function(video) {
+							var promise = $q.defer();
 
-							if ( i === len ) {
-								deferred.resolve(count);
-							}
-						}
-					} else {
+							promises.push(promise);
+
+							videos.get(video.id).then(function(){
+								// Item already exists
+								promise.resolve();
+							}, function(){
+								self.pushVideo(video).then(function(){
+									promise.resolve();
+								});
+							});
+						});
+
+						$q.all(promises).then(function(){
+							deferred.resolve(count);
+						});
+					}, function() {
 						deferred.resolve(0);
-					}
-				});
+					});
 
-			return deferred.promise;
-		};
+				return deferred.promise;
+			},
 
-		var pushVideo = function ( video ) {
-			var details = {
-				id:          video.id,
-				link:        'https://www.youtube.com/watch?v=' + video.id,
-				title:       video.snippet.title,
-				thumbnail:   {
-					default: video.snippet.thumbnails.default.url,
-					medium:  video.snippet.thumbnails.medium.url,
-					high:    video.snippet.thumbnails.high.url
-				},
-				channelId:   video.snippet.channelId,
-				author:      video.snippet.channelTitle,
-				authorlink:  'https://www.youtube.com/channel/' + video.snippet.channelId,
-				published:   video.snippet.publishedAt,
-				duration:    video.contentDetails.duration
-			};
+			pushVideo: function ( video ) {
+				var deferred = $q.defer();
 
-			var existing = $.inArray( video.id, $scope.videoids );
+				var details = {
+					id:          video.id,
+					link:        'https://www.youtube.com/watch?v=' + video.id,
+					title:       video.snippet.title,
+					thumbnail:   {
+						default: video.snippet.thumbnails.default.url,
+						medium:  video.snippet.thumbnails.medium.url,
+						high:    video.snippet.thumbnails.high.url
+					},
+					channelId:   video.snippet.channelId,
+					author:      video.snippet.channelTitle,
+					authorlink:  'https://www.youtube.com/channel/' + video.snippet.channelId,
+					published:   video.snippet.publishedAt,
+					duration:    video.contentDetails.duration
+				};
 
-			if ( existing != -1 ) {
-				// TODO: Revisit this later, might be pointless with only uploads
-				// Update existing data
-				/*$.each(
-				 [
-				 'id', 'link', 'title', 'img', 'authorid',
-				 'author', 'authorlink', 'published', 'duration'
-				 ],
-				 function ( i, v ) {
-				 $scope.videos[eid][v] = details[v];
-				 }
-				 );*/
-
-				return null;
-			} else {
 				var trash = false;
 
+				// TODO: This really needs to be a deferred service
 				if ( $rootScope.filters.channels.hasOwnProperty(details.channelId) ) {
 					$.each( $rootScope.filters.channels[video.channelId].filters, function ( i, v ) {
 						if ( video.title.indexOf( v.string) != -1 ) {
@@ -390,219 +380,116 @@
 
 				if ( trash ) {
 					$rootScope.filters.caught++;
-				}
 
-				if ( trash ) {
-					$scope.trash.push( details );
-					$scope.trashids.push( details.id );
-				} else {
-					$scope.videos.push( details );
-					$scope.videoids.push( details.id );
-				}
-
-				return true;
-			}
-		};
-
-		var checkList = function() {
-			var len = $scope.videos.length;
-
-			for ( i=0; i<len; i++ ) {
-				// Upgrade old style list where id was the hash
-				if ( typeof $scope.videos[i].hash == 'undefined' ) {
-					$scope.videos[i].hash = $scope.videos[i].id;
-				}
-
-				// Remove hashKey if it has been stored by accident
-				if ( typeof $scope.videos[i].$$hashKey != 'undefined' ) {
-					delete $scope.videos[i].$$hashKey;
-				}
-
-				// Lazy way to prevent dupes
-				$scope.videos[i].id = i;
-
-				// Upgrade old format where we didn't have watched and muted
-				if ( typeof $scope.videos[i].watched == 'undefined' ) {
-					$scope.videos[i].watched = $scope.videos[i].muted;
-					$scope.videos[i].muted = false;
-				}
-			}
-		};
-
-		var syncChannels = function(page)
-		{
-			var deferred = $q.defer();
-
-			if ( typeof page == 'undefined' ) {
-				page = null;
-			}
-
-			ytData.subscriptions(page)
-				.then(function(data){
-					loadChannels(data, page)
-						.then(function() {
-							deferred.resolve();
-						});
-				});
-
-			return deferred.promise;
-		};
-
-		var loadChannels = function ( data, page ) {
-			var deferred = $q.defer();
-
-			if ( typeof page == 'undefined' ) page = '';
-
-			if ( typeof data.items != 'undefined' ) {
-				appendChannels(data.items)
-					.then(function() {
-						if ( ($scope.channels.length < data.pageInfo.totalResults) && data.nextPageToken != page ) {
-							syncChannels(data.nextPageToken)
-								.then(function() {
-									deferred.resolve();
-								});
-						} else {
-							deferred.resolve();
-						}
+					trash.create(details ).then(function(){
+						deferred.resolve();
 					});
-			} else {
-				deferred.resolve();
-			}
-
-			return deferred.promise;
-		};
-
-		var appendChannels = function ( items ) {
-			var deferred = $q.defer();
-
-			var len = items.length-1;
-
-			for ( var i = 0; i < items.length; i++ ) {
-				if ( $.inArray( items[i].id, $scope.channelids ) == -1 ) {
-					$scope.channels.push(
-						{
-							id: items[i].id,
-							title: items[i].snippet.title,
-							description: items[i].snippet.description,
-							channelId: items[i].snippet.resourceId.channelId
-						}
-					);
-
-					$scope.channelids.push(items[i].id);
+				} else {
+					videos.create(details).then(function(){
+						deferred.resolve();
+					});
 				}
 
-				if ( i === len ) {
+				return deferred.promise;
+			},
+
+			pageChannels: function(page)
+			{
+				var deferred = $q.defer();
+
+				if ( typeof page == 'undefined' ) {
+					page = null;
+				}
+
+				ytData.subscriptions(page)
+					.then(function(data){
+						this.loadChannels(data, page)
+							.then(function() {
+								deferred.resolve();
+							});
+					});
+
+				return deferred.promise;
+			},
+
+			loadChannels: function ( data, page ) {
+				var deferred = $q.defer();
+
+				if ( typeof page == 'undefined' ) page = '';
+
+				if ( typeof data.items != 'undefined' ) {
+					this.appendChannels(data.items)
+						.then(function() {
+							if (
+								// If we have not added all channels to the db
+								(channels.length() < data.pageInfo.totalResults)
+								// and we're not at the last page of results yet
+								&& (data.nextPageToken != page)
+								) {
+								this.pageChannels(data.nextPageToken)
+									.then(function() {
+										deferred.resolve();
+									});
+							} else {
+								deferred.resolve();
+							}
+						});
+				} else {
 					deferred.resolve();
 				}
+
+				return deferred.promise;
+			},
+
+			appendChannels: function ( items ) {
+				var promises = [];
+
+				angular.forEach(items, function(item) {
+					var promise = $q.defer();
+
+					promises.push(promise);
+
+					channels.get(item.id).then(function(){
+						// Item already exists
+						promise.resolve();
+					}, function(){
+						channels.create(
+							{
+								$id: item.id,
+								title: item.snippet.title,
+								description: item.snippet.description,
+								channelId: item.snippet.resourceId.channelId
+							}
+						).then(function(){
+							promise.resolve();
+						});
+					});
+				});
+
+				return $q.all(promises);
+			},
+
+			migrateOldLS: function() {
+				// Find the old userid
+				// Convert old properties to new
+				// - Thumbnail
+				// - Duration
+				// Sort into right container
 			}
-
-			return deferred.promise;
-		};
-
-		var loadTop = function () {
-			sanityApp.loading();
-
-			$rootScope.filters.caught = 0;
-
-			loadVideos();
-		};
-
-		var updateSidebar = function () {
-			if ( $rootScope.settings.sidebar === true ) {
-				$('.sidebar').css({"height":$document.height()});
-			} else {
-				$('.sidebar').css({"height":"40px"});
-			}
-		};
-
-		var migrateOldLS = function() {
-			// Find the old userid
-			// Convert old properties to new
-			// - Thumbnail
-			// - Duration
-			// Sort into right container
-		};
-
-		$scope.refresh = function() {
-			sanityApp.loading();
-
-			sanityApp.update();
-
-			loadTop();
-		};
-
-		$scope.hideChannel = function ( name ) {
-			var pos = $.inArray( name, $rootScope.channeloptions.hidden );
-
-			if ( pos != -1 ) {
-				$rootScope.channeloptions.hidden = $rootScope.channeloptions.hidden.splice(pos, 1);
-			} else {
-				$rootScope.channeloptions.hidden.push(name);
-			}
-		};
-
-		$scope.togglesidebar = function () {
-			$rootScope.settings.sidebar = !$rootScope.settings.sidebar;
-
-			updateSidebar();
-		};
-
-		$scope.videoFilter = function (video) {
-
-			if ( $rootScope.channelstate.hidden[video.channelId] === "1" ) {
-				return null;
-			}
-
-			var filtered = false;
-
-			$.each( $rootScope.filters.global, function ( i, v ) {
-				if ( video.title.indexOf( v.string ) != -1 ) {
-					filtered = true;
-				}
-			});
-
-			return video;
-		};
-
-		$scope.setLimit = function (increment) {
-			$rootScope.settings.videolimit =
-				Number($rootScope.settings.videolimit) + Number(increment)
-			;
-
-			if ( $rootScope.settings.videolimit < 1 ) {
-				$rootScope.settings.videolimit = 5;
-			}
-		};
-
-		var getPercentage = function () {
-			if ( $rootScope.settings.videolimit < $scope.videos.length ) {
-				$scope.percentage = parseInt(100 * $rootScope.settings.videolimit / $scope.videos.length);
-
-				$scope.abslength = $rootScope.settings.videolimit;
-			} else {
-				$scope.percentage = 100;
-
-				$scope.abslength = $scope.videos.length;
-			}
-		};
-
-		$scope.$watch('videos', getPercentage, true);
-
-		$scope.$watch('settings', getPercentage, true);
-
-		$scope.percentage = getPercentage();
-
-		angular.element($document).bind("keyup", function(event) {
-			if (event.which === 82) $scope.refresh();
-		});
-
-		initAccount();
-
-		updateSidebar();
+		}
 	}
 
-	OldAppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
-	angular.module('sanityData').controller('OldAppRepeatCtrl', OldAppRepeatCtrl);
+	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'videos', 'channels', 'archive', 'trash'];
+	angular.module('sanityData').service('connection', YTConnectionService);
+
+
+	function AccountService( yngutils, Pouchyng )
+	{
+		return new Pouchyng('accounts', 'http://127.0.0.1:5984', yngutils.ASC);
+	}
+
+	AccountService.$inject = ['yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('accounts', AccountService);
 
 
 	function VideoService( yngutils, Pouchyng )
@@ -611,7 +498,34 @@
 	}
 
 	VideoService.$inject = ['yngutils', 'Pouchyng'];
-	angular.module('sanityData').service('Video', VideoService);
+	angular.module('sanityData').service('videos', VideoService);
+
+
+	function TrashService( yngutils, Pouchyng )
+	{
+		return new Pouchyng('trash', 'http://127.0.0.1:5984', yngutils.ASC);
+	}
+
+	TrashService.$inject = ['yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('trash', TrashService);
+
+
+	function ArchiveService( yngutils, Pouchyng )
+	{
+		return new Pouchyng('archive', 'http://127.0.0.1:5984', yngutils.ASC);
+	}
+
+	ArchiveService.$inject = ['yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('archive', ArchiveService);
+
+
+	function ChannelService( yngutils, Pouchyng )
+	{
+		return new Pouchyng('channels', 'http://127.0.0.1:5984', yngutils.ASC);
+	}
+
+	ChannelService.$inject = ['yngutils', 'Pouchyng'];
+	angular.module('sanityData').service('channels', ChannelService);
 
 
 })();
@@ -788,7 +702,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, videos )
+	function AppRepeatCtrl( $rootScope, $scope, $document, sanityApp, connection )
 	{
 		$rootScope.userid = '';
 
@@ -798,6 +712,13 @@
 			sanityApp.loading();
 
 			// TODO: mainChannel();
+
+			connection.initAccount().then(function(count){
+				// TODO: Display count
+				sanityApp.ready();
+			}, function(){
+				$state.go('ready');
+			});
 		};
 
 		var loadTop = function () {
@@ -897,7 +818,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'ytData'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
