@@ -212,17 +212,16 @@
 
 						channels.get();
 
-						channels.pageChannels()
-							.then(function() {
-								videos.get();
-
-								videos.loadVideos()
-									.then(function() {
-										deferred.resolve(videos.countLastAdded);
-									});
-							});
+						return channels.pageChannels()
 					}, function() {
 						deferred.reject();
+					})
+					.then(function() {
+						videos.get();
+
+						return videos.loadVideos()
+					}).then(function() {
+						deferred.resolve(videos.countLastAdded);
 					});
 
 				return deferred.promise;
@@ -250,40 +249,46 @@
 
 				ytData.channels()
 					.then(function(data) {
-						self.checkExisting(data.items[0].id)
-							.then(function(doc){
-								self.doc = doc;
-
-								self.current = doc.id;
-
-								deferred.resolve();
-							}, function(){
-								self.data.create({
-									$id: data.items[0].id,
-									title: data.items[0].snippet.title,
-									channels: [],
-									videos: []
-								} ).then(function(doc){
-									self.doc = doc;
-
-									self.current = doc.id;
-
-									deferred.resolve();
-								});
-							});
+						return self.notExisting(data.items[0].id)
 					}, function() {
 						deferred.reject();
+					})
+					.then(function(){
+						self.data.create({
+							$id: data.items[0].id,
+							title: data.items[0].snippet.title,
+							channels: [],
+							videos: []
+						} ).then(function(doc){
+							self.doc = doc;
+
+							self.current = doc.id;
+
+							deferred.resolve();
+						});
+					}, function(doc){
+						self.doc = doc;
+
+						self.current = doc.id;
+
+						deferred.resolve();
 					});
 
 				return deferred.promise;
 			},
-			checkExisting: function( id ) {
+			notExisting: function( id ) {
 				var promises = [];
 
 				this.data.forEach(function (el) {
 					var promise = $q.defer();
 
 					promises.push(promise);
+
+					if ( el.id != id ) {
+						promise.resolve();
+					} else {
+						promise.reject(el);
+					}
 				});
 
 				return $q.all(promises);
@@ -356,12 +361,12 @@
 
 				ytData.channelvideos(channel)
 					.then(function(data) {
-						self.pushVideos(data.items)
-							.then(function() {
-								deferred.resolve();
-							}, function() {
-								deferred.reject();
-							});
+						return self.pushVideos(data.items)
+					})
+					.then(function() {
+						deferred.resolve();
+					}, function() {
+						deferred.reject();
 					});
 
 				return deferred.promise;
@@ -375,10 +380,10 @@
 				if ( typeof data != 'undefined' ) {
 					self.extractVideoIds(data)
 						.then(function(ids){
-							self.pushVideoIds(ids)
-								.then(function(count){
-									deferred.resolve(count);
-								});
+							return self.pushVideoIds(ids)
+						})
+						.then(function(count){
+							deferred.resolve(count);
 						});
 				} else {
 					deferred.reject();
@@ -512,10 +517,10 @@
 
 				ytData.subscriptions(page)
 					.then(function(data){
-						self.loadChannels(data, page)
-							.then(function() {
-								deferred.resolve();
-							});
+						return self.loadChannels(data, page)
+					})
+					.then(function() {
+						deferred.resolve();
 					});
 
 				return deferred.promise;
