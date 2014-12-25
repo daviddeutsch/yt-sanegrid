@@ -71,19 +71,19 @@
 					.then(function(data) {
 						self.notExisting(data.items[0].id)
 							.then(function(){
-							self.data.create({
-								$id: data.items[0].id,
-								title: data.items[0].snippet.title,
-								channels: [],
-								videos: []
-							} ).then(function(doc){
-								self.doc = doc;
+								self.data.create({
+									$id: data.items[0].id,
+									title: data.items[0].snippet.title,
+									channels: [],
+									videos: []
+								} ).then(function(doc){
+									self.doc = doc;
 
-								self.current = doc.id;
+									self.current = doc.id;
 
-								deferred.resolve();
-							});
-						}, function(doc){
+									deferred.resolve();
+								});
+							}, function(doc){
 								self.doc = doc;
 
 								self.current = doc.id;
@@ -304,6 +304,8 @@
 				}
 
 				this.data.create(details).then(function(){
+					accounts.pushVideoId(details.id);
+
 					deferred.resolve();
 				});
 
@@ -396,6 +398,8 @@
 								channelId: item.snippet.resourceId.channelId
 							}
 						).then(function(){
+							accounts.pushChannelId(item.id);
+
 							promise.resolve();
 						});
 					}
