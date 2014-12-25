@@ -824,7 +824,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'ytData'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'connection'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
