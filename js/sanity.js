@@ -242,6 +242,8 @@
 
 				var self = this;
 
+				var count = 0;
+
 				channels.forEach(function(channel) {
 					var promise = $q.defer();
 
@@ -344,6 +346,7 @@
 								promise.resolve();
 							} else {
 								self.pushVideo(video).then(function(){
+									count++;
 									promise.resolve();
 								});
 							}
