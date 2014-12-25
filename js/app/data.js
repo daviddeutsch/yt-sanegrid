@@ -69,29 +69,29 @@
 
 				ytData.channels()
 					.then(function(data) {
-						return self.notExisting(data.items[0].id)
+						self.notExisting(data.items[0].id)
+							.then(function(){
+							self.data.create({
+								$id: data.items[0].id,
+								title: data.items[0].snippet.title,
+								channels: [],
+								videos: []
+							} ).then(function(doc){
+								self.doc = doc;
+
+								self.current = doc.id;
+
+								deferred.resolve();
+							});
+						}, function(doc){
+								self.doc = doc;
+
+								self.current = doc.id;
+
+								deferred.resolve();
+							});
 					}, function() {
 						deferred.reject();
-					})
-					.then(function(){
-						self.data.create({
-							$id: data.items[0].id,
-							title: data.items[0].snippet.title,
-							channels: [],
-							videos: []
-						} ).then(function(doc){
-							self.doc = doc;
-
-							self.current = doc.id;
-
-							deferred.resolve();
-						});
-					}, function(doc){
-						self.doc = doc;
-
-						self.current = doc.id;
-
-						deferred.resolve();
 					});
 
 				return deferred.promise;
