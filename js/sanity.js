@@ -280,7 +280,7 @@
 			checkExisting: function( id ) {
 				var promises = [];
 
-				accounts.forEach(function (el) {
+				this.data.forEach(function (el) {
 					var promise = $q.defer();
 
 					promises.push(promise);
