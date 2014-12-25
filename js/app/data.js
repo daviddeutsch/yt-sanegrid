@@ -439,7 +439,7 @@
 
 	function VideoService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('contacts', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('videos', 'http://127.0.0.1:5984', yngutils.ASC);
 	}
 
 	VideoService.$inject = ['yngutils', 'Pouchyng'];

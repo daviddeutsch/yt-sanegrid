@@ -171,7 +171,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
+	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, videos )
 	{
 		$rootScope.userid = '';
 
@@ -250,7 +250,10 @@
 			}
 		};
 
-		var getPercentage = function () {
+		$scope.percentage = 0;
+		$scope.abslength = 100;
+
+		/*var getPercentage = function () {
 			if ( $rootScope.settings.videolimit < $scope.videos.length ) {
 				$scope.percentage = parseInt(100 * $rootScope.settings.videolimit / $scope.videos.length);
 
@@ -266,7 +269,7 @@
 
 		$scope.$watch('settings', getPercentage, true);
 
-		$scope.percentage = getPercentage();
+		$scope.percentage = getPercentage();*/
 
 		angular.element($document).bind("keyup", function(event) {
 			if (event.which === 82) $scope.refresh();
