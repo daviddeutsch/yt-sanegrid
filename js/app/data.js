@@ -322,7 +322,7 @@
 
 	function AccountService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('accounts', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC);
 	}
 
 	AccountService.$inject = ['yngutils', 'Pouchyng'];
@@ -331,7 +331,7 @@
 
 	function VideoService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('videos', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('videos', 'ytSanityDB', yngutils.ASC);
 	}
 
 	VideoService.$inject = ['yngutils', 'Pouchyng'];
@@ -340,7 +340,7 @@
 
 	function TrashService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('trash', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('trash', 'ytSanityDB', yngutils.ASC);
 	}
 
 	TrashService.$inject = ['yngutils', 'Pouchyng'];
@@ -349,7 +349,7 @@
 
 	function ArchiveService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('archive', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('archive', 'ytSanityDB', yngutils.ASC);
 	}
 
 	ArchiveService.$inject = ['yngutils', 'Pouchyng'];
@@ -358,7 +358,7 @@
 
 	function ChannelService( yngutils, Pouchyng )
 	{
-		return new Pouchyng('channels', 'http://127.0.0.1:5984', yngutils.ASC);
+		return new Pouchyng('channels', 'ytSanityDB', yngutils.ASC);
 	}
 
 	ChannelService.$inject = ['yngutils', 'Pouchyng'];
