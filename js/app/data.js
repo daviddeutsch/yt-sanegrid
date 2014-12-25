@@ -208,7 +208,7 @@
 
 							promises.push(promise);
 
-							if ( videos.exists(video.id) ) {
+							if ( self.data.exists(video.id) ) {
 								promise.resolve();
 							} else {
 								self.pushVideo(video).then(function(){
