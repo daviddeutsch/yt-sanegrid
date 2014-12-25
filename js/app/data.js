@@ -9,11 +9,13 @@
 			initAccount: function () {
 				var deferred = $q.defer();
 
+				var self = this;
+
 				this.mainChannel()
 					.then(function(id) {
 						$rootScope.userid = id;
 
-						this.pageChannels()
+						self.pageChannels()
 							.then(function() {
 								this.loadVideos()
 									.then(function(count) {
@@ -239,6 +241,8 @@
 			loadChannels: function ( data, page ) {
 				var deferred = $q.defer();
 
+				var self = this;
+
 				if ( typeof page == 'undefined' ) page = '';
 
 				if ( typeof data.items != 'undefined' ) {
@@ -250,7 +254,7 @@
 								// and we're not at the last page of results yet
 								&& (data.nextPageToken != page)
 								) {
-								this.pageChannels(data.nextPageToken)
+								self.pageChannels(data.nextPageToken)
 									.then(function() {
 										deferred.resolve();
 									});
