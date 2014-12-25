@@ -252,7 +252,7 @@
 						self.notExisting(data.items[0].id)
 							.then(function(){
 								self.data.create({
-									$id: data.items[0].id,
+									id: data.items[0].id,
 									title: data.items[0].snippet.title,
 									channels: [],
 									videos: []
@@ -295,12 +295,16 @@
 			},
 			pushChannelId: function( id ) {
 				this.doc.channels.push(id);
+
+				this.data.update(this.doc);
 			},
 			existsChannelId: function( id ) {
 				$.inArray( id, this.doc.channels );
 			},
 			pushVideoId: function( id ) {
 				this.doc.videos.push(id);
+
+				this.data.update(this.doc);
 			},
 			existsVideoId: function( id ) {
 				$.inArray( id, this.doc.videos );
