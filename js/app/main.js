@@ -171,7 +171,7 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $document, sanityApp, connection )
+	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, connection )
 	{
 		$rootScope.userid = '';
 
@@ -289,7 +289,7 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'connection'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'connection'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
