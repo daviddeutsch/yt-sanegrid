@@ -239,6 +239,7 @@
 		return {
 			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC),
 			current: '',
+			doc: null,
 			init: function(page) {
 				var deferred = $q.defer(),
 					self = this;
@@ -249,19 +250,55 @@
 
 				ytData.channels()
 					.then(function(data) {
-						self.data.create({
-							$id: data.items[0].id,
-							title: data.items[0].snippet.title
-						});
+						self.checkExisting(data.items[0].id)
+							.then(function(doc){
+								self.doc = doc;
 
-						self.current = data.items[0].id;
+								self.current = doc.id;
 
-						deferred.resolve();
+								deferred.resolve();
+							}, function(){
+								self.data.create({
+									$id: data.items[0].id,
+									title: data.items[0].snippet.title,
+									channels: [],
+									videos: []
+								} ).then(function(doc){
+									self.doc = doc;
+
+									self.current = doc.id;
+
+									deferred.resolve();
+								});
+							});
 					}, function() {
 						deferred.reject();
 					});
 
 				return deferred.promise;
+			},
+			checkExisting: function( id ) {
+				var promises = [];
+
+				accounts.forEach(function (el) {
+					var promise = $q.defer();
+
+					promises.push(promise);
+				});
+
+				return $q.all(promises);
+			},
+			pushChannelId: function( id ) {
+				this.doc.channels.push(id);
+			},
+			existsChannelId: function( id ) {
+				$.inArray( id, this.doc.channels );
+			},
+			pushVideoId: function( id ) {
+				this.doc.videos.push(id);
+			},
+			existsVideoId: function( id ) {
+				$.inArray( id, this.doc.videos );
 			}
 		}
 	}
@@ -277,7 +314,7 @@
 			countLastAdded: 0,
 
 			get: function() {
-				this.data = new Pouchyng('videos', 'ytSanityDB/' + accounts.current, yngutils.ASC);
+				this.data = new Pouchyng('videos', 'ytSanityDB_' + accounts.current, yngutils.ASC);
 			},
 
 			bind: function( scope ) {
@@ -388,7 +425,7 @@
 
 							promises.push(promise);
 
-							if ( self.data.exists(video.id) ) {
+							if ( accounts.existsVideoId(video.id) ) {
 								promise.resolve();
 							} else {
 								self.pushVideo(video).then(function(){
@@ -460,7 +497,7 @@
 			data: null,
 
 			get: function() {
-				this.data = new Pouchyng('channels', 'ytSanityDB/' + accounts.current, yngutils.ASC);
+				this.data = new Pouchyng('channels', 'ytSanityDB_' + accounts.current, yngutils.ASC);
 			},
 
 			pageChannels: function( page )
@@ -523,12 +560,12 @@
 
 					promises.push(promise);
 
-					if ( self.data.exists(item.id) ) {
+					if ( accounts.existsChannelId(item.id) ) {
 						promise.resolve();
 					} else {
 						self.data.create(
 							{
-								$id: item.id,
+								id: item.id,
 								title: item.snippet.title,
 								description: item.snippet.description,
 								channelId: item.snippet.resourceId.channelId
