@@ -49,6 +49,10 @@
 				return deferred.promise;
 			},
 
+			bindVideos: function( scope ) {
+				videos.bind(scope);
+			},
+
 			loadVideos: function() {
 				var promises = [];
 

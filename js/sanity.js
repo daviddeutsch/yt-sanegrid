@@ -229,6 +229,10 @@
 				return deferred.promise;
 			},
 
+			bindVideos: function( scope ) {
+				videos.bind(scope);
+			},
+
 			loadVideos: function() {
 				var promises = [];
 
@@ -714,8 +718,10 @@
 			// TODO: mainChannel();
 
 			connection.initAccount().then(function(count){
-				// TODO: Display count
-				sanityApp.ready();
+				connection.bindVideos($scope).then(function(){
+					// TODO: Display count
+					sanityApp.ready();
+				});
 			}, function(){
 				$state.go('ready');
 			});
