@@ -236,6 +236,8 @@
 			},
 
 			loadVideos: function() {
+				var deferred = $q.defer();
+
 				var promises = [];
 
 				var self = this;
