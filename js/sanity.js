@@ -496,7 +496,7 @@
 		}
 	}
 
-	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'videos', 'channels', 'archive', 'trash'];
+	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'accounts', 'videos', 'channels', 'archive', 'trash'];
 	angular.module('sanityData').service('connection', YTConnectionService);
 
 
