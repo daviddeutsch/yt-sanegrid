@@ -338,14 +338,13 @@
 
 							promises.push(promise);
 
-							videos.get(video.id).then(function(){
-								// Item already exists
+							if ( videos.exists(video.id) ) {
 								promise.resolve();
-							}, function(){
+							} else {
 								self.pushVideo(video).then(function(){
 									promise.resolve();
 								});
-							});
+							}
 						});
 
 						$q.all(promises).then(function(){
@@ -463,10 +462,9 @@
 
 					promises.push(promise);
 
-					channels.get(item.id).then(function(){
-						// Item already exists
+					if ( channels.exists(item.id) ) {
 						promise.resolve();
-					}, function(){
+					} else {
 						channels.create(
 							{
 								$id: item.id,
@@ -477,7 +475,7 @@
 						).then(function(){
 							promise.resolve();
 						});
-					});
+					}
 				});
 
 				return $q.all(promises);
