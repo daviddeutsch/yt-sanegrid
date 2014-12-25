@@ -3,7 +3,7 @@
 	angular.module('sanityData', ['youtube', 'factoryng']);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
+	function OldAppRepeatCtrl( $rootScope, $scope, $q, $document, $state, sanityApp, ytData )
 	{
 		//$store.bind( $rootScope, 'userid', '' );
 		//$store.bind( $rootScope, 'videocache', {} );
@@ -433,8 +433,8 @@
 		updateSidebar();
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
-	angular.module('sanityData').controller('AppRepeatCtrl', AppRepeatCtrl);
+	OldAppRepeatCtrl.$inject = ['$rootScope', '$scope', '$q', '$document', '$state', 'sanityApp', 'ytData'];
+	angular.module('sanityData').controller('OldAppRepeatCtrl', OldAppRepeatCtrl);
 
 
 	function VideoService( yngutils, Pouchyng )
