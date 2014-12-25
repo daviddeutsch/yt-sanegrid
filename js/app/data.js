@@ -52,7 +52,7 @@
 			},
 
 			bindVideos: function( scope ) {
-				videos.bind(scope);
+				return videos.bind(scope);
 			},
 
 			loadVideos: function() {
