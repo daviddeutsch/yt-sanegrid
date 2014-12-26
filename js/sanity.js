@@ -236,7 +236,7 @@
 	function AccountService( $q, ytData, yngutils, Pouchyng )
 	{
 		return {
-			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC),
+			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.DESC),
 			current: '',
 			doc: null,
 			init: function(page) {
@@ -1270,7 +1270,7 @@
 	 *
 	 * @desc Control behavior in video item
 	 */
-	function videoItemDirective( $timeout )
+	function videoItemDirective( $timeout, videos )
 	{
 		return {
 			restrict: 'C',
@@ -1282,6 +1282,8 @@
 				$scope.mute = function () {
 					$scope.video.muted = !$scope.video.muted;
 					$scope.video.muteddate = new Date().toISOString();
+
+					videos.data.update($scope.video);
 				};
 
 				$scope.watch = function( $event ) {
@@ -1291,13 +1293,6 @@
 
 					$timeout(function(){$scope.watched(false);}, 400);
 				};
-
-				if ( $rootScope.settings.adblockoverride ) {
-					$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
-				} else {
-					$scope.link = $scope.video.link;
-				}
-
 				$scope.watched = function ( force ) {
 					if ( $scope.video.watched && !force ) {
 						return;
@@ -1305,12 +1300,21 @@
 
 					$scope.video.watched = !$scope.video.watched;
 					$scope.video.watcheddate = new Date().toISOString();
+
+					videos.data.update($scope.video);
 				};
+
+				if ( $rootScope.settings.adblockoverride ) {
+					$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
+				} else {
+					$scope.link = $scope.video.link;
+				}
+
 			}
 		}
 	}
 
-	videoItemDirective.$inject = ['$timeout'];
+	videoItemDirective.$inject = ['$timeout', 'videos'];
 	angular.module('sanityApp').directive('videoItem', videoItemDirective);
 
 

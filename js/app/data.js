@@ -56,7 +56,7 @@
 	function AccountService( $q, ytData, yngutils, Pouchyng )
 	{
 		return {
-			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.ASC),
+			data: new Pouchyng('accounts', 'ytSanityDB', yngutils.DESC),
 			current: '',
 			doc: null,
 			init: function(page) {
