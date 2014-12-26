@@ -457,7 +457,7 @@
 				var deferred = $q.defer();
 
 				function map(doc) {
-					if ( doc.id == id ) {
+					if ( doc.ytId == id ) {
 						emit(doc._id, doc);
 					}
 				}
@@ -614,7 +614,7 @@
 				var deferred = $q.defer();
 
 				function map(doc) {
-					if ( doc.id == id ) {
+					if ( doc.ytId == id ) {
 						emit(doc._id, doc);
 					}
 				}
