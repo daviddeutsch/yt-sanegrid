@@ -562,9 +562,9 @@
 						.then(function() {
 							if (
 								// If we have not added all channels to the db
-								(self.data.length() < data.pageInfo.totalResults)
+								/*(self.data.length() < data.pageInfo.totalResults)
 								// and we're not at the last page of results yet
-								&& (data.nextPageToken != page)
+								&&*/ (data.nextPageToken != page)
 								) {
 								self.pageChannels(data.nextPageToken)
 									.then(function() {
