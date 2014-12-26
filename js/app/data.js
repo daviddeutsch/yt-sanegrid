@@ -80,9 +80,12 @@
 									ytId: data.items[0].id,
 									title: data.items[0].snippet.title
 								} ).then(function(doc){
-									self.doc = doc;
+									self.data.get(doc.id)
+										.then(function(res){
+											self.doc = res;
+										});
 
-									self.current = doc.id;
+									self.current = data.items[0].id;
 
 									deferred.resolve();
 								});
