@@ -259,9 +259,7 @@
 							}, function(){
 								self.data.post({
 									id: data.items[0].id,
-									title: data.items[0].snippet.title,
-									channels: [],
-									videos: []
+									title: data.items[0].snippet.title
 								} ).then(function(doc){
 									self.doc = doc;
 
@@ -295,22 +293,6 @@
 					});
 
 				return deferred.promise;
-			},
-			pushChannelId: function( id ) {
-				this.doc.channels.push(id);
-
-				this.data.update(this.doc);
-			},
-			existsChannelId: function( id ) {
-				$.inArray( id, this.doc.channels );
-			},
-			pushVideoId: function( id ) {
-				this.doc.videos.push(id);
-
-				this.data.update(this.doc);
-			},
-			existsVideoId: function( id ) {
-				$.inArray( id, this.doc.videos );
 			}
 		}
 	}
@@ -437,15 +419,16 @@
 
 							promises.push(promise);
 
-							if ( accounts.existsVideoId(video.id) ) {
-								promise.resolve();
-							} else {
-								self.pushVideo(video).then(function(){
-									self.countLastAdded++;
-
+							self.videoExists(video.id)
+								.then(function(){
 									promise.resolve();
+								}, function(){
+									self.pushVideo(video).then(function(){
+										self.countLastAdded++;
+
+										promise.resolve();
+									});
 								});
-							}
 						});
 
 						$q.all(promises).then(function(){
@@ -453,6 +436,27 @@
 						});
 					}, function() {
 						deferred.resolve(0);
+					});
+
+				return deferred.promise;
+			},
+
+			videoExists: function( id ) {
+				var deferred = $q.defer();
+
+				function map(doc) {
+					if ( doc.id == id ) {
+						emit(doc._id, doc);
+					}
+				}
+
+				this.data.query({map: map}, {reduce: false})
+					.then(function(res) {
+						if ( res.total_rows > 0 ) {
+							deferred.resolve();
+						} else {
+							deferred.reject();
+						}
 					});
 
 				return deferred.promise;
@@ -574,25 +578,45 @@
 
 					promises.push(promise);
 
-					if ( accounts.existsChannelId(item.id) ) {
-						promise.resolve();
-					} else {
-						self.data.create(
-							{
-								id: item.id,
-								title: item.snippet.title,
-								description: item.snippet.description,
-								channelId: item.snippet.resourceId.channelId
-							}
-						).then(function(){
-							accounts.pushChannelId(item.id);
-
+					self.channelExists(item.id)
+						.then(function(){
 							promise.resolve();
+						}, function(){
+							self.data.post(
+								{
+									id: item.id,
+									title: item.snippet.title,
+									description: item.snippet.description,
+									channelId: item.snippet.resourceId.channelId
+								}
+							).then(function(){
+								promise.resolve();
+							});
 						});
-					}
 				});
 
 				return $q.all(promises);
+			},
+
+			channelExists: function( id ) {
+				var deferred = $q.defer();
+
+				function map(doc) {
+					if ( doc.id == id ) {
+						emit(doc._id, doc);
+					}
+				}
+
+				this.data.query({map: map}, {reduce: false})
+					.then(function(res) {
+						if ( res.total_rows > 0 ) {
+							deferred.resolve();
+						} else {
+							deferred.reject();
+						}
+					});
+
+				return deferred.promise;
 			}
 		}
 	}
