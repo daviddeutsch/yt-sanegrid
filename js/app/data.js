@@ -78,7 +78,7 @@
 								deferred.resolve();
 							}, function(){
 								self.data.post({
-									id: data.items[0].id,
+									ytId: data.items[0].id,
 									title: data.items[0].snippet.title
 								} ).then(function(doc){
 									self.doc = doc;
@@ -98,7 +98,7 @@
 				var deferred = $q.defer();
 
 				function map(doc) {
-					if ( doc.id == id ) {
+					if ( doc.ytId == id ) {
 						emit(doc._id, doc);
 					}
 				}
@@ -296,7 +296,7 @@
 				var deferred = $q.defer();
 
 				var details = {
-					id:          video.id,
+					ytId:        video.id,
 					link:        'https://www.youtube.com/watch?v=' + video.id,
 					title:       video.snippet.title,
 					thumbnail:   {
@@ -414,7 +414,7 @@
 						}, function(){
 							self.data.post(
 								{
-									id: item.id,
+									ytId: item.id,
 									title: item.snippet.title,
 									description: item.snippet.description,
 									channelId: item.snippet.resourceId.channelId
