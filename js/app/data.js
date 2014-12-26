@@ -107,10 +107,10 @@
 
 				this.data.query({map: map}, {reduce: false})
 					.then(function(res) {
-						if ( res.id == id ) {
-							deferred.resolve(res);
+						if ( res.rows > 0 ) {
+							deferred.resolve(res.rows[0]);
 						} else {
-							deferred.reject(res);
+							deferred.reject();
 						}
 					});
 
