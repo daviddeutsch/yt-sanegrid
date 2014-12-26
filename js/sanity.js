@@ -292,8 +292,8 @@
 						} else {
 							deferred.reject();
 						}
-					}, function(err){
-						alert(err);
+					}).catch(function(response) {
+						alert(response);
 					});
 
 				return deferred.promise;
