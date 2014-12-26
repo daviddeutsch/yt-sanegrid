@@ -249,8 +249,14 @@
 
 				ytData.channels()
 					.then(function(data) {
-						self.notExisting(data.items[0].id)
-							.then(function(){
+						self.findAccount(data.items[0].id)
+							.then(function(doc){
+								self.doc = doc;
+
+								self.current = doc.id;
+
+								deferred.resolve();
+							}, function(){
 								self.data.post({
 									id: data.items[0].id,
 									title: data.items[0].snippet.title,
@@ -263,12 +269,6 @@
 
 									deferred.resolve();
 								});
-							}, function(doc){
-								self.doc = doc;
-
-								self.current = doc.id;
-
-								deferred.resolve();
 							});
 					}, function() {
 						deferred.reject();
