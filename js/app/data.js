@@ -30,18 +30,17 @@
 					.then(function() {
 						$rootScope.userid = accounts.current;
 
-						channels.get();
+						channels.init();
 
-						return channels.pageChannels()
-					}, function() {
-						deferred.reject();
-					})
-					.then(function() {
-						videos.get();
+						channels.pageChannels()
+							.then(function(){
+								videos.init();
 
-						return videos.loadVideos()
-					}).then(function() {
-						deferred.resolve(videos.countLastAdded);
+								videos.loadVideos()
+									.then(function() {
+										deferred.resolve(videos.countLastAdded);
+									});
+							});
 					});
 
 				return deferred.promise;
@@ -127,7 +126,7 @@
 			data: null,
 			countLastAdded: 0,
 
-			get: function() {
+			init: function() {
 				this.data = pouchDB('ytSanityDB/v0/' + accounts.current + '/videos');
 			},
 
@@ -137,7 +136,7 @@
 				self.data.allDocs().then(function(list){
 					scope.videos = list;
 
-					promise.resolve();
+					deferred.resolve();
 				});
 
 				return deferred.promise;
@@ -344,7 +343,7 @@
 		return {
 			data: null,
 
-			get: function() {
+			init: function() {
 				this.data = pouchDB('ytSanityDB/v0/' + accounts.current + '/channels');
 			},
 
