@@ -183,9 +183,11 @@
 			// TODO: mainChannel();
 
 			data.init().then(function(){
-				$scope.videos = videos.data.allDocs();
-				// TODO: Display count of new videos
-				sanityApp.ready();
+				videos.bind($scope)
+					.then(function(){
+						// TODO: Display count of new videos
+						sanityApp.ready();
+					});
 			}, function(){
 				$state.go('ready');
 			});

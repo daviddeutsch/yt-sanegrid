@@ -312,7 +312,15 @@
 			},
 
 			bind: function( scope ) {
-				return this.data.bind(scope);
+				var deferred = $q.defer();
+
+				self.data.allDocs().then(function(list){
+					scope.videos = list;
+
+					promise.resolve();
+				});
+
+				return deferred.promise;
 			},
 
 			loadVideos: function() {
@@ -324,15 +332,17 @@
 
 				this.countLastAdded = 0;
 
-				channels.data.forEach(function(channel) {
-					var promise = $q.defer();
+				channels.data.allDocs().then(function(list){
+					angular.forEach(list, function(channel) {
+						var promise = $q.defer();
 
-					promises.push(promise);
+						promises.push(promise);
 
-					self.channelVideos(channel.channelId).then(function(){
-						promise.resolve();
-					}, function(){
-						promise.resolve();
+						self.channelVideos(channel.channelId).then(function(){
+							promise.resolve();
+						}, function(){
+							promise.resolve();
+						});
 					});
 				});
 
@@ -811,9 +821,11 @@
 			// TODO: mainChannel();
 
 			data.init().then(function(){
-				$scope.videos = videos.data.allDocs();
-				// TODO: Display count of new videos
-				sanityApp.ready();
+				videos.bind($scope)
+					.then(function(){
+						// TODO: Display count of new videos
+						sanityApp.ready();
+					});
 			}, function(){
 				$state.go('ready');
 			});
