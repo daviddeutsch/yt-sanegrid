@@ -469,6 +469,8 @@
 						} else {
 							deferred.reject();
 						}
+					}, function(err){
+						alert(err);
 					});
 
 				return deferred.promise;
@@ -626,6 +628,8 @@
 						} else {
 							deferred.reject();
 						}
+					}, function(err){
+						alert(err);
 					});
 
 				return deferred.promise;
