@@ -107,7 +107,7 @@
 
 				this.data.query({map: map}, {reduce: false})
 					.then(function(res) {
-						if ( res.rows > 0 ) {
+						if ( res.total_rows > 0 ) {
 							deferred.resolve(res.rows[0]);
 						} else {
 							deferred.reject();
