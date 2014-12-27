@@ -226,7 +226,10 @@
 					.then(function(){
 						videos.loadVideos()
 							.then(function() {
-								deferred.resolve(videos.countLastAdded);
+								videos.load()
+									.then(function(){
+										deferred.resolve(videos.countLastAdded);
+									});
 							});
 					});
 
