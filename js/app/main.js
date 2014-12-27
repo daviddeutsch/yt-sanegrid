@@ -190,6 +190,10 @@
 						.then(function(){
 							$scope.videos = videos.list;
 
+							$scope.$on('videos:update', function(event, data) {
+								$scope.videos = videos.list;
+							});
+
 							sanityApp.loading();
 
 							data.update()
@@ -199,17 +203,6 @@
 						});
 				}, function(){
 					$state.go('ready');
-				});
-		};
-
-		var loadTop = function () {
-			sanityApp.loading();
-
-			$rootScope.filters.caught = 0;
-
-			data.update()
-				.then(function(){
-					sanityApp.ready();
 				});
 		};
 

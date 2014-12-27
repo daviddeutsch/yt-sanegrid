@@ -130,6 +130,8 @@
 				this.data.allDocs({include_docs: true}).then(function(list){
 					self.list = list.rows;
 
+					$rootScope.$broadcast('videos:updated');
+
 					deferred.resolve();
 				});
 
