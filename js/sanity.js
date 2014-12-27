@@ -296,7 +296,7 @@
 			bind: function( scope ) {
 				var deferred = $q.defer();
 
-				this.data.allDocs().then(function(list){
+				this.data.allDocs({include_docs: true}).then(function(list){
 					scope.videos = list.rows;
 
 					deferred.resolve();
@@ -314,13 +314,13 @@
 
 				this.countLastAdded = 0;
 
-				channels.data.allDocs().then(function(list){
+				channels.data.allDocs({include_docs: true}).then(function(list){
 					angular.forEach(list.rows, function(channel) {
 						var promise = $q.defer();
 
 						promises.push(promise);
 
-						self.channelVideos(channel.id).then(function(){
+						self.channelVideos(channel.channelId).then(function(){
 							promise.resolve();
 						}, function(){
 							promise.resolve();
