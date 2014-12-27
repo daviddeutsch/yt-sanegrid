@@ -220,6 +220,8 @@
 				return deferred.promise;
 			},
 			update: function() {
+				var deferred = $q.defer();
+
 				channels.pageChannels()
 					.then(function(){
 						videos.loadVideos()
@@ -227,6 +229,8 @@
 								deferred.resolve(videos.countLastAdded);
 							});
 					});
+
+				return deferred.promise;
 			}
 		}
 	}
