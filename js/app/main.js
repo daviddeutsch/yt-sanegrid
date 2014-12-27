@@ -328,7 +328,7 @@
 		});
 	}
 
-	FooterCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data', 'videos'];
+	FooterCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'data', 'videos'];
 	angular.module('sanityApp').controller('FooterCtrl', FooterCtrl);
 
 
