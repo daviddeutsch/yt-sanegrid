@@ -114,17 +114,18 @@
 	{
 		return {
 			data: null,
+			list: [],
 			countLastAdded: 0,
 
 			init: function() {
 				this.data = pouchDB('ytSanityDB/v0/' + accounts.current + '/videos');
 			},
 
-			bind: function( scope ) {
+			load: function() {
 				var deferred = $q.defer();
 
 				this.data.allDocs({include_docs: true}).then(function(list){
-					scope.videos = list.rows;
+					self.list = list.rows;
 
 					deferred.resolve();
 				});

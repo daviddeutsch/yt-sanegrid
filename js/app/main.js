@@ -186,13 +186,14 @@
 				.then(function() {
 					sanityApp.ready();
 
-					videos.bind($scope)
+					videos.load($scope)
 						.then(function(){
+							$scope.videos = videos.list;
+
 							sanityApp.loading();
 
 							data.update()
 								.then(function(){
-									// TODO: Display count of new videos
 									sanityApp.ready();
 								});
 						});
@@ -208,7 +209,6 @@
 
 			data.update()
 				.then(function(){
-					// TODO: Display count of new videos
 					sanityApp.ready();
 				});
 		};
@@ -219,18 +219,6 @@
 			} else {
 				$('.sidebar' ).css({"height":"40px"});
 			}
-		};
-
-		$scope.refresh = function() {
-			sanityApp.loading();
-
-			sanityApp.update();
-
-			data.update()
-				.then(function(){
-					// TODO: Display count of new videos
-					sanityApp.ready();
-				});
 		};
 
 		$scope.hideChannel = function ( name ) {
@@ -297,10 +285,6 @@
 
 		$scope.percentage = getPercentage();*/
 
-		angular.element($document).bind("keyup", function(event) {
-			if (event.which === 82) $scope.refresh();
-		});
-
 		initAccount();
 
 		updateSidebar();
@@ -308,6 +292,44 @@
 
 	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data', 'videos'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
+
+
+	function FooterCtrl( $rootScope, $scope, $document, sanityApp, data, videos )
+	{
+		$scope.refresh = function() {
+			sanityApp.loading();
+
+			sanityApp.update();
+
+			data.update()
+				.then(function(){
+					sanityApp.ready();
+				});
+		};
+
+		$scope.hideChannel = function ( name ) {
+			var pos = $.inArray( name, $rootScope.channeloptions.hidden );
+
+			if ( pos != -1 ) {
+				$rootScope.channeloptions.hidden = $rootScope.channeloptions.hidden.splice(pos, 1);
+			} else {
+				$rootScope.channeloptions.hidden.push(name);
+			}
+		};
+
+		$scope.togglesidebar = function () {
+			$rootScope.settings.sidebar = !$rootScope.settings.sidebar;
+
+			updateSidebar();
+		};
+
+		angular.element($document).bind("keyup", function(event) {
+			if (event.which === 82) $scope.refresh();
+		});
+	}
+
+	FooterCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data', 'videos'];
+	angular.module('sanityApp').controller('FooterCtrl', FooterCtrl);
 
 
 	function SettingsModalCtrl( $rootScope, $scope )
