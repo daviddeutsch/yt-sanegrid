@@ -387,10 +387,9 @@
 						}, function(){
 							self.data.post(
 								{
-									_id: item.id,
+									_id: item.snippet.resourceId.channelId,
 									title: item.snippet.title,
-									description: item.snippet.description,
-									channelId: item.snippet.resourceId.channelId
+									description: item.snippet.description
 								}
 							).then(function(){
 								promise.resolve();

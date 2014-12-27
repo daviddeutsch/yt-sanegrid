@@ -714,10 +714,12 @@
 			templateUrl: 'templates/item.html',
 			controller: function( $scope, $rootScope ) {
 				$scope.mute = function () {
-					$scope.video.muted = !$scope.video.muted;
-					$scope.video.muteddate = new Date().toISOString();
+					$scope.video.doc.muted = !$scope.video.doc.muted;
+					$scope.video.doc.muteddate = new Date().toISOString();
 
 					videos.data.update($scope.video);
+
+					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
 				};
 
 				$scope.watch = function( $event ) {
@@ -727,21 +729,22 @@
 
 					$timeout(function(){$scope.watched(false);}, 400);
 				};
+
 				$scope.watched = function ( force ) {
-					if ( $scope.video.watched && !force ) {
+					if ( $scope.video.doc.watched && !force ) {
 						return;
 					}
 
-					$scope.video.watched = !$scope.video.watched;
-					$scope.video.watcheddate = new Date().toISOString();
+					$scope.video.doc.watched = !$scope.video.doc.watched;
+					$scope.video.doc.watcheddate = new Date().toISOString();
 
-					videos.data.update($scope.video);
+					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
 				};
 
 				if ( $rootScope.settings.adblockoverride ) {
-					$scope.link = $scope.video.link+"&adblock="+$rootScope.settings.adblocksecret;
+					$scope.link = $scope.video.doc.link+"&adblock="+$rootScope.settings.adblocksecret;
 				} else {
-					$scope.link = $scope.video.link;
+					$scope.link = $scope.video.doc.link;
 				}
 
 			}
