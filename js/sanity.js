@@ -305,7 +305,8 @@
 			},
 
 			load: function() {
-				var deferred = $q.defer();
+				var deferred = $q.defer(),
+					self = this;
 
 				this.data.allDocs({include_docs: true}).then(function(list){
 					self.list = list.rows;
