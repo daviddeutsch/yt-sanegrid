@@ -210,18 +210,18 @@
 					.then(function() {
 						$rootScope.userid = accounts.current;
 
+						channels.init();
+
+						videos.init();
+
 						deferred.resolve();
 					});
 
 				return deferred.promise;
 			},
 			update: function() {
-				channels.init();
-
 				channels.pageChannels()
 					.then(function(){
-						videos.init();
-
 						videos.loadVideos()
 							.then(function() {
 								deferred.resolve(videos.countLastAdded);
