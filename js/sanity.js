@@ -296,7 +296,7 @@
 			bind: function( scope ) {
 				var deferred = $q.defer();
 
-				self.data.allDocs().then(function(list){
+				this.data.allDocs().then(function(list){
 					scope.videos = list;
 
 					deferred.resolve();
