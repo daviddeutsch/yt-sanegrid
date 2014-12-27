@@ -210,20 +210,23 @@
 					.then(function() {
 						$rootScope.userid = accounts.current;
 
-						channels.init();
-
-						channels.pageChannels()
-							.then(function(){
-								videos.init();
-
-								videos.loadVideos()
-									.then(function() {
-										deferred.resolve(videos.countLastAdded);
-									});
-							});
+						deferred.resolve();
 					});
 
 				return deferred.promise;
+			},
+			update: function() {
+				channels.init();
+
+				channels.pageChannels()
+					.then(function(){
+						videos.init();
+
+						videos.loadVideos()
+							.then(function() {
+								deferred.resolve(videos.countLastAdded);
+							});
+					});
 			}
 		}
 	}
@@ -749,24 +752,32 @@
 
 	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, data, videos )
 	{
-		$rootScope.userid = '';
+		if ( typeof $rootScope.userid == 'undefined' ) {
+			$state.go('ready');
+		}
 
 		var initAccount = function () {
 			$rootScope.settings.sidebar = false;
 
 			sanityApp.loading();
 
-			// TODO: mainChannel();
+			data.init()
+				.then(function() {
+					sanityApp.ready();
 
-			data.init().then(function(){
-				videos.bind($scope)
-					.then(function(){
-						// TODO: Display count of new videos
-						sanityApp.ready();
-					});
-			}, function(){
-				$state.go('ready');
-			});
+					videos.bind($scope)
+						.then(function(){
+							sanityApp.loading();
+
+							data.update()
+								.then(function(){
+									// TODO: Display count of new videos
+									sanityApp.ready();
+								});
+						});
+				}, function(){
+					$state.go('ready');
+				});
 		};
 
 		var loadTop = function () {
@@ -774,7 +785,11 @@
 
 			$rootScope.filters.caught = 0;
 
-			// TODO: loadVideos();
+			data.update()
+				.then(function(){
+					// TODO: Display count of new videos
+					sanityApp.ready();
+				});
 		};
 
 		var updateSidebar = function () {
@@ -790,7 +805,11 @@
 
 			sanityApp.update();
 
-			// TODO: loadTop();
+			data.update()
+				.then(function(){
+					// TODO: Display count of new videos
+					sanityApp.ready();
+				});
 		};
 
 		$scope.hideChannel = function ( name ) {
