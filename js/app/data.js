@@ -72,7 +72,7 @@
 							.then(function(res){
 								self.doc = res;
 
-								self.current = res.id;
+								self.current = res._id;
 
 								deferred.resolve();
 							}, function(){
