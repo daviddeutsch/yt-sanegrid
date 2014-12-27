@@ -466,8 +466,6 @@
 				}
 
 				this.data.post(details).then(function(){
-					accounts.pushVideoId(details.id);
-
 					deferred.resolve();
 				});
 
