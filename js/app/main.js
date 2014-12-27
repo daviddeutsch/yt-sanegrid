@@ -190,7 +190,7 @@
 						.then(function(){
 							$scope.videos = videos.list;
 
-							$rootScope.$on('videos:update', function(event, data) {
+							$rootScope.$on('videos:updated', function(event, data) {
 								$scope.videos = videos.list;
 							});
 
