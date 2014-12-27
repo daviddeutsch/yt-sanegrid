@@ -465,7 +465,7 @@
 					});
 				}
 
-				this.data.create(details).then(function(){
+				this.data.post(details).then(function(){
 					accounts.pushVideoId(details.id);
 
 					deferred.resolve();
