@@ -68,8 +68,8 @@
 
 				ytData.channels()
 					.then(function(data) {
-						self.findAccount(data.items[0].id)
-							.then(function(doc){
+						self.data.get(data.items[0].id)
+							.then(function(res){
 								self.doc = doc;
 
 								self.current = doc.id;
@@ -79,7 +79,7 @@
 								self.data.post({
 									_id: data.items[0].id,
 									title: data.items[0].snippet.title
-								} ).then(function(doc){
+								}).then(function(doc){
 									self.data.get(doc.id)
 										.then(function(res){
 											self.doc = res;
@@ -92,28 +92,6 @@
 							});
 					}, function() {
 						deferred.reject();
-					});
-
-				return deferred.promise;
-			},
-			findAccount: function( id ) {
-				var deferred = $q.defer();
-
-				function map(doc) {
-					if ( doc._id == id ) {
-						emit(doc._id, doc);
-					}
-				}
-
-				this.data.query({map: map}, {reduce: false})
-					.then(function(res) {
-						if ( res.total_rows > 0 ) {
-							deferred.resolve(res.rows[0]);
-						} else {
-							deferred.reject();
-						}
-					}).catch(function(response) {
-						alert(response);
 					});
 
 				return deferred.promise;
@@ -253,7 +231,7 @@
 
 							promises.push(promise);
 
-							self.videoExists(video.id)
+							self.data.get(video.id)
 								.then(function(){
 									promise.resolve();
 								}, function(){
@@ -270,29 +248,6 @@
 						});
 					}, function() {
 						deferred.resolve(0);
-					});
-
-				return deferred.promise;
-			},
-
-			videoExists: function( id ) {
-				var deferred = $q.defer();
-
-				function map(doc) {
-					if ( doc._id == id ) {
-						emit(doc._id, doc);
-					}
-				}
-
-				this.data.query({map: map}, {reduce: false})
-					.then(function(res) {
-						if ( res.total_rows > 0 ) {
-							deferred.resolve();
-						} else {
-							deferred.reject();
-						}
-					}, function(err){
-						alert(err);
 					});
 
 				return deferred.promise;
@@ -414,7 +369,7 @@
 
 					promises.push(promise);
 
-					self.channelExists(item.id)
+					self.data.get(item.id)
 						.then(function(){
 							promise.resolve();
 						}, function(){
@@ -432,29 +387,6 @@
 				});
 
 				return $q.all(promises);
-			},
-
-			channelExists: function( id ) {
-				var deferred = $q.defer();
-
-				function map(doc) {
-					if ( doc._id == id ) {
-						emit(doc._id, doc);
-					}
-				}
-
-				this.data.query({map: map}, {reduce: false})
-					.then(function(res) {
-						if ( res.total_rows > 0 ) {
-							deferred.resolve();
-						} else {
-							deferred.reject();
-						}
-					}, function(err){
-						alert(err);
-					});
-
-				return deferred.promise;
 			}
 		}
 	}
