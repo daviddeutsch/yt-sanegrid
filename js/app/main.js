@@ -265,24 +265,20 @@
 		$timeout(function(){
 			sanityApp.loading();
 
-			if ( $rootScope.userid ) {
-				initAccount()
-					.then(function(){
-						$scope.$watch('videos', getPercentage, true);
+			initAccount()
+				.then(function(){
+					$scope.$watch('videos', getPercentage, true);
 
-						$scope.$watch('settings', getPercentage, true);
+					$scope.$watch('settings', getPercentage, true);
 
-						$scope.percentage = getPercentage();
+					$scope.percentage = getPercentage();
 
-						sanityApp.ready();
+					sanityApp.ready();
 
-						updateSidebar();
-					}, function(){
-						$state.go('ready');
-					});
-			} else {
-				$state.go('ready');
-			}
+					updateSidebar();
+				}, function(){
+					$state.go('ready');
+				});
 		}, 50);
 	}
 
