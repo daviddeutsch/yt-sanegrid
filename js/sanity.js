@@ -855,20 +855,24 @@
 		$timeout(function(){
 			sanityApp.loading();
 
-			initAccount()
-				.then(function(){
-					$scope.$watch('videos', getPercentage, true);
+			if ( $rootScope.userid ) {
+				initAccount()
+					.then(function(){
+						$scope.$watch('videos', getPercentage, true);
 
-					$scope.$watch('settings', getPercentage, true);
+						$scope.$watch('settings', getPercentage, true);
 
-					$scope.percentage = getPercentage();
+						$scope.percentage = getPercentage();
 
-					sanityApp.ready();
+						sanityApp.ready();
 
-					updateSidebar();
-				}, function(){
-					$state.go('ready');
-				});
+						updateSidebar();
+					}, function(){
+						$state.go('ready');
+					});
+			} else {
+				$state.go('ready');
+			}
 		}, 50);
 	}
 
@@ -876,7 +880,7 @@
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
-	function FooterCtrl( $rootScope, $scope, $document, sanityApp, data, videos )
+	function FooterCtrl( $rootScope, $scope, $document, $state, sanityApp, data, videos )
 	{
 		$scope.backToStart = function ( q ) {
 			$state.go('ready');
@@ -914,7 +918,7 @@
 		});
 	}
 
-	FooterCtrl.$inject = ['$rootScope', '$scope', '$document', 'sanityApp', 'data', 'videos'];
+	FooterCtrl.$inject = ['$rootScope', '$scope', '$document', '$state', 'sanityApp', 'data', 'videos'];
 	angular.module('sanityApp').controller('FooterCtrl', FooterCtrl);
 
 
