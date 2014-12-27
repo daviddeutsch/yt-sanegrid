@@ -140,7 +140,7 @@
 
 						promises.push(promise);
 
-						self.channelVideos(channel._id).then(function(){
+						self.channelVideos(channel.id).then(function(){
 							promise.resolve();
 						}, function(){
 							promise.resolve();
