@@ -250,9 +250,9 @@
 					.then(function(data) {
 						self.data.get(data.items[0].id)
 							.then(function(res){
-								self.doc = doc;
+								self.doc = res;
 
-								self.current = doc.id;
+								self.current = res.id;
 
 								deferred.resolve();
 							}, function(){
