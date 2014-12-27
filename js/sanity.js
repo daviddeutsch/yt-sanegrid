@@ -729,14 +729,6 @@
 
 		$scope.startline = $scope.startlinelist[rand];
 
-		$scope.selectUserid = function ( q ) {
-			if ( q === false ) {
-				$state.go('ready');
-			} else {
-				$state.go('list');
-			}
-		};
-
 		$scope.connect = function()
 		{
 			googleApi.authorize()
@@ -761,12 +753,8 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $state, $document, sanityApp, data, videos )
+	function AppRepeatCtrl( $rootScope, $scope, $state, $document, $timeout, sanityApp, data, videos )
 	{
-		if ( typeof $rootScope.userid == 'undefined' ) {
-			$state.go('ready');
-		}
-
 		var initAccount = function () {
 			$rootScope.settings.sidebar = false;
 
@@ -850,7 +838,7 @@
 		$scope.percentage = 0;
 		$scope.abslength = 100;
 
-		/*var getPercentage = function () {
+		var getPercentage = function () {
 			if ( $rootScope.settings.videolimit < $scope.videos.length ) {
 				$scope.percentage = parseInt(100 * $rootScope.settings.videolimit / $scope.videos.length);
 
@@ -866,19 +854,29 @@
 
 		$scope.$watch('settings', getPercentage, true);
 
-		$scope.percentage = getPercentage();*/
+		$scope.percentage = getPercentage();
 
-		initAccount();
+		$timeout(function(){
+			if ( typeof $rootScope.userid == 'undefined' ) {
+				$state.go('ready');
+			} else {
+				initAccount();
 
-		updateSidebar();
+				updateSidebar();
+			}
+		}, 50);
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', 'sanityApp', 'data', 'videos'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', '$timeout', 'sanityApp', 'data', 'videos'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
 	function FooterCtrl( $rootScope, $scope, $document, sanityApp, data, videos )
 	{
+		$scope.backToStart = function ( q ) {
+			$state.go('ready');
+		};
+
 		$scope.refresh = function() {
 			sanityApp.loading();
 
