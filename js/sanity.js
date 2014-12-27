@@ -753,12 +753,12 @@
 	angular.module('sanityApp').controller('StartCtrl', StartCtrl);
 
 
-	function AppRepeatCtrl( $rootScope, $scope, $state, $document, $timeout, sanityApp, data, videos )
+	function AppRepeatCtrl( $rootScope, $scope, $state, $document, $timeout, $q, sanityApp, data, videos )
 	{
 		var initAccount = function () {
-			$rootScope.settings.sidebar = false;
+			var deferred = $q.defer();
 
-			sanityApp.loading();
+			$rootScope.settings.sidebar = false;
 
 			data.init()
 				.then(function() {
@@ -776,12 +776,14 @@
 
 							data.update()
 								.then(function(){
-									sanityApp.ready();
+									deferred.resolve();
 								});
 						});
 				}, function(){
-					$state.go('ready');
+					deferred.reject();
 				});
+
+			return deferred.promise;
 		};
 
 		var updateSidebar = function () {
@@ -850,24 +852,27 @@
 			}
 		};
 
-		$scope.$watch('videos', getPercentage, true);
-
-		$scope.$watch('settings', getPercentage, true);
-
-		$scope.percentage = getPercentage();
-
 		$timeout(function(){
-			if ( typeof $rootScope.userid == 'undefined' ) {
-				$state.go('ready');
-			} else {
-				initAccount();
+			sanityApp.loading();
 
-				updateSidebar();
-			}
+			initAccount()
+				.then(function(){
+					$scope.$watch('videos', getPercentage, true);
+
+					$scope.$watch('settings', getPercentage, true);
+
+					$scope.percentage = getPercentage();
+
+					sanityApp.ready();
+
+					updateSidebar();
+				}, function(){
+					$state.go('ready');
+				});
 		}, 50);
 	}
 
-	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', '$timeout', 'sanityApp', 'data', 'videos'];
+	AppRepeatCtrl.$inject = ['$rootScope', '$scope', '$state', '$document', '$timeout' ,'$q', 'sanityApp', 'data', 'videos'];
 	angular.module('sanityApp').controller('AppRepeatCtrl', AppRepeatCtrl);
 
 
