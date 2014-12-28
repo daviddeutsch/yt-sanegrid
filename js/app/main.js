@@ -748,7 +748,7 @@
 				}
 
 			}
-		}
+		};
 	}
 
 	videoItemDirective.$inject = ['$timeout', 'videos'];

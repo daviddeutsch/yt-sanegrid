@@ -13,7 +13,7 @@
 				// - Duration
 				// Sort into right container
 			}
-		}
+		};
 	}
 
 	YTConnectionService.$inject = ['$rootScope', '$q', 'ytData', 'accounts', 'videos', 'channels', 'archive', 'trash'];
@@ -55,7 +55,7 @@
 
 				return deferred.promise;
 			}
-		}
+		};
 	}
 
 	MultiAccountDataService.$inject = ['$rootScope', '$q', 'accounts', 'videos', 'channels'];
@@ -106,7 +106,7 @@
 
 				return deferred.promise;
 			}
-		}
+		};
 	}
 
 	AccountService.$inject = ['$q', 'ytData', 'pouchDB'];
@@ -305,7 +305,7 @@
 
 				return deferred.promise;
 			}
-		}
+		};
 	}
 
 	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'pouchDB', 'accounts', 'channels'];
@@ -399,7 +399,7 @@
 
 				return $q.all(promises);
 			}
-		}
+		};
 	}
 
 	ChannelService.$inject = ['$q', 'ytData', 'pouchDB', 'accounts'];
