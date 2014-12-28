@@ -248,7 +248,7 @@
 		};
 
 		$scope.percentage = 0;
-		$scope.abslength = 100;
+		$scope.abslength = 0;
 
 		var getPercentage = function () {
 			if ( $rootScope.settings.videolimit < $scope.videos.length ) {
