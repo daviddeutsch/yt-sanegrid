@@ -102,7 +102,6 @@
 				var deferred = $q.defer(),
 					design = {
 					_id: "_design/ytsanegrid",
-					_rev: "1",
 					views: {
 						'videos': {
 							map: function(doc) {
