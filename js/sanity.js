@@ -354,6 +354,7 @@
 							.then(function(){
 								deferred.resolve();
 							});*/
+						deferred.resolve();
 					}, function(){
 						self.data.put(design)
 							.then(function(){
