@@ -175,7 +175,7 @@
 				var deferred = $q.defer(),
 					self = this;
 
-				accounts.data.query('videos', {include_docs : true})
+				accounts.data.query('ytsanegrid/videos', {include_docs : true})
 					.then(function(list){
 						self.list = list.rows;
 
@@ -196,7 +196,7 @@
 
 				this.countLastAdded = 0;
 
-				accounts.data.query('channels', {include_docs: true})
+				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
 					angular.forEach(list.rows, function(channel) {
 						var promise = $q.defer();
