@@ -349,7 +349,7 @@
 
 				self.current = id;
 
-				self.data = pouchDB('ytSanityDB/v1/' + res._id);
+				self.data = pouchDB('ytSanityDB/v1/' + id);
 
 				self.data.get(design._id)
 					.then(function(res){
