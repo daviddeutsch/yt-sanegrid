@@ -117,6 +117,8 @@
 				response.items[key]._id = response.items[key].id;
 
 				delete response.items[key].id;
+
+				deferred.resolve();
 			});
 
 			$q.all(promises).then(function(){
