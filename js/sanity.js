@@ -464,25 +464,29 @@
 			},
 
 			extractVideoIds: function ( array ) {
-				var deferred = $q.defer();
+				var deferred = $q.defer(),
+					promises = [],
+					list = [];
 
-				var list = [];
+				angular.forEach(array, function(item){
+					var deferred = $q.defer();
 
-				var len = array.length - 1;
+					promises.push(deferred.promise);
 
-				for ( var i = 0; i < array.length; i++ ) {
-					if ( typeof array[i].contentDetails == 'undefined' ) continue;
-
-					if ( typeof array[i].contentDetails.upload != 'undefined' ) {
+					if ( typeof array[i].contentDetails == 'undefined' ) {
+						deferred.resolve();
+					} else if ( typeof array[i].contentDetails.upload != 'undefined' ) {
 						list.push(array[i].contentDetails.upload.videoId);
 
-						if ( i === len ) {
-							deferred.resolve(list);
-						}
-					} else if ( i === len ) {
-						deferred.resolve(list);
+						deferred.resolve();
+					} else {
+						deferred.resolve();
 					}
-				}
+				});
+
+				$q.all(promises).then(function(){
+					deferred.resolve(list);
+				});
 
 				return deferred.promise;
 			},
