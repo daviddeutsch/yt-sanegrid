@@ -2,15 +2,15 @@
 	 ng-if="video.id"
 	 ng-class="{'muted':video.doc.muted,'watched':video.doc.watched}">
 	<div class="img-container">
-		<img src="{{video.doc.thumbnail.medium}}"/>
+		<img src="{{video.thumbnail.medium}}"/>
 
-		<div class="duration">{{ video.doc.duration | duration }}</div>
+		<div class="duration">{{ video.duration | duration }}</div>
 	</div>
 
 	<a href="{{ link }}"
 	   ng-mouseup="watch($event)"
 	   target="video-{{ video.id }}"
-	   title="{{video.doc.title}}">
+	   title="{{video.title}}">
 		<div class="img-container-overlay"></div>
 	</a>
 
@@ -38,16 +38,16 @@
 			<a href="{{ link }}"
 			   ng-mouseup="watch($event)"
 			   target="video-{{ video.id }}"
-			   title="{{video.doc.title}}">{{video.doc.title}}</a>
+			   title="{{video.title}}">{{video.title}}</a>
 		</div>
 		<p class="author text-muted">
-			by <a ng-href="{{video.doc.authorlink}}">{{video.doc.author}}</a>
+			by <a ng-href="{{video.authorlink}}">{{video.author}}</a>
 		</p>
 
 		<p class="time">
-			<abbr class="timeago" title="{{video.doc.published}}"></abbr>
-			<abbr title='{{video.doc.published | timestamp | date:medium}}'>
-				<time-ago from-time='{{video.doc.published | timestamp}}'></time-ago>
+			<abbr class="timeago" title="{{video.published}}"></abbr>
+			<abbr title='{{video.published | timestamp | date:medium}}'>
+				<time-ago from-time='{{video.published | timestamp}}'></time-ago>
 			</abbr>
 		</p>
 	</div>

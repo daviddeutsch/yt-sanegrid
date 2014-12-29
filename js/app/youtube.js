@@ -12,18 +12,19 @@
 	{
 		var self = this;
 
-		this.get = function ( type, options ) {
+		this.get = function( type, options ) {
 			var deferred = $q.defer();
 
 			googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
 			if ( typeof googleApi.gapi.client.youtube !== 'undefined' ) {
-				var request = googleApi.gapi.client.youtube[type].list(options);
-
 				googleApi.gapi.client.youtube[type]
 					.list(options)
 					.execute(function(response) {
-						deferred.resolve(response);
+						self.convertItems(response)
+							.then(function(list){
+								deferred.resolve(list);
+							});
 					});
 			} else {
 				deferred.reject();
@@ -32,7 +33,28 @@
 			return deferred.promise;
 		};
 
-		this.subscriptions = function ( page ) {
+		this.convertItems = function( response ) {
+			var deferred = $q.defer(),
+				promises = [];
+
+			angular.forEach(response.items, function(item, key){
+				var deferred = $q.defer();
+
+				promises.push(deferred.promise);
+
+				response.items[key]._id = response.items[key].id;
+
+				delete response.items[key].id;
+			});
+
+			$q.all(promises).then(function(){
+				deferred.resolve(response);
+			});
+
+			return deferred.promise;
+		};
+
+		this.subscriptions = function( page ) {
 			var options = {
 				part: 'snippet',
 				mine: true,
@@ -48,7 +70,7 @@
 			return self.get('subscriptions', options);
 		};
 
-		this.channels = function ( page ) {
+		this.channels = function( page ) {
 			var options = {
 				part: 'snippet',
 				mine: true,
@@ -64,7 +86,7 @@
 			return self.get('channels', options);
 		};
 
-		this.channelvideos = function ( channel ) {
+		this.channelvideos = function( channel ) {
 			return self.get(
 				'activities',
 				{
@@ -75,7 +97,7 @@
 			);
 		};
 
-		this.videos = function ( ids )
+		this.videos = function( ids )
 		{
 			var deferred = $q.defer();
 
@@ -90,7 +112,10 @@
 					if ( typeof list.items == 'undefined') {
 						deferred.reject();
 					} else {
-						deferred.resolve(list.items);
+						self.convertItems(list)
+							.then(function(list){
+								deferred.resolve(list.items);
+							});
 					}
 				}, function(){
 					deferred.reject();

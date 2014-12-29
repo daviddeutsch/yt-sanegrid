@@ -84,18 +84,19 @@
 	{
 		var self = this;
 
-		this.get = function ( type, options ) {
+		this.get = function( type, options ) {
 			var deferred = $q.defer();
 
 			googleApi.gapi.client.setApiKey(googleApi.apiKey);
 
 			if ( typeof googleApi.gapi.client.youtube !== 'undefined' ) {
-				var request = googleApi.gapi.client.youtube[type].list(options);
-
 				googleApi.gapi.client.youtube[type]
 					.list(options)
 					.execute(function(response) {
-						deferred.resolve(response);
+						self.convertItems(response)
+							.then(function(list){
+								deferred.resolve(list);
+							});
 					});
 			} else {
 				deferred.reject();
@@ -104,7 +105,28 @@
 			return deferred.promise;
 		};
 
-		this.subscriptions = function ( page ) {
+		this.convertItems = function( response ) {
+			var deferred = $q.defer(),
+				promises = [];
+
+			angular.forEach(response.items, function(item, key){
+				var deferred = $q.defer();
+
+				promises.push(deferred.promise);
+
+				response.items[key]._id = response.items[key].id;
+
+				delete response.items[key].id;
+			});
+
+			$q.all(promises).then(function(){
+				deferred.resolve(response);
+			});
+
+			return deferred.promise;
+		};
+
+		this.subscriptions = function( page ) {
 			var options = {
 				part: 'snippet',
 				mine: true,
@@ -120,7 +142,7 @@
 			return self.get('subscriptions', options);
 		};
 
-		this.channels = function ( page ) {
+		this.channels = function( page ) {
 			var options = {
 				part: 'snippet',
 				mine: true,
@@ -136,7 +158,7 @@
 			return self.get('channels', options);
 		};
 
-		this.channelvideos = function ( channel ) {
+		this.channelvideos = function( channel ) {
 			return self.get(
 				'activities',
 				{
@@ -147,7 +169,7 @@
 			);
 		};
 
-		this.videos = function ( ids )
+		this.videos = function( ids )
 		{
 			var deferred = $q.defer();
 
@@ -162,7 +184,10 @@
 					if ( typeof list.items == 'undefined') {
 						deferred.reject();
 					} else {
-						deferred.resolve(list.items);
+						self.convertItems(list)
+							.then(function(list){
+								deferred.resolve(list.items);
+							});
 					}
 				}, function(){
 					deferred.reject();
@@ -210,10 +235,6 @@
 					.then(function() {
 						$rootScope.userid = accounts.current;
 
-						channels.init();
-
-						videos.init();
-
 						deferred.resolve();
 					});
 
@@ -245,9 +266,9 @@
 	function AccountService( $q, ytData, pouchDB )
 	{
 		return {
-			data: pouchDB('ytSanityDB/v0/accounts'),
+			master: pouchDB('ytSanityDB/v1'),
+			data: null,
 			current: '',
-			doc: null,
 			init: function(page) {
 				var deferred = $q.defer(),
 					self = this;
@@ -260,28 +281,93 @@
 					.then(function(data) {
 						self.data.get(data.items[0].id)
 							.then(function(res){
-								self.doc = res;
 
-								self.current = res._id;
-
-								deferred.resolve();
+								self.createDB(res._id)
+									.then(function(){
+										deferred.resolve();
+									});
 							}, function(){
-								self.data.post({
-									_id: data.items[0].id,
-									title: data.items[0].snippet.title
-								}).then(function(doc){
-									self.data.get(doc.id)
-										.then(function(res){
-											self.doc = res;
-										});
+								self.data.put(data.items[0], data.items[0].id)
+									.then(function(doc){
+										self.data.get(doc.id)
+											.then(function(res){
+												self.doc = res;
+											});
 
-									self.current = data.items[0].id;
+										self.current = data.items[0].id;
 
-									deferred.resolve();
-								});
+										deferred.resolve();
+									});
 							});
 					}, function() {
 						deferred.reject();
+					});
+
+				return deferred.promise;
+			},
+			createDB: function(id) {
+				var deferred = $q.defer(),
+					design = {
+					_id: "_design/ytsanegrid",
+					_rev: "1",
+					views: {
+						videos: {
+							map: function(doc) {
+								if (doc.kind === 'youtube#video') {
+									emit(
+										doc._id,
+										{
+											_id:         doc._id + '__meta',
+											link:        'https://www.youtube.com/watch?v=' + doc._id,
+											title:       doc.snippet.title,
+											thumbnail:   {
+												default: doc.snippet.thumbnails.default.url,
+												medium:  doc.snippet.thumbnails.medium.url,
+												high:    doc.snippet.thumbnails.high.url
+											},
+											channelId:   doc.snippet.channelId,
+											author:      doc.snippet.channelTitle,
+											authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
+											published:   doc.snippet.publishedAt,
+											duration:    doc.contentDetails.duration
+										}
+									);
+								}
+							},
+							reduce: false
+						},
+						channels: {
+							map: function(doc) {
+								if (doc.kind === 'youtube#subscription') {
+									emit(doc._id, doc);
+								}
+							},
+							reduce: false
+						}
+					}
+				};
+
+				self.current = id;
+
+				self.data = pouchDB('ytSanityDB/v1/' + res._id);
+
+				self.data.get(design._id)
+					.then(function(res){
+						if ( res._rev == design._rev ) {
+							// Already up to date
+							deferred.resolve();
+						} else {
+							// Needs to be updated
+							self.data.put(design, res._rev, design._id)
+								.then(function(){
+									deferred.resolve();
+								});
+						}
+					}, function(){
+						self.data.put(design)
+							.then(function(){
+								deferred.resolve();
+							});
 					});
 
 				return deferred.promise;
@@ -296,24 +382,20 @@
 	function VideoService( $q, $rootScope, ytData, pouchDB, accounts, channels )
 	{
 		return {
-			data: null,
 			list: [],
 			countLastAdded: 0,
-
-			init: function() {
-				this.data = pouchDB('ytSanityDB/v0/' + accounts.current + '/videos');
-			},
 
 			load: function() {
 				var deferred = $q.defer(),
 					self = this;
 
-				this.data.allDocs({include_docs: true}).then(function(list){
-					self.list = list.rows;
+				accounts.data.query('ytsanegrid/videos', {include_docs : true})
+					.then(function(list){
+						self.list = list.rows;
 
-					$rootScope.$broadcast('videos:updated');
+						$rootScope.$broadcast('videos:updated');
 
-					deferred.resolve();
+						deferred.resolve();
 				});
 
 				return deferred.promise;
@@ -328,7 +410,8 @@
 
 				this.countLastAdded = 0;
 
-				channels.data.allDocs({include_docs: true}).then(function(list){
+				accounts.data.query('ytsanegrid/channels', {include_docs: true})
+					.then(function(list){
 					angular.forEach(list.rows, function(channel) {
 						var promise = $q.defer();
 
@@ -425,15 +508,18 @@
 
 							promises.push(promise);
 
-							self.data.get(video.id)
+							accounts.data.get(video._id)
 								.then(function(){
 									promise.resolve();
 								}, function(){
-									self.pushVideo(video).then(function(){
-										self.countLastAdded++;
+									accounts.data.put(video)
+										.then(function(){
+											self.countLastAdded++;
 
-										promise.resolve();
-									});
+											promise.resolve();
+
+											// TODO: Filtering -> metaData
+										});
 								});
 						});
 
@@ -445,9 +531,9 @@
 					});
 
 				return deferred.promise;
-			},
+			}
 
-			pushVideo: function ( video ) {
+			/*pushVideo: function ( video ) {
 				var deferred = $q.defer();
 
 				var details = {
@@ -479,12 +565,12 @@
 					});
 				}
 
-				this.data.post(details).then(function(){
+				this.data.put(details).then(function(){
 					deferred.resolve();
 				});
 
 				return deferred.promise;
-			}
+			}*/
 		};
 	}
 
@@ -495,12 +581,6 @@
 	function ChannelService( $q, ytData, pouchDB, accounts )
 	{
 		return {
-			data: null,
-
-			init: function() {
-				this.data = pouchDB('ytSanityDB/v0/' + accounts.current + '/channels');
-			},
-
 			pageChannels: function( page )
 			{
 				var deferred = $q.defer();
@@ -531,12 +611,7 @@
 				if ( typeof data.items != 'undefined' ) {
 					self.appendChannels(data.items)
 						.then(function() {
-							if (
-								// If we have not added all channels to the db
-								/*(self.data.length() < data.pageInfo.totalResults)
-								// and we're not at the last page of results yet
-								&&*/ (data.nextPageToken != page)
-								) {
+							if (data.nextPageToken != page) {
 								self.pageChannels(data.nextPageToken)
 									.then(function() {
 										deferred.resolve();
@@ -553,25 +628,18 @@
 			},
 
 			appendChannels: function ( items ) {
-				var promises = [],
-					self = this;
+				var promises = [];
 
 				angular.forEach(items, function(item) {
 					var promise = $q.defer();
 
 					promises.push(promise);
 
-					self.data.get(item.id)
+					accounts.data.get(item._id)
 						.then(function(){
 							promise.resolve();
 						}, function(){
-							self.data.post(
-								{
-									_id: item.snippet.resourceId.channelId,
-									title: item.snippet.title,
-									description: item.snippet.description
-								}
-							).then(function(){
+							accounts.data.put(item).then(function(){
 								promise.resolve();
 							});
 						});
