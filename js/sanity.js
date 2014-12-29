@@ -350,10 +350,10 @@
 
 				self.data.get(design._id)
 					.then(function(res){
-						self.data.put(design, design._id, res._rev)
+						/*self.data.put(design, design._id, res._rev)
 							.then(function(){
 								deferred.resolve();
-							});
+							});*/
 					}, function(){
 						self.data.put(design)
 							.then(function(){
