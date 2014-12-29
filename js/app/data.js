@@ -74,7 +74,7 @@
 
 				ytData.channels()
 					.then(function(data) {
-						self.master.get(data.items[0].id)
+						self.master.get(data.items[0]._id)
 							.then(function(res){
 
 								self.createDB(res._id)
@@ -84,12 +84,7 @@
 							}, function(){
 								self.master.put(data.items[0])
 									.then(function(doc){
-										self.master.get(doc.id)
-											.then(function(res){
-												self.doc = res;
-											});
-
-										self.current = data.items[0].id;
+										self.current = data.items[0]._id;
 
 										self.createDB(res._id)
 											.then(function(){
