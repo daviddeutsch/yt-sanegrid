@@ -333,16 +333,14 @@
 										}
 									);
 								}
-							}.toString(),
-							reduce: false
+							}.toString()
 						},
 						'channels': {
 							map: function(doc) {
 								if (doc.kind === 'youtube#subscription') {
 									emit(doc._id, doc);
 								}
-							}.toString(),
-							reduce: false
+							}.toString()
 						}
 					}
 				};
