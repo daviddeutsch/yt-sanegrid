@@ -405,18 +405,18 @@
 
 				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
-					angular.forEach(list.rows, function(channel) {
-						var promise = $q.defer();
+						angular.forEach(list.rows, function(channel) {
+							var promise = $q.defer();
 
-						promises.push(promise);
+							promises.push(promise);
 
-						self.channelVideos(channel.doc.channelId).then(function(){
-							promise.resolve();
-						}, function(){
-							promise.resolve();
+							self.channelVideos(channel.doc.snippet.channelId).then(function(){
+								promise.resolve();
+							}, function(){
+								promise.resolve();
+							});
 						});
 					});
-				});
 
 				$q.all(promises).then(function(){
 					deferred.resolve();
