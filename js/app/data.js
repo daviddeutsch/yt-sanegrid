@@ -104,7 +104,7 @@
 					_id: "_design/ytsanegrid",
 					_rev: "1",
 					views: {
-						videos: {
+						'videos': {
 							map: function(doc) {
 								if (doc.kind === 'youtube#video') {
 									emit(
@@ -126,15 +126,15 @@
 										}
 									);
 								}
-							},
+							}.toString(),
 							reduce: false
 						},
-						channels: {
+						'channels': {
 							map: function(doc) {
 								if (doc.kind === 'youtube#subscription') {
 									emit(doc._id, doc);
 								}
-							},
+							}.toString(),
 							reduce: false
 						}
 					}
