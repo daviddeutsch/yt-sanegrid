@@ -82,7 +82,7 @@
 										deferred.resolve();
 									});
 							}, function(){
-								self.master.put(data.items[0], data.items[0].id)
+								self.master.put(data.items[0])
 									.then(function(doc){
 										self.master.get(doc.id)
 											.then(function(res){
