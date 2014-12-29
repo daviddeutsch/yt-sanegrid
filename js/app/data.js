@@ -101,41 +101,42 @@
 			createDB: function(id) {
 				var deferred = $q.defer(),
 					design = {
-					_id: "_design/ytsanegrid",
-					views: {
-						'videos': {
-							map: function(doc) {
-								if (doc.kind === 'youtube#video') {
-									emit(
-										doc._id,
-										{
-											_id:         doc._id + '__meta',
-											link:        'https://www.youtube.com/watch?v=' + doc._id,
-											title:       doc.snippet.title,
-											thumbnail:   {
-												default: doc.snippet.thumbnails.default.url,
-												medium:  doc.snippet.thumbnails.medium.url,
-												high:    doc.snippet.thumbnails.high.url
-											},
-											channelId:   doc.snippet.channelId,
-											author:      doc.snippet.channelTitle,
-											authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
-											published:   doc.snippet.publishedAt,
-											duration:    doc.contentDetails.duration
-										}
-									);
-								}
-							}.toString()
-						},
-						'channels': {
-							map: function(doc) {
-								if (doc.kind === 'youtube#subscription') {
-									emit(doc._id, doc);
-								}
-							}.toString()
+						_id: "_design/ytsanegrid",
+						views: {
+							'videos': {
+								map: function(doc) {
+									if (doc.kind === 'youtube#video') {
+										emit(
+											doc._id,
+											{
+												_id:         doc._id + '__meta',
+												link:        'https://www.youtube.com/watch?v=' + doc._id,
+												title:       doc.snippet.title,
+												thumbnail:   {
+													default: doc.snippet.thumbnails.default.url,
+													medium:  doc.snippet.thumbnails.medium.url,
+													high:    doc.snippet.thumbnails.high.url
+												},
+												channelId:   doc.snippet.channelId,
+												author:      doc.snippet.channelTitle,
+												authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
+												published:   doc.snippet.publishedAt,
+												duration:    doc.contentDetails.duration
+											}
+										);
+									}
+								}.toString()
+							},
+							'channels': {
+								map: function(doc) {
+									if (doc.kind === 'youtube#subscription') {
+										emit(doc._id, doc);
+									}
+								}.toString()
+							}
 						}
-					}
-				};
+					},
+					self = this;
 
 				self.current = id;
 
