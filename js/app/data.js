@@ -143,16 +143,10 @@
 
 				self.data.get(design._id)
 					.then(function(res){
-						if ( res._rev == design._rev ) {
-							// Already up to date
-							deferred.resolve();
-						} else {
-							// Needs to be updated
-							self.data.put(design, res._rev, design._id)
-								.then(function(){
-									deferred.resolve();
-								});
-						}
+						self.data.put(design, design._id, res._rev)
+							.then(function(){
+								deferred.resolve();
+							});
 					}, function(){
 						self.data.put(design)
 							.then(function(){
@@ -179,7 +173,7 @@
 				var deferred = $q.defer(),
 					self = this;
 
-				accounts.data.query('ytsanegrid/videos', {include_docs : true})
+				accounts.data.query('videos', {include_docs : true})
 					.then(function(list){
 						self.list = list.rows;
 
@@ -200,7 +194,7 @@
 
 				this.countLastAdded = 0;
 
-				accounts.data.query('ytsanegrid/channels', {include_docs: true})
+				accounts.data.query('channels', {include_docs: true})
 					.then(function(list){
 					angular.forEach(list.rows, function(channel) {
 						var promise = $q.defer();
