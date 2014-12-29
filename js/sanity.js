@@ -473,10 +473,10 @@
 
 					promises.push(deferred.promise);
 
-					if ( typeof array[i].contentDetails == 'undefined' ) {
+					if ( typeof item.contentDetails == 'undefined' ) {
 						deferred.resolve();
-					} else if ( typeof array[i].contentDetails.upload != 'undefined' ) {
-						list.push(array[i].contentDetails.upload.videoId);
+					} else if ( typeof item.contentDetails.upload != 'undefined' ) {
+						list.push(item.contentDetails.upload.videoId);
 
 						deferred.resolve();
 					} else {
