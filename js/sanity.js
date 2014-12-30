@@ -478,6 +478,7 @@
 					if ( typeof item.contentDetails == 'undefined' ) {
 						deferred.resolve();
 					} else if ( typeof item.contentDetails.upload != 'undefined' ) {
+						// TODO: Add check whether we already have this video
 						list.push(item.contentDetails.upload.videoId);
 
 						deferred.resolve();
@@ -497,6 +498,8 @@
 				var deferred = $q.defer();
 
 				var self = this;
+
+				// TODO: Use bulkDocs instead of individual .put actions
 
 				ytData.videos( list )
 					.then(function(items) {
