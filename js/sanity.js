@@ -410,7 +410,7 @@
 
 							promises.push(promise);
 
-							self.channelVideos(channel.doc.snippet.channelId).then(function(){
+							self.channelVideos(channel.doc.snippet.resourceId.channelId).then(function(){
 								promise.resolve();
 							}, function(){
 								promise.resolve();
