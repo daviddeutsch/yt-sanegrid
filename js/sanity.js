@@ -453,11 +453,11 @@
 						.then(function(ids){
 							if ( ids.length ) {
 								self.pushVideoIds(ids)
-									.then(function(count){
-										deferred.resolve(count);
+									.then(function(){
+										deferred.resolve();
 									});
 							} else {
-								deferred.resolve(count);
+								deferred.resolve();
 							}
 						})
 
@@ -529,7 +529,7 @@
 							deferred.resolve();
 						});
 					}, function() {
-						deferred.resolve(0);
+						deferred.resolve();
 					});
 
 				return deferred.promise;
