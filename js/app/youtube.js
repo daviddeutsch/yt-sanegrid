@@ -114,10 +114,7 @@
 					if ( typeof list.items == 'undefined') {
 						deferred.reject();
 					} else {
-						self.convertItems(list)
-							.then(function(list){
-								deferred.resolve(list.items);
-							});
+						deferred.resolve(list.items);
 					}
 				}, function(){
 					deferred.reject();
