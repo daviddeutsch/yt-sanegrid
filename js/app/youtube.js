@@ -94,7 +94,7 @@
 				{
 					part: 'contentDetails',
 					channelId: channel,
-					maxResults: 20
+					maxResults: 50
 				}
 			);
 		};
