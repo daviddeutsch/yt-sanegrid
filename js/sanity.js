@@ -451,11 +451,16 @@
 				if ( typeof data != 'undefined' ) {
 					self.extractVideoIds(data)
 						.then(function(ids){
-							return self.pushVideoIds(ids)
+							if ( ids.length ) {
+								self.pushVideoIds(ids)
+									.then(function(count){
+										deferred.resolve(count);
+									});
+							} else {
+								deferred.resolve(count);
+							}
 						})
-						.then(function(count){
-							deferred.resolve(count);
-						});
+
 				} else {
 					deferred.reject();
 				}
