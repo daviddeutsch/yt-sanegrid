@@ -89,14 +89,26 @@
 		};
 
 		this.channelvideos = function( channel ) {
-			return self.get(
+			var deferred = $q.defer();
+
+			self.get(
 				'activities',
 				{
 					part: 'contentDetails',
 					channelId: channel,
 					maxResults: 50
 				}
-			);
+			).then(function(list){
+					if ( typeof list.items == 'undefined') {
+						deferred.reject();
+					} else {
+						deferred.resolve(list.items);
+					}
+				}, function(){
+					deferred.reject();
+				});
+
+			return deferred.promise;
 		};
 
 		this.videos = function( ids )
