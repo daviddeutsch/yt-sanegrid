@@ -218,7 +218,7 @@
 						});
 					});
 
-				$q.all(promises).then(function(){
+				$q.all(promises).finally(function(){
 					self.pushVideos(final_list)
 						.then(function(){
 							deferred.resolve();
