@@ -659,6 +659,7 @@
 	{
 		return function ( d ) {
 
+			if(!d) return;
 			var duration = d.split('M'); // PT35M2S
 
 			duration[0] = Number(duration[0].slice(2));
@@ -742,9 +743,9 @@
 				};
 
 				if ( $rootScope.settings.adblockoverride ) {
-					$scope.link = $scope.video.doc.link+"&adblock="+$rootScope.settings.adblocksecret;
+					$scope.link = $scope.video.value.link+"&adblock="+$rootScope.settings.adblocksecret;
 				} else {
-					$scope.link = $scope.video.doc.link;
+					$scope.link = $scope.video.value.link;
 				}
 
 			}
