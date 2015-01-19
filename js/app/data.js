@@ -86,7 +86,7 @@
 									.then(function(doc){
 										self.current = data.items[0]._id;
 
-										self.createDB(res._id)
+										self.createDB(data.items[0]._id)
 											.then(function(){
 												deferred.resolve();
 											});
