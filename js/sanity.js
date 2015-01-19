@@ -1396,9 +1396,9 @@
 					$scope.video.value.muted = !$scope.video.value.muted;
 					$scope.video.value.muteddate = new Date().toISOString();
 
-					videos.data.update($scope.video);
+					//videos.data.update($scope.video);
 
-					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
+					//videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
 				};
 
 				$scope.watch = function( $event ) {
@@ -1414,10 +1414,10 @@
 						return;
 					}
 
-					$scope.video.value.watched = !$scope.video.value.watched;
-					$scope.video.value.watcheddate = new Date().toISOString();
+					//$scope.video.value.watched = !$scope.video.value.watched;
+					//$scope.video.value.watcheddate = new Date().toISOString();
 
-					videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
+					//videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
 				};
 
 				if ( $rootScope.settings.adblockoverride ) {

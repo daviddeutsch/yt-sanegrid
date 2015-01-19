@@ -715,12 +715,12 @@
 			templateUrl: 'templates/item.html',
 			controller: function( $scope, $rootScope ) {
 				$scope.mute = function () {
-					$scope.video.doc.muted = !$scope.video.doc.muted;
-					$scope.video.doc.muteddate = new Date().toISOString();
+					$scope.video.value.muted = !$scope.video.value.muted;
+					$scope.video.value.muteddate = new Date().toISOString();
 
-					videos.data.update($scope.video);
+					//videos.data.update($scope.video);
 
-					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
+					//videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
 				};
 
 				$scope.watch = function( $event ) {
@@ -732,14 +732,14 @@
 				};
 
 				$scope.watched = function ( force ) {
-					if ( $scope.video.doc.watched && !force ) {
+					if ( $scope.video.value.watched && !force ) {
 						return;
 					}
 
-					$scope.video.doc.watched = !$scope.video.doc.watched;
-					$scope.video.doc.watcheddate = new Date().toISOString();
+					//$scope.video.value.watched = !$scope.video.value.watched;
+					//$scope.video.value.watcheddate = new Date().toISOString();
 
-					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
+					//videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
 				};
 
 				if ( $rootScope.settings.adblockoverride ) {
