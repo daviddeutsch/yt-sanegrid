@@ -435,11 +435,9 @@
 					});
 
 				$q.all(promises).then(function(){
-					deferred.resolve(final_list);
-
-					accounts.data.query('ytsanegrid/freeids')
-						.then(function(list){
-
+					self.pushVideos(final_list)
+						.then(function(){
+							deferred.resolve();
 						});
 				});
 
@@ -495,10 +493,14 @@
 					if ( typeof item.contentDetails == 'undefined' ) {
 						deferred.resolve();
 					} else if ( typeof item.contentDetails.upload != 'undefined' ) {
-						// TODO: Add check whether we already have this video
-						list.push(item.contentDetails.upload.videoId);
+						accounts.data.get(item.contentDetails.upload.videoId)
+							.then(function(){
+								deferred.resolve();
+							}, function(){
+								list.push(item.contentDetails.upload.videoId);
 
-						deferred.resolve();
+								deferred.resolve();
+							});
 					} else {
 						deferred.resolve();
 					}
