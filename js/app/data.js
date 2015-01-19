@@ -219,10 +219,15 @@
 					});
 
 				$q.all(promises).finally(function(){
-					self.pushVideos(final_list)
-						.then(function(){
-							deferred.resolve();
-						});
+					if ( final_list.length ) {
+						self.pushVideos(final_list)
+							.then(function(){
+								deferred.resolve();
+							});
+					} else {
+						deferred.resolve();
+					}
+
 				});
 
 				return deferred.promise;
