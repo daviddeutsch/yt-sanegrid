@@ -198,8 +198,6 @@
 
 				this.countLastAdded = 0;
 
-				var final_list = [];
-
 				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
 						angular.forEach(list.rows, function(channel) {
@@ -209,18 +207,22 @@
 
 							self.channelVideos(channel.doc.snippet.resourceId.channelId)
 								.then(function(videos){
-									final_list = final_list.concat(videos);
-
-									promise.resolve();
+									promise.resolve(videos);
 								}, function(){
 									promise.resolve();
 								});
 						});
 					});
 
-				$q.all(promises).finally(function(){
-					if ( final_list.length ) {
-						self.pushVideos(final_list)
+				$q.all(promises).finally(function(data){
+					var list = [];
+
+					angular.forEach(data, function(item) {
+						list = list.concat(item)
+					});
+
+					if ( list.length ) {
+						self.pushVideos(list)
 							.then(function(){
 								deferred.resolve();
 							});
