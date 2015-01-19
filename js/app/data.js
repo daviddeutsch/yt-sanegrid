@@ -214,7 +214,7 @@
 						});
 					});
 
-				$q.all(promises).finally(function(data){
+				$q.all(promises).then(function(data){
 					var list = [];
 
 					angular.forEach(data, function(item) {
