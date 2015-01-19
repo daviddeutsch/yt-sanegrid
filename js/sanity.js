@@ -161,14 +161,26 @@
 		};
 
 		this.channelvideos = function( channel ) {
-			return self.get(
+			var deferred = $q.defer();
+
+			self.get(
 				'activities',
 				{
 					part: 'contentDetails',
 					channelId: channel,
 					maxResults: 50
 				}
-			);
+			).then(function(list){
+					if ( typeof list.items == 'undefined') {
+						deferred.reject();
+					} else {
+						deferred.resolve(list.items);
+					}
+				}, function(){
+					deferred.reject();
+				});
+
+			return deferred.promise;
 		};
 
 		this.videos = function( ids )
@@ -400,6 +412,8 @@
 
 				this.countLastAdded = 0;
 
+				var final_list = [];
+
 				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
 						angular.forEach(list.rows, function(channel) {
@@ -407,16 +421,24 @@
 
 							promises.push(promise);
 
-							self.channelVideos(channel.doc.snippet.resourceId.channelId).then(function(){
-								promise.resolve();
-							}, function(){
-								promise.resolve();
-							});
+							self.channelVideos(channel.doc.snippet.resourceId.channelId)
+								.then(function(videos){
+									final_list = final_list.concat(videos);
+
+									promise.resolve();
+								}, function(){
+									promise.resolve();
+								});
 						});
 					});
 
 				$q.all(promises).then(function(){
-					deferred.resolve();
+					deferred.resolve(final_list);
+
+					accounts.data.query('ytsanegrid/freeids')
+						.then(function(list){
+
+						});
 				});
 
 				return deferred.promise;
@@ -425,16 +447,9 @@
 			channelVideos: function( channel ) {
 				var deferred = $q.defer();
 
-				var self = this;
-
 				ytData.channelvideos(channel)
-					.then(function(data) {
-						return self.pushVideos(data.items)
-					})
-					.then(function() {
-						deferred.resolve();
-					}, function() {
-						deferred.reject();
+					.then(function(list) {
+						deferred.resolve(list);
 					});
 
 				return deferred.promise;
@@ -498,6 +513,8 @@
 				var deferred = $q.defer();
 
 				var self = this;
+
+				var list = [];
 
 				// TODO: Use bulkDocs instead of individual .put actions
 
