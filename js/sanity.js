@@ -315,33 +315,35 @@
 				return deferred.promise;
 			},
 			createDB: function(id) {
+				var videoView = function(doc) {
+					if (doc.kind === 'youtube#video') {
+						emit(
+							doc._id,
+							{
+								_id:         doc._id + '__meta',
+								link:        'https://www.youtube.com/watch?v=' + doc._id,
+								title:       doc.snippet.title,
+								thumbnail:   {
+									default: doc.snippet.thumbnails.default.url,
+									medium:  doc.snippet.thumbnails.medium.url,
+									high:    doc.snippet.thumbnails.high.url
+								},
+								channelId:   doc.snippet.channelId,
+								author:      doc.snippet.channelTitle,
+								authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
+								published:   doc.snippet.publishedAt,
+								duration:    doc.contentDetails.duration
+							}
+						);
+					}
+				};
+
 				var deferred = $q.defer(),
 					design = {
 						_id: "_design/ytsanegrid",
 						views: {
 							'videos': {
-								map: function(doc) {
-									if (doc.kind === 'youtube#video') {
-										emit(
-											doc._id,
-											{
-												_id:         doc._id + '__meta',
-												link:        'https://www.youtube.com/watch?v=' + doc._id,
-												title:       doc.snippet.title,
-												thumbnail:   {
-													default: doc.snippet.thumbnails.default.url,
-													medium:  doc.snippet.thumbnails.medium.url,
-													high:    doc.snippet.thumbnails.high.url
-												},
-												channelId:   doc.snippet.channelId,
-												author:      doc.snippet.channelTitle,
-												authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
-												published:   doc.snippet.publishedAt,
-												duration:    doc.contentDetails.duration
-											}
-										);
-									}
-								}.toString()
+								map: videoView.toString()
 							},
 							'channels': {
 								map: function(doc) {
@@ -381,7 +383,7 @@
 	angular.module('sanityData').service('accounts', AccountService);
 
 
-	function VideoService( $q, $rootScope, ytData, pouchDB, accounts, channels )
+	function VideoService( $q, $rootScope, ytData, accounts, channels )
 	{
 		return {
 			list: [],
@@ -593,11 +595,11 @@
 		};
 	}
 
-	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'pouchDB', 'accounts', 'channels'];
+	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'accounts', 'channels'];
 	angular.module('sanityData').service('videos', VideoService);
 
 
-	function ChannelService( $q, ytData, pouchDB, accounts )
+	function ChannelService( $q, ytData, accounts )
 	{
 		return {
 			pageChannels: function( page )
@@ -669,7 +671,7 @@
 		};
 	}
 
-	ChannelService.$inject = ['$q', 'ytData', 'pouchDB', 'accounts'];
+	ChannelService.$inject = ['$q', 'ytData', 'accounts'];
 	angular.module('sanityData').service('channels', ChannelService);
 
 
@@ -1391,8 +1393,8 @@
 			templateUrl: 'templates/item.html',
 			controller: function( $scope, $rootScope ) {
 				$scope.mute = function () {
-					$scope.video.doc.muted = !$scope.video.doc.muted;
-					$scope.video.doc.muteddate = new Date().toISOString();
+					$scope.video.value.muted = !$scope.video.value.muted;
+					$scope.video.value.muteddate = new Date().toISOString();
 
 					videos.data.update($scope.video);
 
@@ -1408,14 +1410,14 @@
 				};
 
 				$scope.watched = function ( force ) {
-					if ( $scope.video.doc.watched && !force ) {
+					if ( $scope.video.value.watched && !force ) {
 						return;
 					}
 
-					$scope.video.doc.watched = !$scope.video.doc.watched;
-					$scope.video.doc.watcheddate = new Date().toISOString();
+					$scope.video.value.watched = !$scope.video.value.watched;
+					$scope.video.value.watcheddate = new Date().toISOString();
 
-					videos.data.put($scope.video.doc, $scope.video._id, $scope.video._rev);
+					videos.data.put($scope.video.value, $scope.video._id, $scope.video._rev);
 				};
 
 				if ( $rootScope.settings.adblockoverride ) {
