@@ -201,34 +201,34 @@
 				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
 						angular.forEach(list.rows, function(channel) {
-							var promise = $q.defer();
+							var deferredChannel = $q.defer();
 
-							promises.push(promise);
+							promises.push(deferredChannel.promise);
 
-							self.channelVideos(channel.doc.snippet.resourceId.channelId)
+							self.channelVideos(channel.value.snippet.resourceId.channelId)
 								.then(function(videos){
-									promise.resolve(videos);
+									deferredChannel.resolve(videos);
 								}, function(){
-									promise.resolve();
+									deferredChannel.resolve();
 								});
 						});
-					});
 
-				$q.all(promises).then(function(data){
-					var list = [];
-
-					angular.forEach(data, function(item) {
-						list = list.concat(item)
-					});
-
-					if ( list.length ) {
-						self.pushVideos(list)
-							.then(function(){
-								deferred.resolve();
+						$q.all(promises).then(function(data) {
+							var list = [];
+							
+							angular.forEach(data, function(item) {
+								list = list.concat(item);
 							});
-					} else {
-						deferred.resolve();
-					}
+							
+							if ( list.length ) {
+								self.pushVideos(list)
+									.then(function(){
+										deferred.resolve();
+									});
+							} else {
+								deferred.resolve();
+							}
+						});
 
 				});
 
@@ -309,41 +309,54 @@
 
 				var self = this;
 
-				var list = [];
+//				var list = [];
 
 				// TODO: Use bulkDocs instead of individual .put actions
 
-				ytData.videos( list )
-					.then(function(items) {
-						var promises = [];
+				var chunkPromises = [];
 
-						angular.forEach(items, function(video) {
-							var promise = $q.defer();
+				var i,j,templist,chunk = 10;
+				for (i=0,j=list.length; i<j; i+=chunk) {
+				    	templist = list.slice(i,i+chunk);
+					
+					var deferredChunk = $q.defer();
+					chunkPromises.push(deferredChunk.promise);
 
-							promises.push(promise);
+					ytData.videos( templist )
+						.then(function(items) {
+							var promises = [];
 
-							accounts.data.get(video._id)
-								.then(function(){
-									promise.resolve();
-								}, function(){
-									accounts.data.put(video)
-										.then(function(){
-											self.countLastAdded++;
+							angular.forEach(items, function(video) {
+								var deferredVideo = $q.defer();
 
-											promise.resolve();
-
-											// TODO: Filtering -> metaData
-										});
-								});
+								promises.push(deferredVideo.promise);
+	
+								accounts.data.get(video._id)
+									.then(function(){
+										deferredVideo.resolve();
+									}, function(){
+										accounts.data.put(video)
+											.then(function(){
+												self.countLastAdded++;
+	
+												deferredVideo.resolve();
+	
+												// TODO: Filtering -> metaData
+											});
+									});
+							});
+	
+							$q.all(promises).then(function(){
+								deferredChunk.resolve();
+							});
+						}, function() {
+							deferredChunk.resolve();
 						});
+				}
 
-						$q.all(promises).then(function(){
-							deferred.resolve();
-						});
-					}, function() {
-						deferred.resolve();
-					});
-
+				$q.all(chunkPromises).then(function() {
+					deferred.resolve();
+				});
 				return deferred.promise;
 			}
 
