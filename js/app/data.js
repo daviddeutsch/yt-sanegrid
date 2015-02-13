@@ -309,20 +309,20 @@
 
 				var self = this;
 
-//				var list = [];
-
 				// TODO: Use bulkDocs instead of individual .put actions
 
 				var chunkPromises = [];
-
-				var i,j,templist,chunk = 10;
+				var chunks = [];
+				var i,j,chunk = 10;
 				for (i=0,j=list.length; i<j; i+=chunk) {
-				    	templist = list.slice(i,i+chunk);
-					
+				    chunks.push(list.slice(i,i+chunk));
+				}	
+
+				angular.forEach(chunks, function(chunkedlist) {
 					var deferredChunk = $q.defer();
 					chunkPromises.push(deferredChunk.promise);
 
-					ytData.videos( templist )
+					ytData.videos( chunkedlist )
 						.then(function(items) {
 							var promises = [];
 
@@ -342,6 +342,8 @@
 												deferredVideo.resolve();
 	
 												// TODO: Filtering -> metaData
+											}, function() {
+												deferredVideo.resolve();											
 											});
 									});
 							});
@@ -352,7 +354,7 @@
 						}, function() {
 							deferredChunk.resolve();
 						});
-				}
+				});
 
 				$q.all(chunkPromises).then(function() {
 					deferred.resolve();
