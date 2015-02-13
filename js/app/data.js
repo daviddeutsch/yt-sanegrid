@@ -86,7 +86,7 @@
 									.then(function(doc){
 										self.current = data.items[0]._id;
 
-										self.createDB(res._id)
+										self.createDB(data.items[0]._id)
 											.then(function(){
 												deferred.resolve();
 											});
@@ -99,33 +99,35 @@
 				return deferred.promise;
 			},
 			createDB: function(id) {
+				var videoView = function(doc) {
+					if (doc.kind === 'youtube#video') {
+						emit(
+							doc._id,
+							{
+								_id:         doc._id + '__meta',
+								link:        'https://www.youtube.com/watch?v=' + doc._id,
+								title:       doc.snippet.title,
+								thumbnail:   {
+									default: doc.snippet.thumbnails.default.url,
+									medium:  doc.snippet.thumbnails.medium.url,
+									high:    doc.snippet.thumbnails.high.url
+								},
+								channelId:   doc.snippet.channelId,
+								author:      doc.snippet.channelTitle,
+								authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
+								published:   doc.snippet.publishedAt,
+								duration:    doc.contentDetails.duration
+							}
+						);
+					}
+				};
+
 				var deferred = $q.defer(),
 					design = {
 						_id: "_design/ytsanegrid",
 						views: {
 							'videos': {
-								map: function(doc) {
-									if (doc.kind === 'youtube#video') {
-										emit(
-											doc._id,
-											{
-												_id:         doc._id + '__meta',
-												link:        'https://www.youtube.com/watch?v=' + doc._id,
-												title:       doc.snippet.title,
-												thumbnail:   {
-													default: doc.snippet.thumbnails.default.url,
-													medium:  doc.snippet.thumbnails.medium.url,
-													high:    doc.snippet.thumbnails.high.url
-												},
-												channelId:   doc.snippet.channelId,
-												author:      doc.snippet.channelTitle,
-												authorlink:  'https://www.youtube.com/channel/' + doc.snippet.channelId,
-												published:   doc.snippet.publishedAt,
-												duration:    doc.contentDetails.duration
-											}
-										);
-									}
-								}.toString()
+								map: videoView.toString()
 							},
 							'channels': {
 								map: function(doc) {
@@ -165,7 +167,7 @@
 	angular.module('sanityData').service('accounts', AccountService);
 
 
-	function VideoService( $q, $rootScope, ytData, pouchDB, accounts, channels )
+	function VideoService( $q, $rootScope, ytData, accounts, channels )
 	{
 		return {
 			list: [],
@@ -196,33 +198,38 @@
 
 				this.countLastAdded = 0;
 
-				var final_list = [];
-
 				accounts.data.query('ytsanegrid/channels', {include_docs: true})
 					.then(function(list){
 						angular.forEach(list.rows, function(channel) {
-							var promise = $q.defer();
+							var deferredChannel = $q.defer();
 
-							promises.push(promise);
+							promises.push(deferredChannel.promise);
 
-							self.channelVideos(channel.doc.snippet.resourceId.channelId)
+							self.channelVideos(channel.value.snippet.resourceId.channelId)
 								.then(function(videos){
-									final_list = final_list.concat(videos);
-
-									promise.resolve();
+									deferredChannel.resolve(videos);
 								}, function(){
-									promise.resolve();
+									deferredChannel.resolve();
 								});
 						});
-					});
 
-				$q.all(promises).then(function(){
-					deferred.resolve(final_list);
-
-					accounts.data.query('ytsanegrid/freeids')
-						.then(function(list){
-
+						$q.all(promises).then(function(data) {
+							var list = [];
+							
+							angular.forEach(data, function(item) {
+								list = list.concat(item);
+							});
+							
+							if ( list.length ) {
+								self.pushVideos(list)
+									.then(function(){
+										deferred.resolve();
+									});
+							} else {
+								deferred.resolve();
+							}
 						});
+
 				});
 
 				return deferred.promise;
@@ -277,10 +284,14 @@
 					if ( typeof item.contentDetails == 'undefined' ) {
 						deferred.resolve();
 					} else if ( typeof item.contentDetails.upload != 'undefined' ) {
-						// TODO: Add check whether we already have this video
-						list.push(item.contentDetails.upload.videoId);
+						accounts.data.get(item.contentDetails.upload.videoId)
+							.then(function(){
+								deferred.resolve();
+							}, function(){
+								list.push(item.contentDetails.upload.videoId);
 
-						deferred.resolve();
+								deferred.resolve();
+							});
 					} else {
 						deferred.resolve();
 					}
@@ -298,41 +309,56 @@
 
 				var self = this;
 
-				var list = [];
-
 				// TODO: Use bulkDocs instead of individual .put actions
 
-				ytData.videos( list )
-					.then(function(items) {
-						var promises = [];
+				var chunkPromises = [];
+				var chunks = [];
+				var i,j,chunk = 10;
+				for (i=0,j=list.length; i<j; i+=chunk) {
+				    chunks.push(list.slice(i,i+chunk));
+				}	
 
-						angular.forEach(items, function(video) {
-							var promise = $q.defer();
+				angular.forEach(chunks, function(chunkedlist) {
+					var deferredChunk = $q.defer();
+					chunkPromises.push(deferredChunk.promise);
 
-							promises.push(promise);
+					ytData.videos( chunkedlist )
+						.then(function(items) {
+							var promises = [];
 
-							accounts.data.get(video._id)
-								.then(function(){
-									promise.resolve();
-								}, function(){
-									accounts.data.put(video)
-										.then(function(){
-											self.countLastAdded++;
+							angular.forEach(items, function(video) {
+								var deferredVideo = $q.defer();
 
-											promise.resolve();
-
-											// TODO: Filtering -> metaData
-										});
-								});
+								promises.push(deferredVideo.promise);
+	
+								accounts.data.get(video._id)
+									.then(function(){
+										deferredVideo.resolve();
+									}, function(){
+										accounts.data.put(video)
+											.then(function(){
+												self.countLastAdded++;
+	
+												deferredVideo.resolve();
+	
+												// TODO: Filtering -> metaData
+											}, function() {
+												deferredVideo.resolve();											
+											});
+									});
+							});
+	
+							$q.all(promises).then(function(){
+								deferredChunk.resolve();
+							});
+						}, function() {
+							deferredChunk.resolve();
 						});
+				});
 
-						$q.all(promises).then(function(){
-							deferred.resolve();
-						});
-					}, function() {
-						deferred.resolve();
-					});
-
+				$q.all(chunkPromises).then(function() {
+					deferred.resolve();
+				});
 				return deferred.promise;
 			}
 
@@ -377,11 +403,11 @@
 		};
 	}
 
-	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'pouchDB', 'accounts', 'channels'];
+	VideoService.$inject = ['$q', '$rootScope', 'ytData', 'accounts', 'channels'];
 	angular.module('sanityData').service('videos', VideoService);
 
 
-	function ChannelService( $q, ytData, pouchDB, accounts )
+	function ChannelService( $q, ytData, accounts )
 	{
 		return {
 			pageChannels: function( page )
@@ -453,7 +479,7 @@
 		};
 	}
 
-	ChannelService.$inject = ['$q', 'ytData', 'pouchDB', 'accounts'];
+	ChannelService.$inject = ['$q', 'ytData', 'accounts'];
 	angular.module('sanityData').service('channels', ChannelService);
 
 
